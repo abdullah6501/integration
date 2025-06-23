@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordAction</target>
+    </targets>
+    <!-- <targetConfigs>
+        <targetConfig targets="lightning__AppPage, lightning__RecordPage, lightningCommunity__Default">
+          
+            <property name="qbId" type="String" label="QB Id" description="The QB Id" />
+         
+        </targetConfig>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="recordId" type="String" role="inputOnly" label="Record Id" description="The ID of the record to process" />
+            <property name="qbId" type="String" role="inputOnly" label="QB Id" description="The QB Id" />
+            <property name="printMode" type="Boolean" role="inputOnly" label="Print Mode" description="Enable print mode" />
+            <property name="referenceMode" type="Boolean" role="inputOnly" label="Reference Mode" description="Enable reference mode" />
+        </targetConfig>
+    </targetConfigs> -->
+</LightningComponentBundle>

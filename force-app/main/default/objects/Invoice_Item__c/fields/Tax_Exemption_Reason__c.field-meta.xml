@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tax_Exemption_Reason__c</fullName>
+    <label>Tax Exemption Reason</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Tax_ID__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>The international transport of goods</fullName>
+                <default>false</default>
+                <label>The international transport of goods</label>
+            </value>
+            <value>
+                <fullName>International transport of passengers</fullName>
+                <default>false</default>
+                <label>International transport of passengers</label>
+            </value>
+            <value>
+                <fullName>Services directly connected and incidental to a supply of international passenger transport</fullName>
+                <default>false</default>
+                <label>Services directly connected and incidental to a supply of international passenger transport</label>
+            </value>
+            <value>
+                <fullName>Supply of a qualifying means of transport</fullName>
+                <default>false</default>
+                <label>Supply of a qualifying means of transport</label>
+            </value>
+            <value>
+                <fullName>Any services relating to goods or passenger transportation</fullName>
+                <default>false</default>
+                <label>Any services relating to goods or passenger transportation</label>
+            </value>
+            <value>
+                <fullName>Medicines and medical equipment</fullName>
+                <default>false</default>
+                <label>Medicines and medical equipment</label>
+            </value>
+            <value>
+                <fullName>Qualifying metals</fullName>
+                <default>false</default>
+                <label>Qualifying metals</label>
+            </value>
+            <value>
+                <fullName>Private education to citizen</fullName>
+                <default>false</default>
+                <label>Private education to citizen</label>
+            </value>
+            <value>
+                <fullName>Private healthcare to citizen</fullName>
+                <default>false</default>
+                <label>Private healthcare to citizen</label>
+            </value>
+            <value>
+                <fullName>Supply of qualified military goods</fullName>
+                <default>false</default>
+                <label>Supply of qualified military goods</label>
+            </value>
+            <value>
+                <fullName>Financial services</fullName>
+                <default>false</default>
+                <label>Financial services</label>
+            </value>
+            <value>
+                <fullName>Life insurance</fullName>
+                <default>false</default>
+                <label>Life insurance</label>
+            </value>
+            <value>
+                <fullName>Real estate transactions</fullName>
+                <default>false</default>
+                <label>Real estate transactions</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>The international transport of goods</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>International transport of passengers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Services directly connected and incidental to a supply of international passenger transport</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Supply of a qualifying means of transport</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Any services relating to goods or passenger transportation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Medicines and medical equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Qualifying metals</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Private education to citizen</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Private healthcare to citizen</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Zero Rate</controllingFieldValue>
+            <valueName>Supply of qualified military goods</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Exempted From Tax</controllingFieldValue>
+            <valueName>Financial services</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Exempted From Tax</controllingFieldValue>
+            <valueName>Life insurance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Exempted From Tax</controllingFieldValue>
+            <valueName>Real estate transactions</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

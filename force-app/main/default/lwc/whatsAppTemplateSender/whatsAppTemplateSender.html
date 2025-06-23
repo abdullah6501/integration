@@ -1,0 +1,65 @@
+<template>
+    <lightning-card title="Send WhatsApp Template Message">
+        <lightning-button 
+            label="Fetch Templates" 
+            variant="brand" 
+            onclick={fetchTemplates} 
+            slot="actions">
+        </lightning-button>
+        
+        <label for="phoneNumbers">Select Phone Numbers:</label>
+        <div>
+            <lightning-combobox
+                name="phoneNumbers"
+                label="Phone Numbers"
+                placeholder="Select phone numbers"
+                options={phoneOptions}
+                onchange={handlePhoneSelection}>
+            </lightning-combobox>
+        </div>
+        
+        <template if:true={selectedPhoneNumbers}>
+            <div>
+                <p>Selected Numbers:</p>
+                <template for:each={selectedPhoneNumbers} for:item="number">
+                    <lightning-badge key={number.value} label={number.label} onclick={deselectPhoneNumber}></lightning-badge>
+                </template>
+            </div>
+        </template>        
+
+        <lightning-combobox 
+            name="templateName"
+            label="Template Name"
+            placeholder="Select a template"
+            options={templateOptions}
+            value={templateName}
+            onchange={handleTemplateSelection}>
+        </lightning-combobox>
+
+        <template for:each={parameters} for:item="param">
+            <lightning-input 
+                key={param.index}
+                label={param.name}
+                value={param.value} 
+                onchange={handleParameterChange} 
+                data-index={param.index}>
+            </lightning-input>
+        </template>
+
+        <!-- <lightning-button 
+            label="Add Parameter" 
+            onclick={addParameter}
+            disabled={isAddParameterDisabled}>
+        </lightning-button> -->
+
+        <lightning-button 
+            label="Send Message" 
+            variant="brand" 
+            onclick={sendMessage}>
+        </lightning-button>
+
+        <!-- <template if:true={responseMessage}>
+            <p>{responseMessage}</p>
+        </template> -->
+    </lightning-card>
+</template>

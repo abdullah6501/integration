@@ -1,0 +1,126 @@
+<template>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-input 
+                label="Search Projects" 
+                value={projectkey} 
+                onchange={handleInputProject}>
+            </lightning-input>
+            <template if:true={projects}>
+                <ul>
+                    <template for:each={projects} for:item="project">
+                        <li key={project.id} data-name={project.Name} onclick={handleProjectSelect}>
+                            {project.Name}
+                        </li>
+                    </template>
+                </ul>
+            </template>
+        </div>
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-input 
+                label="Search Site" 
+                value={sitekey} 
+                onchange={handleInputSite}>
+            </lightning-input>
+            <template if:true={sites}>
+                <ul>
+                    <template for:each={sites} for:item="site">
+                        <li key={site.id} data-name={site.Name} onclick={handleSiteSelect}>
+                            {site.Name}
+                        </li>
+                    </template>
+                </ul>
+            </template>
+        </div>
+    </div>
+    <lightning-button label="Add Row" onclick={handleAddRow}></lightning-button>
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+        <thead>
+            <tr>
+                <th scope="col">
+                    <div class="slds-truncate" title="Product">Product</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Product Availability">Product Availability</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Quantity">Quantity</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Date">Date</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Comments">Comments</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <template for:each={tableData} for:item="row">
+                <tr key={row.id}>
+                    <td>
+                        <lightning-input data-id={row.id} value={row.product} onchange={handleProductInputChange} data-field="product"></lightning-input>
+                        <template if:true={row.productSearchResults}>
+                            <ul>
+                                <template for:each={row.productSearchResults} for:item="product">
+                                    <li key={product.id} data-id={row.id} data-name={product.Name} onclick={handleProductSelect}>
+                                        {product.Name}
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                    </td>
+                    <td>
+                        <lightning-input data-id={row.id} value={row.productAvailability} readonly></lightning-input>
+                    </td>
+                    <td>
+                        <lightning-input data-id={row.id} value={row.quantity} onchange={handleInputChange} data-field="quantity"></lightning-input>
+                    </td>
+                    <td>
+                        <lightning-input data-id={row.id} value={row.date} onchange={handleInputChange} data-field="date" type="date"></lightning-input>
+                    </td>
+                    <td>
+                        <lightning-input data-id={row.id} value={row.comments} onchange={handleInputChange} data-field="comments"></lightning-input>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-input 
+                label="Request" 
+                value={requestKey} 
+                onchange={handleInputRequest}>
+            </lightning-input>
+            <template if:true={requests}>
+                <ul>
+                    <template for:each={requests} for:item="request">
+                        <li key={request.id} data-name={request.Name} onclick={handleRequestSelect}>
+                            {request.Name}
+                        </li>
+                    </template>
+                </ul>
+            </template>
+        </div>
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-input 
+                label="Approver" 
+                value={approverKey} 
+                onchange={handleInputApprover}>
+            </lightning-input>
+            <template if:true={approvers}>
+                <ul>
+                    <template for:each={approvers} for:item="approver">
+                        <li key={approver.id} data-name={approver.Name} onclick={handleApproverSelect}>
+                            {approver.Name}
+                        </li>
+                    </template>
+                </ul>
+            </template>
+        </div>
+    </div>
+    <div class="slds-align_absolute-center slds-m-top_medium">
+        <lightning-button label="Submit" onclick={handleSubmit}></lightning-button>
+    </div>
+</template>

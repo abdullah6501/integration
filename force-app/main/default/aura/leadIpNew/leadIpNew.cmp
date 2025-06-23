@@ -1,0 +1,4 @@
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,lightning:actionOverride"
+    access="global">
+    <c:leadIp />
+</aura:component>

@@ -1,0 +1,182 @@
+<template>
+    <lightning-card title="Create Invoice" icon-name="custom:custom14">
+        <template if:true={salesOrder}>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-form-element">
+                            <lightning-input
+                                label="Customer Name"
+                                type="text"
+                                value={salesOrder.RFAB__Customer__r.Name}
+                                disabled
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-textarea
+                                label="Billing Address"
+                                value={billingAddress}
+                                disabled>
+                            </lightning-textarea>
+
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-form-element">
+                            <lightning-input
+                                label="Date"
+                                type="text"
+                                value={dateValue}
+                                disabled
+                            ></lightning-input>
+                        </div>
+        
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-input
+                                label="Payment Terms"
+                                type="text"
+                                value={salesOrder.RFAB__Customer__r.Payment_Terms__c}
+                                disabled
+                            ></lightning-input>
+                        </div>
+        
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-input
+                                label="Shipping Terms"
+                                type="text"
+                                value={salesOrder.RFAB__Customer__r.Shipping_Terms__c}
+                                disabled
+                            ></lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        
+        <div class="slds-m-left_medium">
+            <lightning-input type="checkbox" label="Journal Entry" name="journalEntry"
+                onchange={handleCheckboxChange}></lightning-input>
+            <lightning-input type="checkbox" label="Delivery Notes" name="deliveryNotes"
+                onchange={handleCheckboxChange}></lightning-input>
+        </div>
+        
+        
+        <div class="slds-m-top_medium " >
+            <h2 class="slds-text-heading_medium slds-m-bottom_small slds-m-left_medium">Stock Information</h2>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col" style="width: 15%;">
+                            <div class="slds-truncate" title="Product Name">Product Name</div>
+                        </th>
+                        <th scope="col" style="width: 10%;">
+                            <div class="slds-truncate" title="Product Quantity">Stock</div>
+                        </th>
+                        <th scope="col" style="width: 12%;">
+                            <div class="slds-truncate" title="SKU">Ordering Code</div>
+                        </th>
+                        <th scope="col" style="width: 20%;">
+                            <div class="slds-truncate" title="Description">Description</div>
+                        </th>
+                        <th scope="col" style="width: 10%;">
+                            <div class="slds-truncate" title="Serial Number">Serial Number</div>
+                        </th>
+                        <th scope="col" style="width: 8%;" class="slds-text-align_center">
+                            <div class="slds-truncate slds-m-horizontal_small" title="Qty">Qty</div>
+                        </th>
+                        <th scope="col" style="width: 4%;" class="slds-text-align_center">
+                            <div class="slds-truncate slds-m-horizontal_small" title="Unit Price">Unit Price</div>
+                        </th>
+                        <!-- <template if:true={isAmount}>
+                        <th scope="col" style="width: 8%;" class="slds-text-align_center">
+                            <div class="slds-truncate slds-m-horizontal_small" title="Tax %">Tax %</div>
+                        </th>
+                        </template> -->
+                        <th scope="col" style="width: 12%;" class="slds-text-align_center">
+                            <div class="slds-truncate slds-m-horizontal_small" title="Total">Total</div>
+                        </th>
+                        <th scope="col" style="width: 5%;" class="slds-text-align_center">
+                            <div class="slds-truncate" title="Actions">Actions</div>
+                        </th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+
+                    <template for:each={soItems} for:item="item" for:index="index">
+                        <tr key={item.id}>
+                            <td>
+                                <lightning-textarea type="text" value={item.Name} data-index={index} name="RFAB__Product__c"
+                                disabled>
+                                </lightning-textarea>
+                            </td>
+                            <td>
+                                <lightning-input type="text" value={item.RFAB__Product__r.RFAB__Product_Quantity__c}
+                                    data-index={index} disabled>
+                                </lightning-input>
+                            </td>
+                            <td>
+                                <lightning-input type="text" value={item.RFAB__Product__r.RFAB__SKU__c}
+                                    data-index={index} disabled>
+                                </lightning-input>
+                            </td>
+                            <td >
+                                <lightning-input type="text" value={item.Description__c} data-index={index}
+                                    name="Description__c" onchange={handleInputChange}>
+                                </lightning-input>
+                            </td>
+                            <td>
+                                <lightning-input type="text" value={item.Serial_Number__c} data-index={index}
+                                    name="Serial_Number__c" onchange={handleInputChange} 
+                                    disabled={item.isSerialDisabled}
+                                    required={item.isSerial}>
+                                </lightning-input>
+                            </td>
+                            <td class="slds-text-align_right">
+                                <lightning-input type="number" value={item.RFAB__Quantity__c} data-index={index}
+                                    name="RFAB__Quantity__c" step="1" onchange={handleInputChange} class="right-align-input">
+                                </lightning-input>
+                            </td>
+                            <td class="slds-text-align_right">
+                                <lightning-input type="number" value={item.RFAB__Unit_Price__c} data-index={index}
+                                    name="RFAB__Unit_Price__c" step="0.01" onchange={handleInputChange}
+                                    class="right-align-input" >
+                                </lightning-input>
+                            </td>
+                            <!-- <template if:true={isAmount}>
+                            <td>
+                                <lightning-combobox value={item.RFAB__Tax_Percentage__c} data-index={index}
+                                    name="RFAB__Tax_Percentage__c" onchange={handleInputChange} options={taxOptions} disabled>
+                                </lightning-combobox>
+                            </td>
+                           </template> -->
+                            <td class="slds-text-align_right">
+                                <lightning-input type="number" value={item.RFAB__Total_Price__c} data-index={index}
+                                    name="RFAB__Total_Price__c" step="0.01" onchange={handleInputChange}
+                                    class="right-align-input" disabled>
+                                </lightning-input>
+                            </td>
+                            <td class="slds-text-align_center">
+                                <lightning-button-icon icon-name="utility:delete" alternative-text="Delete" title="Delete"
+                                    data-index={index} onclick={handleDeleteRow}>
+                                </lightning-button-icon>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <!-- Action Buttons -->
+        <div class="slds-grid slds-gutters slds-m-top_medium slds-grid_align-center">
+            <div class="slds-col slds-size_1-of-1 slds-text-align_center">
+                <lightning-button label="Create Invoice" variant="success" onclick={handleSave} disabled={isButtonDisabled}></lightning-button>
+
+            </div>
+        </div>
+    </lightning-card>
+    
+</template>

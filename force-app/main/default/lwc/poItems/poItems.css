@@ -1,0 +1,50 @@
+.tdClass{
+    text-align:initial;
+    border-top:none;
+    border-bottom:none;
+  }
+  .column {
+    flex: 50%;
+    height: auto; 
+  }
+  .columnRightStyling{
+    width:20rem;
+    font-size:1rem;
+    border:none;
+    float:right;
+  }
+  .calculation-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.calculation-table {
+    width: 300px;
+}
+
+.calculation-table table {
+    background: white;
+}
+
+.tdClass {
+    padding: 8px 16px;
+    text-align: left;
+    border: none !important;
+}
+
+.value-cell {
+    padding: 8px 16px;
+    text-align: right;
+    border: none !important;
+}
+
+.slds-table tr {
+    border: none;
+}
+
+.slds-table td {
+    border-top: none !important;
+    border-bottom: none !important;
+}

@@ -1,0 +1,204 @@
+<template>
+    <div class="slds-m-top_medium slds-m-bottom_x-large">
+        <h2 class="slds-text-heading_medium slds-m-bottom_medium Heading" if:true={assetFlag}>
+            CONDENSED CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+        </h2>
+        <h2 class="slds-text-heading_medium slds-m-bottom_medium Heading" if:true={revenueFlag}>
+            CONDENSED CONSOLIDATED STATEMENT OF REVENUE
+        </h2>
+        <h2 class="slds-text-heading_medium slds-m-bottom_medium Heading" if:true={cashFlowFlag}>
+            CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS
+        </h2>
+        <!-- GV 04-apr-25 - Style changes  -->
+        <lightning-card title="Select Report Type"> 
+            <div class="slds-m-around_medium slds-grid slds-wrap">
+                <!-- Combobox - 3/4 width -->
+                <div class="slds-col slds-size_2-of-5 slds-p-around_medium">
+        <lightning-combobox
+            name="reportType"
+            label="Report type"
+            value={value}
+            placeholder="Select Report Type"
+            options={options}
+                        onchange={handleChange}>
+        </lightning-combobox>
+                </div>
+        
+                <!-- Button - 1/4 width -->
+                <div class="slds-col slds-size_1-of-5 slds-p-around_medium slds-align-bottom">                
+                <lightning-button
+                    variant="brand"
+                    label="Get Report"
+                    title="action"
+                    onclick={handleClick}
+                    class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button
+                    variant="brand"
+                    label="Download Report"
+                    title="download"
+                    onclick={handleDownload}
+                    class="slds-m-left_x-small">
+                </lightning-button>
+                </div>
+            </div>
+        </lightning-card>
+        <div class="slds-col">
+            <span>
+                
+            </span>
+        </div>
+        <div class="slds-p-around_medium lgc-bg">
+            <template if:true={assetFlag}>
+                <h1>Current Assets</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentAssetList}
+                        columns={assetColumns}
+                        hide-checkbox-column
+                        class="tableClass" >
+                    </lightning-datatable>
+                <h1>Fixed Assets are </h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentAssetList}
+                        columns={assetColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Owners Equities are</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentEquityList}
+                        columns={equityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Shareholder Equities are</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentEquityList}
+                        columns={equityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Current Liability</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentLiabilityList}
+                        columns={liabilityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Non current Liability</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentLiabilityList}
+                        columns={liabilityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+            </template>
+            <template if:true={revenueFlag}>
+                <h1>Gross profit</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentAssetList}
+                        columns={assetColumns}
+                        hide-checkbox-column
+                        class="tableClass" >
+                    </lightning-datatable>
+                <h1>Operating profit </h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentAssetList}
+                        columns={assetColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <!-- <h1>Profit before tax</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentEquityList}
+                        columns={equityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Non current Equities are</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentEquityList}
+                        columns={equityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Current Liability</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentLiabilityList}
+                        columns={liabilityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Non current Liability</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentLiabilityList}
+                        columns={liabilityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable> -->
+            </template>
+            <template if:true={cashFlowFlag}>
+                <h1>Cash Flows from operating activities</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentAssetList}
+                        columns={assetColumns}
+                        hide-checkbox-column
+                        class="tableClass" >
+                    </lightning-datatable>
+                <h1>Cash Flows from investing activities </h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentAssetList}
+                        columns={assetColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <!-- <h1>Profit before tax</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentEquityList}
+                        columns={equityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Non current Equities are</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentEquityList}
+                        columns={equityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>-->
+                <h1>Current Liability</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={currentLiabilityList}
+                        columns={liabilityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable>
+                <h1>Non current Liability</h1>
+                    <lightning-datatable
+                        key-field="chartOfAccountName"
+                        data={nonCurrentLiabilityList}
+                        columns={liabilityColumns}
+                        hide-checkbox-column
+                        class="tableClass">
+                    </lightning-datatable> 
+            </template>
+        </div>
+    </div>
+</template>

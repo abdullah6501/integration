@@ -1,0 +1,81 @@
+<template>
+    <lightning-card title="New Lead">
+        <div>
+            <!-- Information Section (Top) -->
+            <div class="slds-size_1-of-1 slds-p-around_medium">
+                <h3 class="slds-text-heading_medium">Information</h3>
+                <div class="slds-grid slds-wrap">
+                    <!-- Left Column -->
+                    <div class="slds-size_1-of-2 slds-p-around_small">
+                        <!-- Account Lookup (Mandatory) -->
+                        <c-reusable-lookup label="Account Name" selected-icon-name="custom:Account" object-label="Accounts"
+                            object-api-name="Account"
+                            selected-record-id={accountId}
+                            field-api-name="Name"
+                            search-field-api-name="Phone"
+                            other-field-api-name="Fax"
+                            additional-field-api-name="BillingAddress"
+                            journlentryflag={journlentryflag}
+                            newrecord={newrecord}
+                            onvalueselected={handleValueSelectedOnAccount}
+                            required="">
+                        </c-reusable-lookup>
+                        <template if:true={accountError}>
+                            <p class="slds-text-color_error">Account is required.</p>
+                        </template>
+
+                        <!-- Mobile Field -->
+                        <lightning-input type="tel" name="mobile" label="Mobile" value={MobilePhone} onchange={handleInputChange}></lightning-input>
+                        <!-- Status Picklist (Full Width) -->
+               
+                        <lightning-combobox name="status" label="Status" value={status} placeholder="Select Status"
+                            options={statusOptions} onchange={handleInputChange}>
+                        </lightning-combobox>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="slds-size_1-of-2 slds-p-around_small">
+                        <!-- Contact Lookup (Mandatory) -->
+                        <c-reusable-lookup label="Contact Name" selected-icon-name="custom:Contact" object-label="Contact"
+                            object-api-name="Contact"
+                            selected-record-id={contactId}
+                            field-api-name="Name"
+                            search-field-api-name={accountId}
+                            other-field-api-name="Email"
+                            additional-field-api-name="MobilePhone"
+                            contactentryflag={contactentryflag}
+                            newrecord={newrecord}
+                            onvalueselected={handleValueSelectedOnContact}
+                            required="">
+                        </c-reusable-lookup>
+                        <template if:true={contactError}>
+                            <p class="slds-text-color_error">Contact is required.</p>
+                        </template>
+
+                        <!-- Email Field -->
+                        <lightning-input type="email" name="email" label="Email" value={email} onchange={handleInputChange}></lightning-input>
+                    </div>
+                </div>
+
+               
+            </div>
+
+            <!-- Description Information Section (Bottom) -->
+            <div class="slds-size_1-of-1 slds-p-around_medium">
+                <h3 class="slds-text-heading_medium">Description Information</h3>
+
+                <lightning-textarea name="projectReference" label="Project Reference" value={projectReference} onchange={handleInputChange}></lightning-textarea>
+                
+                <lightning-input type="text" name="endUser" label="End User" value={endUser} onchange={handleInputChange}></lightning-input>
+                
+                <lightning-textarea name="remarks" label="Remarks" value={remarks} onchange={handleInputChange}></lightning-textarea>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="slds-m-top_medium slds-text-align_center">
+            <lightning-button variant="neutral" label="Reset" onclick={handleReset}></lightning-button>
+            <lightning-button variant="brand" label="Save" onclick={handleSave} class="slds-m-left_small"></lightning-button>
+        </div>
+    </lightning-card>
+</template>

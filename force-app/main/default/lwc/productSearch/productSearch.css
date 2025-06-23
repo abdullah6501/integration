@@ -1,0 +1,43 @@
+/* .custom-datatable .slds-th__action {
+    justify-content: center;
+    position: relative;
+    left: 100px;
+}
+
+.custom-datatable .center-align {
+    text-align: center;
+}
+
+.space::part{
+    text-align: center;
+} */
+
+template {
+    background-color: 100vh;
+}
+
+.bordert{
+    border: 1px solid rgb(235 235 235);
+    padding-top: 20px;
+    
+    /* width: auto; */
+    /* border-radius: 20px; */
+}
+
+.card {
+    border-bottom: 1px solid black;
+}
+
+.total{
+    background-color: #ebebeb;
+}
+
+.quan{
+    margin-left: 60%;
+    text-align: center;
+}
+
+.loc{
+    margin-left: 30%;
+    text-align: center;
+}

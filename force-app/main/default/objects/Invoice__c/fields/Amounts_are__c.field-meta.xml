@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amounts_are__c</fullName>
+    <label>Amounts are</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Exclusive of Tax</fullName>
+                <default>false</default>
+                <label>Exclusive of Tax</label>
+            </value>
+            <value>
+                <fullName>Inclusive of Tax</fullName>
+                <default>false</default>
+                <label>Inclusive of Tax</label>
+            </value>
+            <value>
+                <fullName>Out of scope of Tax</fullName>
+                <default>false</default>
+                <label>Out of scope of Tax</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

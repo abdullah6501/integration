@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PDF_Backend</fullName>
+    <availability>online</availability>
+    <displayType>button</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>PDF Backend</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <url>{!REQUIRESCRIPT(&quot;/soap/ajax/49.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/49.0/apex.js&quot;)}
+
+var recordId = &apos;{!Message__c.Id}&apos;;
+
+sforce.apex.execute(
+    &apos;PDFDownloadController&apos;,
+    &apos;getPDFDownloadLink&apos;,
+    { recordId: recordId },
+    function(result) {
+        if (result) {
+            window.open(result, &apos;_blank&apos;);
+        } else {
+            alert(&apos;PDF not found or not generated yet.&apos;);
+        }
+    }
+);</url>
+</WebLink>

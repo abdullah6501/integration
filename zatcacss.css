@@ -1,0 +1,195 @@
+/* table, th, td {
+    border: 1px solid black;
+    text-align: center;
+  } */
+
+  /* .slds-table_bordered tbody td {
+    border-top: none;
+    border-bottom: none;
+  } */
+
+  .tableStyle {
+    border: 1px solid black;
+    text-align: center;
+  }
+
+  input{
+    text-align: left;
+    border:none;
+    padding:0;
+  }
+
+  thead{
+      height:40px;
+      font-size: 12px;
+  }
+
+  lightning-button.button {
+    width: 150px;
+  } 
+
+  button{
+    width: 130px;
+    border: 1px solid;
+    justify-content: center;
+  }
+
+  .slds-button[disabled], .slds-button:disabled{
+    border-color: lightgrey;
+    color:lightgrey;
+  }
+
+  .subTotalDiv{
+    margin-top:10px;
+    font-size:18px;
+    width:20%;
+  }
+
+  .subTotalSpan{
+    font-weight:bold;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  
+  .row {
+    display: flex;
+  }
+  
+  /* Create two equal columns that sits next to each other */
+  .column {
+    flex: 50%;
+    /* padding-top: 10px; */
+    height: auto; /* 300px Should be removed. Only for demonstration */
+  }
+
+
+/* .tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: visible;
+  width: 18rem;
+  background-color: white;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  border: 1px solid #cfc6c5;
+
+  /* Position the tooltip */
+  /*position: absolute;
+  z-index: 10;
+  top: -5px;
+  left: 105%;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+} */
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  width: 18rem;
+  background-color: #ededed;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 10;
+  top: -440%;
+  left: 110%;
+  border: 1px solid black;
+}
+
+/* .tooltip .ccBccSec {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: outset;
+  border-color: transparent #ededed transparent transparent;
+} */
+
+.tooltip .tooltiptext::before {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%;  /* To the left of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: outset;
+  border-color: transparent #ededed transparent transparent;
+}
+
+/* .tooltip:hover .tooltiptext {
+  visibility: visible;
+} */
+
+.ccBccInputSecOriginal {
+  text-align:start;
+  font-weight:bold;
+  color:black;
+}
+
+/* Chrome, Safari, Edge, Opera ==> To remove up/down OR increment/decrement toggles */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox ==> To remove up/down OR increment/decrement toggles */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.custom-textarea {
+  --sds-c-textarea-sizing-min-height:12rem;
+  width:20rem;
+}
+
+.invoiceItemtextarea {
+  --sds-c-textarea-sizing-min-height:2rem;
+}
+
+.greyed-out {
+  opacity: 0.2; /* Adjust the opacity value as needed */
+  pointer-events: none; /* Optionally, disable interaction with the component */
+}
+
+.columnRightStyling{
+  width:20rem;
+  font-size:1rem;
+  border:none;
+  float:right;
+}
+.tdClass{
+  text-align:initial;
+  border-top:none;
+  border-bottom:none;
+}

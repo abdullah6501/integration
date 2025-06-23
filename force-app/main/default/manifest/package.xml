@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- <types>
+        <members>InvoiceFormController</members>
+        <members>InvoiceFormHelper</members>
+        <members>InvoiceFormWrapper</members>
+        <members>InvoiceItemWrapper</members>
+        <name>ApexClass</name>
+    </types> -->
+    <types>
+    <members>Invoice__c.Discount_Type__c</members>
+    <members>Invoice__c.Discount_Mode__c</members>
+    <members>Invoice__c.Lumpsum_Discount_Percentage__c</members>
+    <members>Invoice__c.Lumpsum_Discount_Amount__c</members>
+    <members>Invoice__c.Amount_After_Discount__c</members>
+
+    <members>Invoice_Item__c.Discount_Amount__c</members>
+    <members>Invoice_Item__c.Discount_Percentage__c</members>
+    <members>Invoice_Item__c.Amount_Before_Discount__c</members>
+    <members>Invoice_Item__c.Tax_Amount__c</members>
+
+    <name>CustomField</name>
+  </types>
+    <version>52.0</version>
+</Package>
+ 

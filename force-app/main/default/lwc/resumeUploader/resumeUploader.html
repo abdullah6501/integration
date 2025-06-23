@@ -1,0 +1,54 @@
+<!-- <template>
+    <lightning-card title="Upload Resume">
+        <div class="slds-m-around_medium">
+            <lightning-file-upload 
+                label="Upload Resume"
+                name="resumeUploader"
+                accept=".pdf,.doc,.docx"
+                record-id={recordId}
+                onuploadfinished={handleUpload}>
+            </lightning-file-upload>
+        </div>
+        <template if:true={response}>
+            <div class="slds-m-around_medium">
+                <p><strong>Response:</strong> {response}</p>
+            </div>
+        </template>
+    </lightning-card>
+</template> -->
+<template>
+    <lightning-card title="Upload Resume">
+        <div class="slds-m-around_medium">
+            <lightning-file-upload 
+                label="Upload Resume"
+                name="resumeUploader"
+                accept=".pdf,.doc,.docx"
+                record-id={recordId}
+                onuploadfinished={handleUpload}>
+            </lightning-file-upload>
+        </div>
+
+        <template if:true={showParseButton}>
+            <div class="slds-m-around_medium">
+                <lightning-button 
+                    label="Parse Resume" 
+                    variant="brand" 
+                    onclick={handleParse}
+                    disabled={isParsing}>
+                </lightning-button>
+            </div>
+        </template>
+
+        <template if:true={isParsing}>
+            <div class="slds-m-around_medium">
+                <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:true={response}>
+            <div class="slds-m-around_medium">
+                <p><strong>Response:</strong> {response}</p>
+            </div>
+        </template>
+    </lightning-card>
+</template>

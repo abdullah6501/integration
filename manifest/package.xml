@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!--<types>
+        <members>Invoice__Item__c.Tax_ID__c</members>
+        <members>Invoice__Item__c.Tax_Exemption_Reason__c</members>
+        <name>CustomField</name>
+    </types>-->
+    <!--<types>
+        <members>InvoiceFormController</members>
+        <members>InvoiceFormHelper</members>
+        <members>InvoiceFormWrapper</members>
+        <members>InvoiceItemWrapper</members>
+        <name>ApexClass</name>
+    </types>-->
+    <types>
+        <!--<members>chartComponent</members>
+        <members>chartDashboard</members>-->
+        <members>generalLedger</members>
+        <members>trialBalance</members>
+        <members>csvExporter</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>63.0</version>
+</Package>

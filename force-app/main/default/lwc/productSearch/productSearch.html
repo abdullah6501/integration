@@ -1,0 +1,204 @@
+<template>
+    <div>
+        <lightning-card title="Check Product Availability" icon-name="standard:account" class="card">
+            <div class="slds-m-around_medium slds-grid slds-gutters">
+                <!-- Search Product -->
+                <div class="slds-form-element slds-col">
+                    <div class="slds-form-element__control">
+                        <template if:false={isProductSelected}>
+                            <c-reusable-lookup label="Search Product" object-api-name="Product__c" field-api-name="Name"
+                                productsearchflag="true" selected-record-id={selectedProductId}
+                                onvalueselected={handleValueSelected} onvalueremoval={handleValueRemoval}>
+                            </c-reusable-lookup>
+                        </template>
+                        <template if:true={isProductSelected}>
+                            <label class="slds-form-element__label" for="combobox-id-5"
+                                id="combobox-label-id-35">Selected Product</label>
+                            <div tabindex="0" class="slds-combobox_container slds-has-selection">
+                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right"
+                                        role="none">
+                                        <span
+                                            class="slds-icon_container slds-icon-standard-product slds-combobox__input-entity-icon"
+                                            title="Product">
+                                            <lightning-icon icon-name="standard:account" alternative-text="Product"
+                                                size="x-small"></lightning-icon>
+                                        </span>
+                                        <button type="button"
+                                            class="slds-input_faux slds-combobox__input slds-combobox__input-value"
+                                            aria-labelledby="combobox-label-id-34 combobox-id-5-selected-value"
+                                            id="combobox-id-5-selected-value" aria-controls="listbox-id-5"
+                                            aria-expanded="false" aria-haspopup="listbox">
+                                            <span class="slds-truncate"
+                                                id="combobox-value-id-19">{selectedProductName}</span>
+                                        </button>
+                                        <button
+                                            class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                            title="Remove selected option" onclick={handleProductRemove}>
+                                            <lightning-icon icon-name="utility:close"
+                                                alternative-text="Remove selected option"
+                                                size="x-small"></lightning-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <!-- Display Product Availability Data -->
+            <template if:true={productAvailabilityData}>
+                <div class="slds-grid slds-wrap slds-grid_align-center">
+                    <div class="slds-theme_default" style="max-width: 95%; width: 100%; margin-top:2%">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped bordert">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="S.No">S.No</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate loc" title="Location">Location</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate quan" title="Quantity">Quantity</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={productAvailabilityData} for:item="record" for:index="index">
+                                    <tr class="slds-hint-parent" key={record.id}>
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate">{record.sno}</div>
+                                        </td>
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate loc">{record.locationName}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate quan">{record.quantity}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template if:true={totalProduct}>
+                                    <tr class="slds-hint-parent">
+                                        <td colspan="3" class="slds-text-align_center" style="color:red;">Total count: {totalProduct}</td>
+                                    </tr>
+                                    <!-- <tr>
+                                        <div >
+                                            <div class="total ">
+                                                <div>
+                                                    <span>Total Count</span>
+                                                </div>
+                                                <div>
+                                                    <span>{totalProduct}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </tr>
+                                         -->
+                                </template>
+                                <template if:false={productAvailabilityData.length}>
+                                    <tr class="slds-hint-parent">
+                                        <td colspan="3" class="slds-text-align_center" style="color:red;">No Records
+                                            Found</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <!-- <td data-label="Prospecting">
+                <div class="slds-truncate" title="Prospecting">Prospecting</div>
+                </td>
+                <td data-label="Confidence">
+                <div class="slds-truncate" title="20%">20%</div>
+                </td>
+                <td data-label="Amount">
+                <div class="slds-truncate" title="$25k">$25k</div>
+                </td>
+                <td data-label="Contact">
+                <div class="slds-truncate" title="jrogers@cloudhub.com">
+                <a href="#" tabindex="-1">jrogers@cloudhub.com</a>
+                </div>
+                </td>
+                
+                <tr class="slds-hint-parent">
+                <th data-label="Opportunity Name" scope="row">
+                <div class="slds-truncate" title="Cloudhub + Anypoint Connectors">
+                <a href="#" tabindex="-1">Cloudhub + Anypoint Connectors</a>
+                </div>
+                </th>
+                <td data-label="Account Name">
+                <div class="slds-truncate" title="Cloudhub">Cloudhub</div>
+                </td>
+                <td data-label="Close Date">
+                <div class="slds-truncate" title="4/14/2015">4/14/2015</div>
+                </td>
+                <td data-label="Prospecting">
+                <div class="slds-truncate" title="Prospecting">Prospecting</div>
+                </td>
+                <td data-label="Confidence">
+                <div class="slds-truncate" title="20%">20%</div>
+                </td>
+                <td data-label="Amount">
+                <div class="slds-truncate" title="$25k">$25k</div>
+                </td>
+                <td data-label="Contact">
+                <div class="slds-truncate" title="jrogers@cloudhub.com">
+                <a href="#" tabindex="-1">jrogers@cloudhub.com</a>
+                </div>
+                </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                <th data-label="Opportunity Name" scope="row">
+                <div class="slds-truncate" title="Cloudhub">
+                <a href="#" tabindex="-1">Cloudhub</a>
+                </div>
+                </th>
+                <td data-label="Account Name">
+                <div class="slds-truncate" title="Cloudhub">Cloudhub</div>
+                </td>
+                <td data-label="Close Date">
+                <div class="slds-truncate" title="4/14/2015">4/14/2015</div>
+                </td>
+                <td data-label="Prospecting">
+                <div class="slds-truncate" title="Prospecting">Prospecting</div>
+                </td>
+                <td data-label="Confidence">
+                <div class="slds-truncate" title="20%">20%</div>
+                </td>
+                <td data-label="Amount">
+                <div class="slds-truncate" title="$25k">$25k</div>
+                </td>
+                <td data-label="Contact">
+                <div class="slds-truncate" title="jrogers@cloudhub.com">
+                <a href="#" tabindex="-1">jrogers@cloudhub.com</a>
+                </div>
+                </td>
+                </tr> -->
+                <!-- </tbody>
+                </table> -->
+                <!-- <div class="slds-p-around_medium slds-m-around_medium">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col" style="text-align: center;">Location</th>
+                            <th scope="col" style="text-align: center;">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={productAvailabilityData} for:item="record">
+                            <tr key={record.id}>
+                                <td style="text-align: center;">{record.locationName}</td>
+                                <td style="text-align: center;">{record.quantity}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div> -->
+            </template>
+        </lightning-card>
+    </div>
+</template>

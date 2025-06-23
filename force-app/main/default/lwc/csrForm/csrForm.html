@@ -1,0 +1,63 @@
+<template>
+    <lightning-card title="CSR Configuration Form">
+        <div class="slds-m-around_medium">
+
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input label="Company Name" name="Company_Name__c"
+                        value={csrData.Company_Name__c} onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input label="VAT Number" name="VAT_Number__c"
+                        value={csrData.VAT_Number__c} onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input label="Branch Name" name="Branch_Name__c" 
+                        value={csrData.Branch_Name__c} onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox label="Country" name="Country__c" value={csrData.Country__c}
+                        options={countryOptions} onchange={handleInputChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox label="Invoice Type" name="Invoice_Type__c"
+                        options={invoiceTypeOptions} value={csrData.Invoice_Type__c} onchange={handleInputChange}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input label="Business Address" name="Address__c"
+                        value={csrData.Address__c} onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input label="Industry Type" name="Industry__c"
+                        value={csrData.Industry__c} onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input label="OTP" name="OTP" type="password"
+                        value={csrData.OTP} onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <div class="slds-m-top_medium">
+                <lightning-button label="Submit" variant="brand" onclick={handleSubmit}></lightning-button>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

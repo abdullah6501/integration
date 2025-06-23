@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Discount_Reason__c</fullName>
+    <label>Discount Reason</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <!-- <value>
+                <fullName>Discount</fullName>
+                <default>false</default>
+                <label>Discount</label>
+            </value>
+            <value>
+                <fullName>Brokerage</fullName>
+                <default>false</default>
+                <label>Brokerage</label>
+            </value> -->
+            <value>
+                <fullName>Handling commission</fullName>
+                <default>false</default>
+                <label>Handling commission</label>
+            </value>
+            <value>
+                <fullName>Amendment commission</fullName>
+                <default>false</default>
+                <label>Amendment commission</label>
+            </value>
+            <value>
+                <fullName>Acceptance commission</fullName>
+                <default>false</default>
+                <label>Acceptance commission</label>
+            </value>
+            <value>
+                <fullName>Commission for obtaining acceptance</fullName>
+                <default>false</default>
+                <label>Commission for obtaining acceptance</label>
+            </value>
+            <value>
+                <fullName>Commission on delivery</fullName>
+                <default>false</default>
+                <label>Commission on delivery</label>
+            </value>
+            <value>
+                <fullName>Advising commission</fullName>
+                <default>false</default>
+                <label>Advising commission</label>
+            </value>
+            <value>
+                <fullName>Confirmation commission</fullName>
+                <default>false</default>
+                <label>Confirmation commission</label>
+            </value>
+            <value>
+                <fullName>Deferred payment commission</fullName>
+                <default>false</default>
+                <label>Deferred payment commission</label>
+            </value>
+            <value>
+                <fullName>Commission for taking up documents</fullName>
+                <default>false</default>
+                <label>Commission for taking up documents</label>
+            </value>
+            <value>
+                <fullName>Opening commission</fullName>
+                <default>false</default>
+                <label>Opening commission</label>
+            </value>
+            <value>
+                <fullName>Fee for payment under reserve</fullName>
+                <default>false</default>
+                <label>Fee for payment under reserve</label>
+            </value>
+            <value>
+                <fullName>Discrepancy fee</fullName>
+                <default>false</default>
+                <label>Discrepancy fee</label>
+            </value>
+            <value>
+                <fullName>Domicilation commission</fullName>
+                <default>false</default>
+                <label>Domicilation commission</label>
+            </value>
+            <value>
+                <fullName>Commission for release of goods</fullName>
+                <default>false</default>
+                <label>Commission for release of goods</label>
+            </value>
+            <value>
+                <fullName>Collection commission</fullName>
+                <default>false</default>
+                <label>Collection commission</label>
+            </value>
+            <value>
+                <fullName>Negotiation commission</fullName>
+                <default>false</default>
+                <label>Negotiation commission</label>
+            </value>
+            <value>
+                <fullName>Return commission</fullName>
+                <default>false</default>
+                <label>Return commission</label>
+            </value>
+            <value>
+                <fullName>B/L splitting charges</fullName>
+                <default>false</default>
+                <label>B/L splitting charges</label>
+            </value>
+            <value>
+                <fullName>Trust commission</fullName>
+                <default>false</default>
+                <label>Trust commission</label>
+            </value>
+            <value>
+                <fullName>Transfer commission</fullName>
+                <default>false</default>
+                <label>Transfer commission</label>
+            </value>
+            <value>
+                <fullName>Commission for opening irrevocable documentary credits</fullName>
+                <default>false</default>
+                <label>Commission for opening irrevocable documentary credits</label>
+            </value>
+            <value>
+                <fullName>Pre-advice commission</fullName>
+                <default>false</default>
+                <label>Pre-advice commission</label>
+            </value>
+            <value>
+                <fullName>Supervisory commission</fullName>
+                <default>false</default>
+                <label>Supervisory commission</label>
+            </value>
+            <value>
+                <fullName>Model charges</fullName>
+                <default>false</default>
+                <label>Model charges</label>
+            </value>
+            <value>
+                <fullName>Risk commission</fullName>
+                <default>false</default>
+                <label>Risk commission</label>
+            </value>
+            <value>
+                <fullName>Guarantee commission</fullName>
+                <default>false</default>
+                <label>Guarantee commission</label>
+            </value>
+            <value>
+                <fullName>Reimbursement commission</fullName>
+                <default>false</default>
+                <label>Reimbursement commission</label>
+            </value>
+            <value>
+                <fullName>Stamp duty</fullName>
+                <default>false</default>
+                <label>Stamp duty</label>
+            </value>
+            <value>
+                <fullName>Brokerage</fullName>
+                <default>false</default>
+                <label>Brokerage</label>
+            </value>
+            <value>
+                <fullName>Bank charges</fullName>
+                <default>false</default>
+                <label>Bank charges</label>
+            </value>
+            <value>
+                <fullName>Bank charges information</fullName>
+                <default>false</default>
+                <label>Bank charges information</label>
+            </value>
+            <value>
+                <fullName>Courier fee</fullName>
+                <default>false</default>
+                <label>Courier fee</label>
+            </value>
+            <value>
+                <fullName>Phone fee</fullName>
+                <default>false</default>
+                <label>Phone fee</label>
+            </value>
+            <value>
+                <fullName>Postage fee</fullName>
+                <default>false</default>
+                <label>Postage fee</label>
+            </value>
+            <value>
+                <fullName>S.W.I.F.T. fee</fullName>
+                <default>false</default>
+                <label>S.W.I.F.T. fee</label>
+            </value>
+            <value>
+                <fullName>Telex fee</fullName>
+                <default>false</default>
+                <label>Telex fee</label>
+            </value>
+            <value>
+                <fullName>Penalty for late delivery of documents</fullName>
+                <default>false</default>
+                <label>Penalty for late delivery of documents</label>
+            </value>
+            <value>
+                <fullName>Penalty for late delivery of valuation of works</fullName>
+                <default>false</default>
+                <label>Penalty for late delivery of valuation of works</label>
+            </value>
+            <value>
+                <fullName>Penalty for execution of works behind schedule</fullName>
+                <default>false</default>
+                <label>Penalty for execution of works behind schedule</label>
+            </value>
+            <value>
+                <fullName>Other penalties</fullName>
+                <default>false</default>
+                <label>Other penalties</label>
+            </value>
+            <value>
+                <fullName>Bonus for works ahead of schedule</fullName>
+                <default>false</default>
+                <label>Bonus for works ahead of schedule</label>
+            </value>
+            <value>
+                <fullName>Other bonus</fullName>
+                <default>false</default>
+                <label>Other bonus</label>
+            </value>
+            <value>
+                <fullName>Project management cost</fullName>
+                <default>false</default>
+                <label>Project management cost</label>
+            </value>
+            <value>
+                <fullName>Pro rata retention</fullName>
+                <default>false</default>
+                <label>Pro rata retention</label>
+            </value>
+            <value>
+                <fullName>Contractual retention</fullName>
+                <default>false</default>
+                <label>Contractual retention</label>
+            </value>
+            <value>
+                <fullName>Other retentions</fullName>
+                <default>false</default>
+                <label>Other retentions</label>
+            </value>
+            <value>
+                <fullName>Interest on arrears</fullName>
+                <default>false</default>
+                <label>Interest on arrears</label>
+            </value>
+            <value>
+                <fullName>Interest</fullName>
+                <default>false</default>
+                <label>Interest</label>
+            </value>
+            <value>
+                <fullName>Charge per credit cover</fullName>
+                <default>false</default>
+                <label>Charge per credit cover</label>
+            </value>
+            <value>
+                <fullName>Charge per unused credit cover</fullName>
+                <default>false</default>
+                <label>Charge per unused credit cover</label>
+            </value>
+            <value>
+                <fullName>Minimum commission</fullName>
+                <default>false</default>
+                <label>Minimum commission</label>
+            </value>
+            <value>
+                <fullName>Factoring commission</fullName>
+                <default>false</default>
+                <label>Factoring commission</label>
+            </value>
+            <value>
+                <fullName>Chamber of commerce charge</fullName>
+                <default>false</default>
+                <label>Chamber of commerce charge</label>
+            </value>
+            <value>
+                <fullName>Transfer charges</fullName>
+                <default>false</default>
+                <label>Transfer charges</label>
+            </value>
+            <value>
+                <fullName>Repatriation charges</fullName>
+                <default>false</default>
+                <label>Repatriation charges</label>
+            </value>
+            <value>
+                <fullName>Miscellaneous charges</fullName>
+                <default>false</default>
+                <label>Miscellaneous charges</label>
+            </value>
+            <value>
+                <fullName>Foreign exchange charges</fullName>
+                <default>false</default>
+                <label>Foreign exchange charges</label>
+            </value>
+            <value>
+                <fullName>Agreed debit interest charge</fullName>
+                <default>false</default>
+                <label>Agreed debit interest charge</label>
+            </value>
+            <value>
+                <fullName>Manufacturer's consumer discount</fullName>
+                <default>false</default>
+                <label>Manufacturer's consumer discount</label>
+            </value>
+            <value>
+                <fullName>Fax advice charge</fullName>
+                <default>false</default>
+                <label>Fax advice charge</label>
+            </value>
+            <value>
+                <fullName>Due to military status</fullName>
+                <default>false</default>
+                <label>Due to military status</label>
+            </value>
+            <value>
+                <fullName>Due to work accident</fullName>
+                <default>false</default>
+                <label>Due to work accident</label>
+            </value>
+            <value>
+                <fullName>Special agreement</fullName>
+                <default>false</default>
+                <label>Special agreement</label>
+            </value>
+            <value>
+                <fullName>Production error discount</fullName>
+                <default>false</default>
+                <label>Production error discount</label>
+            </value>
+            <value>
+                <fullName>New outlet discount</fullName>
+                <default>false</default>
+                <label>New outlet discount</label>
+            </value>
+            <value>
+                <fullName>Sample discount</fullName>
+                <default>false</default>
+                <label>Sample discount</label>
+            </value>
+            <value>
+                <fullName>End-of-range discount</fullName>
+                <default>false</default>
+                <label>End-of-range discount</label>
+            </value>
+            <value>
+                <fullName>Charge for a customer specific finish</fullName>
+                <default>false</default>
+                <label>Charge for a customer specific finish</label>
+            </value>
+            <value>
+                <fullName>Incoterm discount</fullName>
+                <default>false</default>
+                <label>Incoterm discount</label>
+            </value>
+            <value>
+                <fullName>Point of sales threshold allowance</fullName>
+                <default>false</default>
+                <label>Point of sales threshold allowance</label>
+            </value>
+            <value>
+                <fullName>Technical modification costs</fullName>
+                <default>false</default>
+                <label>Technical modification costs</label>
+            </value>
+            <value>
+                <fullName>Job-order production costs</fullName>
+                <default>false</default>
+                <label>Job-order production costs</label>
+            </value>
+            <value>
+                <fullName>Off-premises costs</fullName>
+                <default>false</default>
+                <label>Off-premises costs</label>
+            </value>
+            <value>
+                <fullName>Additional processing costs</fullName>
+                <default>false</default>
+                <label>Additional processing costs</label>
+            </value>
+            <value>
+                <fullName>Attesting charge</fullName>
+                <default>false</default>
+                <label>Attesting charge</label>
+            </value>
+            <value>
+                <fullName>Rush delivery surcharge</fullName>
+                <default>false</default>
+                <label>Rush delivery surcharge</label>
+            </value>
+            <value>
+                <fullName>Special construction costs</fullName>
+                <default>false</default>
+                <label>Special construction costs</label>
+            </value>
+            <value>
+                <fullName>Freight charges</fullName>
+                <default>false</default>
+                <label>Freight charges</label>
+            </value>
+            <value>
+                <fullName>Packing charge</fullName>
+                <default>false</default>
+                <label>Packing charge</label>
+            </value>
+            <value>
+                <fullName>Repair charge</fullName>
+                <default>false</default>
+                <label>Repair charge</label>
+            </value>
+            <value>
+                <fullName>Loading charge</fullName>
+                <default>false</default>
+                <label>Loading charge</label>
+            </value>
+            <value>
+                <fullName>Setup charge</fullName>
+                <default>false</default>
+                <label>Setup charge</label>
+            </value>
+            <value>
+                <fullName>Testing charge</fullName>
+                <default>false</default>
+                <label>Testing charge</label>
+            </value>
+            <value>
+                <fullName>Warehousing charge</fullName>
+                <default>false</default>
+                <label>Warehousing charge</label>
+            </value>
+            <value>
+                <fullName>Gold surcharge</fullName>
+                <default>false</default>
+                <label>Gold surcharge</label>
+            </value>
+            <value>
+                <fullName>Copper surcharge</fullName>
+                <default>false</default>
+                <label>Copper surcharge</label>
+            </value>
+            <value>
+                <fullName>Material surcharge/deduction</fullName>
+                <default>false</default>
+                <label>Material surcharge/deduction</label>
+            </value>
+            <value>
+                <fullName>Lead surcharge</fullName>
+                <default>false</default>
+                <label>Lead surcharge</label>
+            </value>
+            <value>
+                <fullName>Price index surcharge</fullName>
+                <default>false</default>
+                <label>Price index surcharge</label>
+            </value>
+            <value>
+                <fullName>Platinum surcharge</fullName>
+                <default>false</default>
+                <label>Platinum surcharge</label>
+            </value>
+            <value>
+                <fullName>Silver surcharge</fullName>
+                <default>false</default>
+                <label>Silver surcharge</label>
+            </value>
+            <value>
+                <fullName>Wolfram surcharge</fullName>
+                <default>false</default>
+                <label>Wolfram surcharge</label>
+            </value>
+            <value>
+                <fullName>Aluminum surcharge</fullName>
+                <default>false</default>
+                <label>Aluminum surcharge</label>
+            </value>
+            <value>
+                <fullName>Discount</fullName>
+                <default>false</default>
+                <label>Discount</label>
+            </value>
+            <value>
+                <fullName>Insurance</fullName>
+                <default>false</default>
+                <label>Insurance</label>
+            </value>
+            <value>
+                <fullName>Minimum order / minimum billing charge</fullName>
+                <default>false</default>
+                <label>Minimum order / minimum billing charge</label>
+            </value>
+            <value>
+                <fullName>Material surcharge (special materials)</fullName>
+                <default>false</default>
+                <label>Material surcharge (special materials)</label>
+            </value>
+            <value>
+                <fullName>Surcharge</fullName>
+                <default>false</default>
+                <label>Surcharge</label>
+            </value>
+            <value>
+                <fullName>Special rebate</fullName>
+                <default>false</default>
+                <label>Special rebate</label>
+            </value>
+            <value>
+                <fullName>Carbon footprint charge</fullName>
+                <default>false</default>
+                <label>Carbon footprint charge</label>
+            </value>
+            <value>
+                <fullName>Fixed long term</fullName>
+                <default>false</default>
+                <label>Fixed long term</label>
+            </value>
+            <value>
+                <fullName>Temporary</fullName>
+                <default>false</default>
+                <label>Temporary</label>
+            </value>
+            <value>
+                <fullName>Standard</fullName>
+                <default>false</default>
+                <label>Standard</label>
+            </value>
+            <value>
+                <fullName>Yearly turnover</fullName>
+                <default>false</default>
+                <label>Yearly turnover</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

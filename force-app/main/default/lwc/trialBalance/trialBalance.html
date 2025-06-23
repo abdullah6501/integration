@@ -1,0 +1,84 @@
+<template>
+    <lightning-card title="Trial Balance">
+        <div class="slds-m-around_medium"> 
+            <div class="slds-p-around_medium"> 
+                <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_medium">
+                    <div class="slds-col slds-size_2-of-10">
+                        <lightning-input type="date" label="From Date" value={fromDate} onchange={handleFromDateChange}></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_2-of-10">
+                        <lightning-input type="date" label="To Date" value={toDate} onchange={handleToDateChange}></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-10 slds-align_absolute-center">
+                        <lightning-button label="Search" onclick={handleSearch} variant="brand" class="slds-m-top_medium"></lightning-button>
+                    </div>
+                    <div class="slds-col slds-size_1-of-10 slds-align_absolute-center">
+                        <lightning-button 
+                            label="Export" 
+                            onclick={handleDownloadCSV} 
+                            variant="brand" 
+                            class="slds-m-top_medium"
+                            icon-name="utility:download">
+                        </lightning-button>
+                    </div>
+                    <div class="slds-col slds-size_2-of-10">
+                        <lightning-input
+                            type="search"
+                            label="Search COA"
+                            placeholder="Search for COA"
+                            onchange={handleCOASearch}>
+                        </lightning-input>
+                    </div>
+                </div>
+
+
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr class="slds-theme_shade">
+                            <th class="slds-p-left_small">Account Name</th>
+                            <th class="slds-text-align_center">Debit</th>
+                            <th class="slds-text-align_center">Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={displayList} for:item="item">
+                            <tr key={item.id}>
+                                <td class="slds-p-left_small" style={item.indentStyle}>
+                                    <template if:true={item.hasChildren}>
+                                        <lightning-icon 
+                                            icon-name={item.iconName} 
+                                            size="xx-small" 
+                                            class="slds-m-right_x-small" 
+                                            onclick={handleToggle}
+                                            data-id={item.id}>
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:true={item.hasChildren}>
+                                        <strong onclick={handleItemClick} data-id={item.id} class="slds-text-link" style="color:black;">{item.name} {item.recordType}</strong>
+                                    </template>
+                                    <template if:false={item.hasChildren}>
+                                        <div onclick={handleItemClick} data-id={item.id} class="slds-text-link" style="color:black;">{item.name} {item.recordType}</div>
+                                    </template>
+                                </td>
+                                <td class="slds-text-align_center">{item.debit}</td>
+                                <td class="slds-text-align_center">{item.credit}</td>
+                            </tr>
+                        </template>
+
+                        <!-- Total Row -->
+                        <tr class="slds-theme_info">
+                            <td class="slds-p-left_small"><strong>Total</strong></td>
+                            <td class="slds-text-align_center"><strong>{totalDebit}</strong></td>
+                            <td class="slds-text-align_center"><strong>{totalCredit}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- <template if:true={noDataFound}>
+                    <div class="slds-p-around_medium slds-align_absolute-center slds-text-color_weak">
+                        <p class="slds-text-heading_small">No Data Found</p>
+                    </div>
+                </template> -->
+            </div>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,97 @@
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+        <div class="slds-modal__container" style="max-width: 100rem;">
+            
+            <header class="slds-modal__header slds-grid slds-grid_align-spread slds-p-around_medium">
+                <h2 class="slds-text-heading_medium">Invoice Payments</h2>
+                <lightning-button-icon 
+                    icon-name="utility:close" 
+                    alternative-text="Close" 
+                    size="small"
+                    variant="bare"
+                    onclick={handleCancel}>
+                </lightning-button-icon>
+            </header>
+
+            <div class="slds-modal__content slds-p-around_medium">
+                <div class="slds-text-body_regular slds-m-bottom_small">
+                    <strong>Invoice Number :</strong> {invoiceNumber}
+                </div>
+
+                <div class="slds-text-title_bold slds-p-around_x-small" style="background-color:#e5e5e5;">
+                    Payments Information
+                </div>
+                <lightning-layout multiple-rows class="slds-m-vertical_small">
+                    <lightning-layout-item size="4" padding="horizontal-small">
+                        <lightning-input label="Payment Cost" 
+                                         name="paymentCost" 
+                                         value={paymentCost}
+                                         type="number" 
+                                         placeholder="Ex.00" 
+                                         required
+                                         onchange={handleChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="4" padding="horizontal-small">
+                        <lightning-combobox name="paymentMode" 
+                                            label="Payment Mode" 
+                                            placeholder="--Select the Category--" 
+                                            value={paymentMode} 
+                                            options={paymentOptions} 
+                                            required 
+                                            onchange={handleChange}>
+                        </lightning-combobox>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="4" padding="horizontal-small">
+                        <lightning-input type="date" 
+                                         name="paymentDate" 
+                                         value={paymentDate}
+                                         label="Payment Date" 
+                                         required
+                                         onchange={handleChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="horizontal-small">
+                        <lightning-input label="Account Name" value={accountName} disabled></lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+
+                <div class="slds-text-title_bold slds-p-around_x-small slds-m-top_medium" style="background-color:#e5e5e5;">
+                    Additional Information
+                </div>
+                <lightning-layout multiple-rows class="slds-m-vertical_small">
+                    <lightning-layout-item size="6" padding="horizontal-small">
+                        <lightning-input label="Invoice Name" value={invoiceName} disabled></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="horizontal-small">
+                        <lightning-input label="Due Balance" value={dueBalance} disabled></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="horizontal-small">
+                        <lightning-input label="Early Paid Amount" value={earlyPaidAmount} disabled></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="horizontal-small">
+                        <lightning-input label="Bank Charges (If Any)" 
+                                         name="bankCharges" 
+                                         value={bankCharges}
+                                         type="number" 
+                                         placeholder="Ex.00" 
+                                         onchange={handleChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+
+            <footer class="slds-modal__footer slds-grid slds-grid_align-center">
+                <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-right_small"></lightning-button>
+                <lightning-button variant="brand" label="Save" onclick={handleSave}></lightning-button>
+            </footer>
+        </div>
+    </section>
+    <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+</template>

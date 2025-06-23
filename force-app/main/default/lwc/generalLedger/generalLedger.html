@@ -1,0 +1,160 @@
+<template>
+    <lightning-card>
+        <div class="slds-grid slds-wrap slds-grid_align-center">
+            <div class="slds-theme_default" style="max-width: 80%; width: 100%;">           
+                <div class="slds-grid slds-gutters">        
+                    <div class="slds-col slds-size_2-of-5">
+                        <div class="slds-box  slds-p-around_medium  tc">
+                            <!-- <lightning-input type="text" label="Asset Name" placeholder="Enter the asset's code name" 
+                                value={assetName} onchange={handleInputChange}>
+                            </lightning-input> -->
+                            <c-reusable-lookup label="Account Name" selected-icon-name="standard:account" object-label="Chart of Accounts"
+                                object-api-name="Chart_of_Accounts__c"
+                                selected-record-id={selectedid}
+                                field-api-name="Name"
+                                search-field-api-name="Code__c"
+                                other-field-api-name="SubCategory__c"
+                                additional-field-api-name="Code__c"
+                                related-parent-field = "Parent_Account__r.Name"                                                           
+                                parent-field-api-name="Parent_Account__c"        
+                                journlentryflag = {journlentryflag}
+                                onvalueselected={handleValueSelectedOnAccount}>
+                            </c-reusable-lookup> 
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_3-of-5">
+                        <div class="slds-box  slds-p-around_medium tc">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="date" label="Start Date" value={startDate} onchange={handlestartdatechange}>
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="date" label="End Date" value={endDate} onchange={handleenddatechange}>
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4 slds-align_absolute-center">
+                                    <lightning-button label="Search" variant="brand" onclick={handleSearch}></lightning-button>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4 slds-align_absolute-center">
+                                    <lightning-button label="Export" variant="brand" onclick={handleDownloadCSV} icon-name="utility:download"></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <template if:false={noDataFound}>
+            <template if:true={showGeneralLedgerTable}>
+                <div class="slds-grid slds-wrap slds-grid_align-center">
+                    <div class="slds-theme_default" style="max-width: 80%; width: 100%; margin-top:1%">
+                        <div class="slds-m-top_medium">
+                            <table>
+                                <thead>
+                                    <tr style="padding: 1rem 0;">
+                                        <th style="padding: 1rem 0;width:10%;font-size:16px;">Date </th>
+                                        <th style="padding: 1rem 0;width:10%;font-size:16px;">Transaction Details</th>
+                                        <th style="padding: 1rem 0;width:20%;font-size:16px;">Account Name</th>
+                                        <!-- <th style="width:13%;">Opening Balance</th> -->
+                                        <th style="padding: 1rem 0;width:10%;font-size:16px;">Debit</th>
+                                        <th style="padding: 1rem 0;width:10%;font-size:16px;">Credit</th>
+                                        <th style="padding: 1rem 0;width:15%;font-size:16px;">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td colspan="2" style="text-align:center; padding: 1rem 0;">
+                                            <span style="font-weight: 700; margin-right:7%; font-size:15px;">Opening Balance</span>
+                                        </td>
+                                        <td><span style="font-weight: 700; margin-right:5%; font-size:15px;">
+                                            {currencySymbol} {OpeningBalance}
+                                        </span> </td>
+                                    </tr>
+                                    <template for:each={data} for:item="data">
+                                        <tr key={data.id}>
+                                            <td style="font-weight:500;">{data.GeneralLedgerEntrydate}</td> 
+                                            <td style="font-weight:500;">
+                                                <a onclick={handleJournalEntryClick}
+                                                    data-id={data.JournalEntryId}
+                                                    class="slds-text-link">
+                                                     {data.JournalEntryName}
+                                                </a>
+                                            </td>
+                                            <td style="font-weight:500;">{data.Accountname}</td>
+                                            <!-- <td>₹ {data.OpeningBalance}</td> -->
+                                            <td class={data.debitClass} style="font-weight:500;">{data.debited}</td>
+                                            <td class={data.creditClass} style="font-weight:500;">{data.credited}</td>
+                                            <td class={data.balanceClass} style="font-weight:500;">{currencySymbol} {data.ClosingBalance}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-grid slds-wrap slds-grid_align-center">
+                    <div class="slds-theme_default" style="max-width: 80%; width: 100%">
+                        <div class="slds-m-top_medium overall-summary slds-grid slds-grid_align-spread slds-text-align_center">
+                            <div class="slds-col slds-size_6-of-12 slds-text-align_left">
+                                <span>Overall Summary</span>
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                <span class="slds-text-align_center">{currencySymbol} {totalcredited}</span>
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                <span class="slds-text-align_center">{currencySymbol} {totaldebited}</span>
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                <span class="slds-text-align_center">{currencySymbol} {totalbalance}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            </template>
+            <template if:false={showGeneralLedgerTable}>
+                <div class="slds-grid slds-wrap slds-grid_align-center">
+                    <div class="slds-theme_default" style="max-width: 80%; width: 100%; margin-top:1%">
+                        <div class="slds-m-top_medium">
+                            <table>
+                                <thead>
+                                    <tr style="padding: 1rem 0;">
+                                        <th style="padding: 1rem 0;width:40%;font-size:16px;">Account Name</th>
+                                        <th style="padding: 1rem 0;width:30%;font-size:16px;">Opening Balance</th>
+                                        <th style="padding: 1rem 0;width:30%;font-size:16px;">Closing Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={summaryData} for:item="summary">
+                                        <tr key={summary.id}>
+                                            <td style="font-weight:500;">{summary.AccountName}</td>
+                                            <td style="font-weight:500;">{currencySymbol} {summary.OpeningBalance}</td>
+                                            <td style="font-weight:500;">{currencySymbol} {summary.BalanceAmount}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </template>
+        
+        <template if:true={noDataFound}>
+            <div class="slds-grid slds-wrap slds-grid_align-center">
+                <div class="slds-theme_default" style="max-width: 80%; width: 100%">
+                    <div class="slds-p-around_medium slds-align_absolute-center slds-text-color_weak">
+                        <p class="slds-text-heading_small">No Data Found</p>
+                    </div>
+                </div>
+            </div>           
+        </template>
+        
+    </lightning-card>
+</template>

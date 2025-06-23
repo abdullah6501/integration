@@ -1,0 +1,17 @@
+<template>
+    <lightning-combobox
+        name="taxCategory"
+        label="Tax Category"
+        value={selectedTaxCategory}
+        options={taxCategoryOptions}
+        onchange={handleTaxCategoryChange}>
+    </lightning-combobox>
+
+    <lightning-combobox
+        name="taxExemption"
+        label="Tax Exemption"
+        value={selectedTaxExemption}
+        options={taxExemptionOptions}
+        onchange={handleTaxExemptionChange}>
+    </lightning-combobox>
+</template>

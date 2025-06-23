@@ -1,0 +1,11 @@
+.Heading {
+    color: pink;
+    size: 20px;
+}
+
+.tableClass{
+    padding: 20px 10px;
+}
+.tableClass tr:last-child lightning-base-formatted-text{
+    font-weight: bold !important;
+}

@@ -1,0 +1,21 @@
+<template>
+    <lightning-combobox
+        label="Select Chart Type"
+        value={chartType}
+        options={chartOptions}
+        onchange={handleChartTypeChange}>
+    </lightning-combobox>
+
+    <c-chart-component
+        chart-data={chartData}
+        chart-type={chartType}
+        x-axis="label"
+        y-axis="value"
+        width={width}
+        height={height}
+        bar-color={color}
+        label-orientation={angle}>
+    </c-chart-component>
+    <br>
+    <br>
+</template>

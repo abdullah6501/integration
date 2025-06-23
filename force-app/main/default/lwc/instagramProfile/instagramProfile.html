@@ -1,0 +1,91 @@
+<template>
+    <lightning-card title="Instagram Profile Viewer">
+        <div class="slds-p-around_medium">
+            <template if:true={showProfile}>
+                <p><strong>User ID:</strong> {userId}</p>
+                <p><strong>Username:</strong> {username}</p>
+                <p><strong>Media Count:</strong> {mediaCount}</p>
+                <p><strong>Account Type:</strong> {accountType}</p>
+            </template>
+
+            <template if:true={error}>
+                <p class="slds-text-color_error">{error}</p>
+            </template>
+
+            <template if:false={showProfile}>
+                <lightning-button
+                    label="Login with Instagram"
+                    onclick={handleLogin}
+                    variant="brand"
+                ></lightning-button>
+            </template>
+        </div>
+    </lightning-card>
+
+    <lightning-card title="Create Instagram Post">
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <lightning-input label="Caption" value={caption} onchange={handleCaptionChange}></lightning-input>
+                </div>
+                <div class="slds-col">
+                    <lightning-input type="file" label="Choose Image" onchange={handleFileChange} accept="image/*"></lightning-input>
+                </div>
+            </div>
+            <div if:true={previewUrl} class="slds-m-vertical_medium">
+                <img src={previewUrl} alt="Preview" style="max-width: 200px; max-height: 200px;"/>
+            </div>
+            <lightning-button label="Post to Instagram" onclick={handleUpload} variant="brand"></lightning-button>
+        </div>
+    </lightning-card>  
+
+    <template if:true={mediaList.length}>
+        <lightning-card title="Recent Instagram Posts">
+            <template for:each={mediaList} for:item="post">
+                <div key={post.id} class="slds-p-around_medium">
+                    <img src={post.media_url} alt="Post Image" style="max-width: 20%; max-height:20%; border-radius: 8px;" />
+                    <p><strong>Caption:</strong> {post.caption}</p>
+                    <p><strong>Posted At:</strong> {post.timestamp}</p>
+                    <hr />
+                </div>
+            </template>
+        </lightning-card>
+    </template>  
+
+    <!-- <lightning-card title="Post to Instagram">
+        <div class="slds-p-around_medium">
+            <lightning-input 
+                type="file" 
+                label="Upload Image" 
+                accept="image/png, image/jpeg"
+                onchange={handleFileUpload}
+                required
+            ></lightning-input>
+            <div if:true={previewUrl} class="slds-m-vertical_medium">
+                <img src={previewUrl} alt="Preview" style="max-width: 200px; max-height: 200px;"/>
+            </div>
+            <lightning-input 
+                type="text" 
+                label="Caption" 
+                value={caption} 
+                onchange={handleCaptionChange}
+                required
+            ></lightning-input>
+            <lightning-button 
+                label="Upload Post" 
+                onclick={handleUploadPost} 
+                class="slds-m-top_medium" 
+                variant="brand"
+                disabled={isUploading}
+            ></lightning-button>
+
+            <template if:true={postSuccess}>
+                <p class="slds-text-color_success">Post uploaded successfully!</p>
+            </template>
+
+            <template if:true={postError}>
+                <p class="slds-text-color_error">{postError}</p>
+            </template>
+        </div>
+    </lightning-card> -->
+</template>

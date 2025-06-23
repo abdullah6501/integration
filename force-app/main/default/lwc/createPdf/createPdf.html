@@ -1,0 +1,36 @@
+<template>
+    <template if:true={isLoading}>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <div class="slds-spinner_container full-screen-loader">
+            <lightning-spinner alternative-text="Generating PDF..." size="large"></lightning-spinner>
+        </div>
+    </template>
+
+        <template if:false={isLoading}>
+            <lightning-card title="Download PDF" class="custom-card">
+                <div class="slds-p-around_medium slds-text-align_center">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+                        Are you sure you want to download the PDF?
+                    </h2>
+                    <div class="slds-grid slds-gutters slds-m-top_large">
+                        <div class="slds-col">
+                            <lightning-button 
+                                label="Cancel" 
+                                variant="destructive" 
+                                onclick={cancelQB} 
+                                class="full-width">
+                            </lightning-button>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-button 
+                                label="Confirm" 
+                                variant="brand" 
+                                onclick={processQB} 
+                                class="full-width">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </lightning-card>
+        </template>
+</template>

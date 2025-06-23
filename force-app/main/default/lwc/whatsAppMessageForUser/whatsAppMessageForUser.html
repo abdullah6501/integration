@@ -1,0 +1,202 @@
+<template>
+    <lightning-card title="Chat">
+        <div class="slds-p-around_medium chat-container">
+            <div class="chat-messages">
+                <template for:each={messages} for:item="message">
+                    <div key={message.Id} class={message.cssClass}>
+                        <template if:true={message.isImage}>
+                            <img 
+                                src={message.File_Show__c}  
+                                class="chat-image" 
+                                data-image-url={message.File_Show__c} 
+                                onclick={handleImageClick}
+                            />
+                        </template>
+                        <template if:true={message.isVideo}>
+                            <video 
+                                class="chat-video" 
+                                controls 
+                                src={message.File_Show__c}>
+                            </video>
+                        </template>
+                        <template if:true={message.isDocument}>
+                            <a 
+                                href={message.File_Show__c} 
+                                class="download-link" 
+                                data-image-url={message.File_Show__c}>
+                                Open Document
+                            </a>
+                        </template>
+                        <!-- <template if:true={message.isDocument}>
+                            <a href="javascript:void(0);" data-id={message.documentId} onclick={previewFile}>
+                                {message.documentTitle}
+                            </a>
+                        </template> -->
+                        <!-- <template if:false={message.isImage} :false={message.isDocument}> -->
+                        <template if:true={message.isText}>
+                            <p>{message.Message_Body__c}</p>
+                        </template>
+                        <small>{message.CreatedDate}</small>
+                    </div>
+                </template>
+            </div>
+            <!-- Image preview before send -->
+            <template if:true={uploadedImageUrl}>
+                <div class="image-preview">
+                    <img src={uploadedImageUrl} alt="Uploaded Image" class="preview-image" />
+                    <lightning-button 
+                        label="X" 
+                        variant="destructive" 
+                        onclick={cancelImageUpload}>
+                    </lightning-button>
+                </div>
+            </template>
+            <!-- video preview before send -->
+            <template if:true={uploadedVideoUrl}>
+                <div class="video-preview">
+                    <video controls class="preview-video">
+                        <source src={uploadedVideoUrl} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                    <lightning-button 
+                        class="video-preview-close"
+                        label="X" 
+                        variant="destructive" 
+                        onclick={cancelVideoUpload}>
+                    </lightning-button>
+                </div>
+            </template>
+
+            <template if:true={uploadedDocUrl}>
+                <div class="doc-preview">
+                    <!-- <img src={uploadedDocUrl} alt="Uploaded Image" class="preview-image" /> -->
+                     <p>{uploadedDocUrl}</p>
+                    <lightning-button 
+                        label="X" 
+                        variant="destructive" 
+                        onclick={cancelDocUpload}>
+                    </lightning-button>
+                </div>
+            </template>
+
+            <div class="chat-input">
+                <lightning-textarea
+                    class="messagetextarea"
+                    placeholder="Type your message here"
+                    value={messageBody}
+                    onchange={handleMessageChange}
+                    onkeydown={handleKeyPress}
+                ></lightning-textarea>
+
+                <lightning-button  
+                    class="upload-iconn"
+                    variant="neutral" 
+                    icon-name="utility:upload" 
+                    icon-position="left" 
+                    onclick={togglePopup}
+                ></lightning-button>
+
+                <template if:true={showPopup}>
+                    <div class="popup-menu">
+                        <div class="file-image-container">
+                            <lightning-file-upload
+                                name="fileUploader"
+                                accept=".jpg,.jpeg,.png,.mp4,.avi,.3gp,.mov,.gif,.mkv,.flv,.wmv"
+                                label=""
+                                title="Image"
+                                onuploadfinished={handleImageUpload}>
+                            </lightning-file-upload>
+                            <lightning-icon
+                                icon-name="doctype:image"
+                                alternative-text="Upload Image"
+                                class="file-upload-icon">
+                            </lightning-icon>
+                        </div>
+                        <div class="file-doc-container">
+                            <lightning-file-upload
+                                name="fileUploader"
+                                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv"
+                                label=""
+                                title="Document"
+                                onuploadfinished={handleDocUpload}>
+                            </lightning-file-upload>
+                            <lightning-icon
+                                icon-name="doctype:xml"
+                                alternative-text="Upload Image"
+                                class="file-upload-icon-doc">
+                            </lightning-icon>
+                        </div>
+                    </div>
+                </template>
+
+                <lightning-button  
+                    class="template-icon"
+                    variant="neutral" 
+                    label="Template"
+                    onclick={openTemplateModal}
+                ></lightning-button>
+
+                <!-- Template Modal -->
+                <template if:true={showTemplateModal}>
+                    <div class="modal-backdrop">
+                        <div class="template-modal-content">
+                            <h2>Send Template Message</h2>
+                            <lightning-combobox 
+                                name="templateName"
+                                label="Template Name"
+                                placeholder="Select a template"
+                                options={templateOptions}
+                                value={templateName}
+                                onchange={handleTemplateSelection}>
+                            </lightning-combobox>
+
+                            <template for:each={parameters} for:item="param">
+                                <lightning-input 
+                                    key={param.index}
+                                    label={param.name}
+                                    value={param.value} 
+                                    onchange={handleParameterChange} 
+                                    data-index={param.index}>
+                                </lightning-input>
+                            </template>
+
+                            <div class="template-modal-buttons">
+                                <lightning-button 
+                                    label="Cancel" 
+                                    variant="neutral" 
+                                    onclick={closeTemplateModal}
+                                    class="slds-m-right_x-small">
+                                </lightning-button>
+                                <lightning-button 
+                                    label="Send Template" 
+                                    variant="brand" 
+                                    onclick={sendTemplateMessage}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <lightning-button
+                    class="send-icon"
+                    label="Send"
+                    variant="brand"
+                    onclick={sendMessage}
+                ></lightning-button>
+            </div>
+        </div>
+
+        <template if:true={showImageModal}>
+            <div class="modal-backdrop">
+                <div class="modal-content">
+                    <img src={selectedImage} alt="Preview Image" class="modal-image" />
+                    <lightning-button
+                        label="Close" 
+                        variant="neutral" 
+                        onclick={closeImageModal}
+                    ></lightning-button>
+                </div>
+            </div>
+        </template>
+    </lightning-card>
+</template>
