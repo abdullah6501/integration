@@ -1,0 +1,110 @@
+<template>
+    <lightning-card>
+        <table class="slds-table slds-table_cell-buffer">
+            <thead>
+                <tr>
+                    <th scope="col">Particulars</th>
+                    <th scope="col">Debit</th>
+                    <th scope="col">Credit</th>
+                    <th scope="col">Narration</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={rows} for:item="row">
+                    <tr key={row.id}>
+                        <td>
+                            <!-- AB 26JUN25 Removed label for COA lookup-->
+                            <c-reusable-lookup label={Accountname} selected-icon-name="custom:Chart_of_Accounts__c" object-label="Chart of Accounts"
+                                object-api-name="Chart_of_Accounts__c"
+                                selected-record-id={row.selectedid}
+                                field-api-name="Name"
+                                search-field-api-name="Code__c"
+                                other-field-api-name="SubCategory__c"
+                                additional-field-api-name="Code__c"
+                                related-parent-field = "Parent_Account__r.Name"
+                                data-id={row.id}
+                                parent-field-api-name="Parent_Account__c"        
+                                journlentryflag = {journlentryflag}
+                                newrecord = {newrecord}
+                                onvalueselected={handleValueSelectedOnAccount}
+                                disable-flag={disable}>
+                            </c-reusable-lookup>
+                        </td>
+                        <td>
+                            <lightning-input
+                                type="text"
+                                value={row.debit}
+                                data-id={row.id}
+                                data-field="debit"
+                                onchange={handleInputChange}
+                                disabled={row.creditDisabled}>
+                            </lightning-input>
+                        </td>
+                        <td>
+                            <lightning-input
+                                type="text"
+                                value={row.credit}
+                                data-id={row.id}
+                                data-field="credit"
+                                onchange={handleInputChange}
+                                disabled={row.debitDisabled}>
+                            </lightning-input>
+                        </td>
+                        <td>
+                            <lightning-textarea
+                                value={row.description}
+                                data-id={row.id}
+                                data-field="description"
+                                placeholder="Enter the Narration"
+                                onchange={handleInputChange}
+                                disabled={freezeFlag}> <!-- AB 26JUN25 introduced freezeflag to disable button -->
+                            </lightning-textarea>
+                        </td>
+                        <td class="delete-icon-container delete">
+                            <lightning-button-icon 
+                              icon-name="utility:delete" 
+                              alternative-text="Delete" 
+                              onclick={handleDeleteRow} 
+                              data-id={row.id} 
+                              variant="bare"
+                              disabled={disable}>
+                            </lightning-button-icon>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td> <!-- Empty for alignment -->
+                    <td>
+                        <div class="slds-grid slds-grid_align-spread">
+                            <label class="slds-m-right_small"><strong>Total Debit:</strong></label>
+                            <lightning-input 
+                                type="number" 
+                                value={totalDebit} 
+                                disabled 
+                                variant="label-hidden"> 
+                            </lightning-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-grid slds-grid_align-spread">
+                            <label class="slds-m-right_small"><strong>Total Credit:</strong></label>
+                            <lightning-input 
+                                type="number" 
+                                value={totalCredit} 
+                                disabled 
+                                variant="label-hidden"> 
+                            </lightning-input>
+                        </div>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <!-- <div class="slds-m-around_medium">
+            <lightning-button label="Save" variant="brand" onclick={handleSave}></lightning-button>
+        </div> -->
+    </lightning-card>
+</template>

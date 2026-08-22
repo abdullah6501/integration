@@ -1,22 +1,35 @@
 <template>
   <!-- Utilizing Existing Components -->
-  <div class="slds-scrollable" style={whStyle} tabindex="0">
+  <div class="slds-scrollable table-container" style={whStyle} tabindex="0">
     <template if:true={rowTypeTable}>
       <table style="width: 100%; height: auto">
         <thead>
           <tr>
+            <!-- VD 19Mar25 table S.no and headstyle changes-->
+            <!-- VD 21May25 row draggable changes -->
+            <template if:true={isRowDraggable}>
+              <th style="width: 30px" class="slds-no-print"></th>
+            </template>
+            <template if:true={isSno}>
+              <th style={snoHeadStyle}>S.No</th>
+            </template>
             <template for:each={tableFieldList} for:item="field">
-              <th key={field.name} style={field.widthStyle}>{field.label}</th>
+              <th key={field.name} style={field.tableHeadStyle}>
+                {field.label}
+              </th>
             </template>
             <!-- VD NOV23 - action column- this will be from field meta -->
             <!-- VD 8feb25 print mode changes -->
-            <th
-              if:false={printMode}
-              style="text-align: center"
-              class="slds-no-print"
-            >
-              Actions
-            </th>
+            <!--  // VD 05MAR25 table action changes-->
+            <template if:true={isDeleteRowAction}>
+              <th
+                if:false={printMode}
+                style="text-align: center"
+                class="slds-no-print"
+              >
+                Actions
+              </th>
+            </template>
           </tr>
         </thead>
         <tbody>
@@ -25,58 +38,102 @@
             for:item="record"
             for:index="recIndex"
           >
+            <!-- VD 21May25 row draggable changes -->
             <tr
               key={record.recordId}
               onclick={handleSelect}
               data-id={record.recordId}
+              draggable={isrowDrag}
+              ondragstart={handleDragStart}
+              ondragover={handleDragOver}
+              ondrop={handleDrop}
+              data-index={recIndex}
+              class={getRowClass}
             >
-              <template for:each={record.value} for:item="fv">
-                <td key={fv.fieldName} style={fv.fieldStyle}>
-                  <!-- MR 23NOV23 - used existing book-->
-                  <!-- VD 07DEC23 - removed static variable-->
-                  <!-- VD NOV23 fields with printmode and without printmode -->
-                  <template if:false={printMode}>
-                    <c-question-book
-                      questions={fv.questions}
-                      onselecteddata={inputChange}
-                    ></c-question-book>
-                  </template>
-                  <template
-                    if:true={printMode}
-                    for:each={fv.questions}
-                    for:item="fv"
+              <!-- show Non-deleted records on UI-->
+              <template if:false={record.isDeleted}>
+                <!-- VD 19Mar25 table S.no and data style changes-->
+                <!-- VD 21May25 row draggable changes -->
+                <template if:true={isRowDraggable}>
+                  <td
+                    style="padding: 0.5rem; cursor: grab"
+                    class="slds-no-print"
                   >
-                    <span key={fv.Id}>{fv.input}</span>
-                  </template>
-                </td>
+                    <div class="dots-container" title="Drag to reorder">
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                    </div>
+                  </td>
+                </template>
+                <template if:true={isSno}>
+                  <td style={snoDataStyle}>{record.serialNumber}</td>
+                </template>
+                <template for:each={record.value} for:item="fv">
+                  <td key={fv.fieldName} style={fv.tableDataStyle}>
+                    <!-- MR 23NOV23 - used existing book-->
+                    <!-- VD 07DEC23 - removed static variable-->
+                    <!-- VD NOV23 fields with printmode and without printmode -->
+                    <template if:false={printMode}>
+                      <c-question-book
+                        questions={fv.questions}
+                        onselecteddata={inputChange}
+                      ></c-question-book>
+                    </template>
+                    <!-- VD 20May25 pass the print mode to process book type too-->
+                    <template if:true={printMode}>
+                        <c-question-book
+                        questions={fv.questions}
+                        print-mode="true"
+                        onselecteddata={inputChange}
+                        ></c-question-book>
+                    </template>
+                    <!-- <template
+                      if:true={printMode}
+                      for:each={fv.questions}
+                      for:item="fv"
+                    >
+                      <span key={fv.Id}>{fv.input}</span>
+                    </template> -->
+                  </td>
+                </template>
+                <!-- VD NOV23 - action column- this will be from field meta -->
+                <!-- VD 05MAR25 table action changes-->
+                <template if:true={isDeleteRowAction}>
+                  <td
+                    if:false={printMode}
+                    class="slds-no-print"
+                    style="text-align: center"
+                  >
+                    <lightning-icon
+                      icon-name="utility:delete"
+                      size="small"
+                      alternative-text="Delete"
+                      onclick={delIconClicked}
+                      data-id={record.recordId}
+                    ></lightning-icon>
+                  </td>
+                </template>
               </template>
-              <!-- VD NOV23 - action column- this will be from field meta -->
-              <td
-                if:false={printMode}
-                class="slds-no-print"
-                style="text-align: center"
-              >
-                <lightning-icon
-                  icon-name="utility:delete"
-                  size="small"
-                  alternative-text="Delete"
-                  onclick={delIconClicked}
-                  data-id={record.recordId}
-                ></lightning-icon>
-              </td>
             </tr>
           </template>
         </tbody>
       </table>
       <!-- VD 16NOV23 - no print class added-->
       <!-- VD NOV23 - printmode update-->
-      <div if:false={printMode} class="slds-no-print add-record">
-        <lightning-button
-          label="Add Record"
-          onclick={addRecord}
-          slot="actions"
-        ></lightning-button>
-      </div>
+      <!--  // VD 05MAR25 table action changes-->
+      <template if:true={isAddRowAction}>
+        <div if:false={printMode} class="slds-no-print add-record">
+          <lightning-button
+            label="Add Record"
+            onclick={addRecord}
+            slot="actions"
+          ></lightning-button>
+        </div>
+      </template>
     </template>
 
     <template if:true={blockTypeTable}>

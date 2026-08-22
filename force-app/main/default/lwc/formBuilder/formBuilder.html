@@ -1,0 +1,124 @@
+<template>
+  <div class="form-wrapper">
+    <!-- Form Header - Independent at the Top -->
+    <!-- <template if:false={loading}> -->
+    <!-- RT 17APR25 - Preview Changes -->
+    <!-- RT 17MAY25 - Form Builder Changes -->
+    <!-- VD 08May25 button invoke changes -->
+    <!-- RT 13MAY25 - Preview Changes -->
+
+    <template if:true={jsonData}>
+      <div class="slds-m-bottom_xx-small slds-p-bottom_xx-small">
+        <c-form-header
+          pageoptions={pageOptions}
+          onpreviewpage={handlePreviewpage}
+          onaddpage={handleAddpage}
+          ondeletepage={handlePageDelete}
+          onhandlefg={handleFG}
+          selectedpageid={selectedPageId}
+          anchor-object={selectedObject}
+          page-title-map={pageTitleMap}
+          title={FormTitle}
+          onpagechange={handlePageChange}
+          pages={pages}
+          form-data={jsonData}
+        ></c-form-header>
+      </div>
+    </template>
+  
+    <!-- AT 10MAY25 Ai_chatcomponent -->
+    <template if:true={jsonData}>
+      <div class="slds-m-bottom_xx-small">
+        <!-- Commenting out old chat component -->
+        <!-- <c-chatcomponent
+          ischatvisible={ischatvisible}
+          chatmessages={chatmessages}
+          onnewmessage={handleNewMessage}
+          chatloading={chatloading}
+        ></c-chatcomponent> -->
+        <c-chat-bot
+          onclosechat={handleChatClose}
+          onnewmessage={handleNewMessage}
+          chatloading={chatloading}
+          messages={chatmessages}
+          is-visible={ischatvisible}
+        ></c-chat-bot>
+      </div>
+    </template>
+
+    <!-- RT 17MAY25 - Form Builder UI -->
+
+    <template if:false={isPreview}>
+      <!-- Main content below the header -->
+      <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_3-of-4 slds-p-right_xx-small">
+          <!--VD -18Mr25 used common method handleFinalData-->
+          <c-fb-canvas
+            onfinaldata={handleFinalData}
+            onexistingformdata={handleFinalData}
+            onselcteddata={handleInput}
+            ondeleteddata={handleFinalData}
+            onupdateditem={handleupdatedform}
+            onsectionadded={handleFinalData}
+            ondeleteclick={handleFinalData}
+            message={noFormData}
+            onelementdeleted={handleElementDeleted}
+          ></c-fb-canvas>
+        </div>
+
+        <div
+          class="slds-col slds-size_1-of-4 slds-p-left_xx-small slds-scrollable_y"
+          style="height: 100vh"
+        >
+          <c-fb-properties
+            onupdateditem={handleupdated}
+            dependent-id-list={dependentIdList}
+            field-label-map={FieldLabelMap}
+            onsave={handleSaveEvent}
+            onupdatedpagetitle={handleupdated}
+            onupdatedpageorder={handleOrderChange}
+            parent-page-count={pageOptionsCount}
+          ></c-fb-properties>
+        </div>
+      </div>
+
+      <!-- Buttons aligned to the right -->
+      <!-- RT 28MAR25 - Removed unused Preview button -->
+      <!-- <div class="slds-text-align_right slds-m-top_small">
+        <a class="slds-button slds-button_brand" onclick={handleSave}>Save</a>
+      </div> -->
+
+      <!-- Custom Modal -->
+      <c-custom-model></c-custom-model>
+    </template>
+    <!-- </template> -->
+    <!-- Loading Spinner -->
+    <template if:true={loading}>
+      <div class="slds-backdrop slds-backdrop_open custom-spinner-background">
+        <div class="slds-spinner slds-spinner_large slds-spinner_brand">
+          <div class="slds-spinner__dot-a"></div>
+          <div class="slds-spinner__dot-b"></div>
+        </div>
+      </div>
+    </template>
+
+    <!-- RT 22MAR25 - Preview Changes -->
+    <template if:true={isPreview}>
+      <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_3-of-4">
+          <c-fb-canvas
+            is-preview={isPreview}
+            form-data={formVale}
+            selected-page-id={selectedPageId}
+          ></c-fb-canvas>
+        </div>
+        <div
+          class="slds-col slds-size_1-of-4 slds-p-left_xx-small slds-scrollable_y"
+          style="height: 100vh; opacity: 0.2"
+        >
+          <c-fb-properties is-preview={isPreview}></c-fb-properties>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>

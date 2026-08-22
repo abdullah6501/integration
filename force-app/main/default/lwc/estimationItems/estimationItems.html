@@ -1,0 +1,427 @@
+<!--KA 29/05/2025 Estimation item Component-->
+<!-- AR 1/07/2025 Field visible and Read only control -->
+
+<!-- /*
+   AR 18/07/2025 Tax detail records creation and calculation
+   AAB 20/07/2025 UI Changes ,width control,,Account detail fetch 
+*/ -->
+<!-- Abdullah V S | 21-Aug-25 | Dynamically sets visibility, read-only, and required flags for fields -->
+<!-- AAB 5SEP25 Freeze form after status gets approved -->
+<template >
+    <div style="background-color: white;">
+      <!-- Header Section: 2 rows, total amount positioned like billItemsTab -->
+      <div class="slds-grid slds-wrap slds-p-around_medium">
+        <!-- First Row: Estimation Name, Vendor, Shipping Terms, Payment Terms -->
+        <div class="slds-col slds-size_1-of-1">
+          <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-size_1-of-6">
+              <div class="slds-form-element">
+                <lightning-input label="Estimation Name" value={name} onchange={handleInputChange} data-id="name"></lightning-input>
+              </div>
+            </div>
+            <div class="slds-col slds-size_1-of-6">
+              <div class="slds-form-element">
+                <c-reusable-lookup 
+                     label="Customer" 
+                     selected-icon-name="standard:account" 
+                     object-label={accountlabel}
+                     object-api-name={accountobjectApiName}
+                     field-api-name="Name" 
+                     other-field-api-name={accountotherFieldApiName}
+                     additional-field-api-name={accountadditionalFieldApiName}
+                     selected-record-id={customerSelectedRecord.id}
+                     onvalueselected={handleValueSelectedOnCustomer}
+                     onvalueremoved={handleCustomerValRemoval}
+                     disable-flag={isButtonDisabled}>
+                </c-reusable-lookup>
+              </div>
+            </div>
+            <div class="slds-col slds-size_1-of-6">
+              <div class="slds-form-element">
+                <lightning-input label="Shipping Terms" value={shippingTerms} onchange={handleInputChange} data-id="shippingTerms"></lightning-input>
+              </div>
+            </div>
+            <div class="slds-col slds-size_1-of-6">
+              <div class="slds-form-element">
+                <lightning-input label="Payment Terms" value={paymentTerms} onchange={handleInputChange} data-id="paymentTerms"></lightning-input>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Row: Quote Date, Status, PO Ref Number, Estimation Version, Total Amount -->
+        <div class="slds-col slds-size_1-of-1 slds-m-top_xx-small">
+          <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-size_1-of-6">
+              <div class="slds-form-element">
+                <lightning-input type="date" label="Quote Date" value={quoteDate} onchange={handleInputChange} data-id="quoteDate"></lightning-input>
+                <!-- Sync Estimation Items button positioned below Quote Date -->
+                <div if:true={SyncEstimation} class="slds-m-top_small">
+                  <lightning-button
+                     label="Sync Estimation Items"
+                     onclick={handleSync}
+                     variant="brand"
+                     disabled ={isSyncButtonDisabled}
+                     ></lightning-button>
+                </div>
+              </div>
+            </div>
+            <div class="slds-col slds-size_1-of-6">
+              <div class="slds-form-element">
+                <lightning-combobox label="Status" value={status} options={statusOptions} onchange={handleInputChange} data-id="status"></lightning-combobox>
+              </div>
+            </div>
+            <div class="slds-col slds-size_1-of-6">
+              <div class="slds-form-element">
+                <lightning-input label="PO Ref Number" value={porefnum} onchange={handleInputChange} data-id="porefnum"></lightning-input>
+              </div>
+            </div>
+            <div class="slds-col slds-size_1-of-6">
+               <div class="slds-form-element">
+                 <lightning-input label="Preferred Currency" value={preferredCurrency} onchange={handleInputChange} data-id="preferredCurrency"></lightning-input>
+               </div>
+             </div>
+            <!-- Total Amount Section - Now aligned with the form row -->
+              <!-- AP-04AUG24 Right Side Total Section -->
+              <div class="slds-col slds-size_1-of-6">
+               <div class="grand-total-section-inline">
+                   <!-- AP-04AUG25 Right Side Total Section -->
+               <div class="total-amount-section">
+                 <div class="slds-text-heading_small" style="grid-column: span 2;">Total Amount</div>
+                 <!-- AP-04AUG25 {currencyCode} Replace currencyDisplay -->
+                 <div class="currency">{currencyDisplay}</div>
+                 <div class="total-amount">{grandTotal}</div>
+                 <template if:true={amountInWords}>
+                   <div style="grid-column: span 2; font-weight: bold;">{amountInWords}</div>
+                 </template>
+               </div>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- PO Items and Discount Section in aligned row -->
+      <div class="po-items-discount-row">
+          <div class="custom-card-style">
+              <div class="custom-card-header">Estimation Items</div>
+          </div>
+          
+          <!-- Combined Discount Section - toggle on right, fields on left when enabled -->
+          <div class="discount-toggle-wrapper">
+              <!-- Discount fields appear to the LEFT of toggle when enabled -->
+               <!-- Toggle always appears on the RIGHT -->
+              <div class="discount-toggle-container">
+                  <span class="compact-label" style= "position: relative; bottom: 10px">Discount</span>
+                  <lightning-input 
+                      type="toggle" 
+                      checked={isDiscountEnabled} 
+                      onchange={handleDiscountToggle}
+                      variant="label-hidden" 
+                      class="compact-toggle">
+                  </lightning-input>
+              </div>
+              <template if:true={isDiscountEnabled}>
+                  <div class="discount-fields-container">
+                      <div class="discount-input-wrapper">
+                          <lightning-combobox 
+                              name="Discount Type" 
+                              label="Discount Type" 
+                              value={discountTypeValue}
+                              options={discountType}
+                              onchange={handleDiscountTypeChange}>
+                          </lightning-combobox>
+                      </div>
+                      <div class="discount-input-wrapper">
+                          <lightning-combobox 
+                              name="Discount Mode" 
+                              label="Discount Mode" 
+                              value={discountModeValue} 
+                              onchange={handleDiscountModeChange}
+                              options={discOptions}>
+                          </lightning-combobox>
+                      </div>
+                  </div>
+              </template>
+          </div>
+      </div>
+      
+      <table class="slds-table slds-table_bordered">
+        <thead>
+           <tr>
+              <th></th>
+              <th></th>
+              <th>Product</th>
+              <th if:true={isDescription.visible} style={isDescriptionStyle}>Description</th>
+              <th if:true={isStockAvailable.visible} style={isStockStyle}>Stock</th>
+              <th if:true={isProductSKU.visible} style={isProductSKUStyle}>Ordering Code</th>
+              <th if:true={isLeadTime.visible} style={isLeadTimeStyle}>Lead Time</th>
+              <th if:true={isSalesCost.visible} style={isSalesCostStyle}>Sales Cost</th>
+              <th if:true={isQuantity.visible} style={isQuantityStyle}>Quantity</th>
+              <template if:true={showDiscountAmount}>
+                 <th if:true={isSDiscountAmount.visible} style={isSDiscountAmountStyle}>Disc Amount</th>
+              </template>
+              <template if:true={showDiscountPercentage}>
+                 <th if:true={isDiscountPercentage.visible} style={isDiscountPercentageStyle}>Disc %</th>
+              </template>
+              <template if:true={noneTax}>
+                 <th if:true={isTax.visible} style={isTaxStyle}>Tax %</th>
+              </template>
+              <th>Action</th>
+           </tr>
+        </thead>
+        <tbody>
+           <template for:each={estimationitems} for:item="item" for:index="index">
+              <tr key={item.id} draggable="true"
+                 ondragstart={start}
+                 ondragover={over}
+                 ondrop={newDrop}
+                 title={index}>
+                 <td class="tableStyle" role="gridcell">
+                    <div style="padding-top:20px;">
+                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id1="IconChangeColor" height="11" width="11">
+                          <rect width="256" height="256" fill="none"></rect>
+                          <circle cx="60" cy="92" r="16"></circle>
+                          <circle cx="128" cy="92" r="16"></circle>
+                          <circle cx="196" cy="92" r="16"></circle>
+                          <circle cx="60" cy="164" r="16"></circle>
+                          <circle cx="128" cy="164" r="16"></circle>
+                          <circle cx="196" cy="164" r="16"></circle>
+                       </svg>
+                    </div>
+                 </td>
+                 <td>
+                    <div style="padding-top:20px;">
+                       {item.keyField}
+                    </div>
+                 </td>
+                 <td>
+                    <lightning-input type="Search"
+                       value={item.productName}
+                       data-index={index}
+                       onchange={handleProductSearch}>
+                    </lightning-input>
+                    <div if:true={item.searchResults.length} class="search-results">
+                       <template for:each={item.searchResults} for:item="product">
+                          <div key={product.id} data-id={product.id} data-index={index} onclick={selectProduct}>
+                             {product.name}
+                             <br>
+                             <small style="color: #888;">{product.sku}</small>
+                             <!-- GV 26-06-25 ordering code for search -->
+                          </div>
+                       </template>
+                    </div>
+                 </td>
+                 <td if:true={isDescription.visible} style={isDescriptionStyle}>
+                    <lightning-textarea 
+                       type="text" 
+                       name="description" 
+                       data-index={index} 
+                       value={item.description} 
+                       onchange={handleInputChange}
+                       disabled ={descriptionDisabled} 
+                       required={isDescription.required} 
+                       class={isDescription.requiredClass}>
+                    </lightning-textarea>
+                 </td>
+                 <!-- Abdullah V S | 14-Aug-25 | Control Read only field as non editable-->
+                 <td if:true={isStockAvailable.visible} style={isStockStyle}>
+                    <lightning-input
+                       type="text"
+                       name="stockAvailable"
+                       data-index={index}
+                       value={item.stockAvailable}
+                       disabled={stockDisabled}
+                       required={isStockAvailable.required} 
+                       class={isStockAvailable.requiredClass}>
+                    </lightning-input>
+                 </td>
+                 <td if:true ={isProductSKU.visible} style={isProductSKUStyle}>
+                    <lightning-input type="text"
+                       name="productSku"
+                       data-index={index}
+                       value={item.productSku}
+                       disabled={productSKUDisabled}
+                       required={isProductSKU.required} 
+                       class={isProductSKU.requiredClass}>
+                    </lightning-input>
+                 </td>
+                 <!-- Abdullah V S | 18-Aug-25 | Handle change for leadTime -->
+                 <td if:true ={isLeadTime.visible} style={isLeadTimeStyle}>
+                    <lightning-input type="text"
+                       name="leadTime"
+                       data-index={index}
+                       value={item.leadTime}
+                       onchange={handleInputChange}
+                       disabled={leadTimeDisabled}
+                       required={isLeadTime.required} 
+                       class={isLeadTime.requiredClass}>
+                    </lightning-input>
+                 </td>
+                 <td if:true ={isSalesCost.visible} style={isSalesCostStyle}>
+                    <lightning-input type="number"
+                       name="unitPrice"
+                       data-index={index}
+                       value={item.unitPrice}
+                       onchange={handleInputChange}
+                       disabled={salesCostDisabled}
+                       required={isSalesCost.required} 
+                       class={isSalesCost.requiredClass}
+                       step="0.01">
+                    </lightning-input>
+                 </td>
+                 <td if:true ={isQuantity.visible} style={isQuantityStyle}>
+                    <lightning-input
+                       type="number"
+                       name="quantity"
+                       data-index={index}
+                       value={item.quantity}
+                       onchange={handleInputChange}
+                       disabled={quantityDisabled} 
+                       required={isQuantity.required} 
+                       class={isQuantity.requiredClass}>
+                    </lightning-input>
+                 </td>
+                 <template if:true={showDiscountAmount} style={isSDiscountAmountStyle}>
+                    <td if:true={isSDiscountAmount.visible}>
+                       <lightning-input
+                          type="number"
+                          name="discountAmount"
+                          data-index={index}
+                          value={item.discountAmount}
+                          onchange={handleInputChange}
+                          disabled ={discountAmountDisabled} 
+                          required={isSDiscountAmount.required} 
+                          class={isSDiscountAmount.requiredClass}>
+                       </lightning-input>
+                    </td>
+                 </template>
+                 <template if:true={showDiscountPercentage}>
+                    <td if:true={isDiscountPercentage.visible}>
+                       <lightning-input
+                          type="number"
+                          name="discountPercentage"
+                          data-index={index}
+                          value={item.discountPercentage}
+                          onchange={handleInputChange}
+                          disabled ={discountPercentageDisabled} 
+                          required={isDiscountPercentage.required} 
+                          class={isDiscountPercentage.requiredClass}>
+                       </lightning-input>
+                    </td>
+                 </template>
+                 <template if:true={noneTax}>
+                    <td if:true={isTax.visible} style={isTaxStyle}>
+                       <lightning-combobox name="taxPercentage"
+                          data-index={index}
+                          value={item.tax}
+                          onchange={handleInputChange}
+                          disabled ={taxDisabled} 
+                          required={isTax.required} 
+                          class={isTax.requiredClass}
+                          options={taxOptions}>
+                       </lightning-combobox>
+                    </td>
+                 </template>
+                 <!--AAB 29AUG25 Delete icon position fix-->
+                 <td ><!--class="delete-icon-container"-->
+                  <div class="delete-icon-container">
+                    <lightning-button-icon
+                       icon-name="utility:delete"
+                       alternative-text="Delete"
+                       variant="bare"
+                       class="slds-m-left_xx-small"
+                       data-index={index}
+                       onclick={deleteRow}>
+                    </lightning-button-icon>
+                  </div>
+                 </td>
+              </tr>
+           </template>
+        </tbody>
+      </table>
+      
+      <div class="slds-m-top_medium" style="text-align: right;">
+        <lightning-button label="Add Row" onclick={addRow}></lightning-button>
+      </div>
+      
+      <div class="slds-grid slds-gutters slds-p-horizontal_medium slds-wrap" style="justify-content: flex-end">
+        <template if:true={showLumpsumTax}>
+           <div class="slds-col slds-size_1-of-4">
+              <lightning-combobox
+                 label="Lumpsum Tax Percentage"
+                 name="lumpsumTaxPercentage"
+                 value={lumpsumTaxPercentage}
+                 options={taxOptions}
+                 onchange={handleLumpsumTax}>
+              </lightning-combobox>
+           </div>
+        </template>
+        <template if:true={showLumpsumAmount}>
+           <div class="slds-col slds-size_1-of-4">
+              <lightning-input
+                 type="number"
+                 label="Lumpsum Discount Amount"
+                 name="lumpsumAmount"
+                 value={lumpsumAmount}
+                 onchange={handleLumpsumChange}>
+              </lightning-input>
+           </div>
+        </template>
+        <template if:true={showLumpsumPercentage}>
+           <div class="slds-col slds-size_1-of-4">
+              <lightning-input
+                 type="number"
+                 label="Lumpsum Discount Percentage"
+                 name="lumpsumPercentage"
+                 value={lumpsumPercentage}
+                 onchange={handleLumpsumChange}>
+              </lightning-input>
+           </div>
+        </template>
+      </div>
+      
+      <div class="calculation-wrapper">
+        <div class="calculation-table">
+           <table aria-multiselectable="true" class="slds-table slds-no-row-hover slds-table_bordered">
+              <tbody>
+                 <tr>
+                    <td class="tdClass">Amount ({currencyDisplay})</td>
+                    <td class="value-cell">{totalAmount}</td>
+                 </tr>
+                 <tr>
+                    <td class="tdClass">Discount ({currencyDisplay})</td>
+                    <td class="value-cell">{totalDiscount}</td>
+                 </tr>
+                 <tr>
+                    <td class="tdClass">Subtotal ({currencyDisplay})</td>
+                    <td class="value-cell">{calculatedSubTotal}</td>
+                 </tr>
+                 <!-- AR Tax Summary -->
+                 <template if:true={showTaxDetailsSection}>
+                  <template for:each={taxDetails} for:item="tax">
+                      <tr key={tax.taxId}>
+                          <td class="tdClass">{tax.taxName}</td>
+                          <td class="value-cell">{tax.taxAmount}</td>
+                      </tr>
+                  </template>
+                </template>
+                 <tr>
+                    <td class="tdClass">Tax Amount ({currencyDisplay})</td>
+                    <td class="value-cell">{calculatedTaxAmount}</td>
+                 </tr>
+                 <tr>
+                    <td class="tdClass">Total ({currencyDisplay})</td>
+                    <td class="value-cell">{grandTotal}</td>
+                 </tr>
+              </tbody>
+           </table>
+        </div>
+      </div>
+      
+      <div class="slds-grid slds-grid_align-center slds-p-top_large">
+       <lightning-button variant="neutral" label="Cancel" onclick={handleCancel} class="slds-m-right_x-small" style="position: relative; top: 13px;"></lightning-button>
+       <lightning-button label="Save" variant="brand" onclick={saveRecords} class="slds-m-top_small" disabled={isButtonDisabled}></lightning-button>
+      </div>
+    </div>
+</template>

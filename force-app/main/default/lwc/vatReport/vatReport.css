@@ -1,0 +1,18 @@
+.slds-table th {
+    background-color: #f3f3f3;
+    font-weight: 600;
+}
+
+.slds-table_striped tbody tr:nth-of-type(odd) {
+    background-color: #fafafa;
+}
+
+.slds-theme_shade {
+    background-color: #f3f3f3;
+}
+.horizontal-radio .slds-radio_button-group,
+.horizontal-radio .slds-form-element__control {
+    display: flex;
+    gap: 1rem; /* controls spacing between options */
+    align-items: center;
+}

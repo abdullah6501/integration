@@ -1,0 +1,114 @@
+<template>
+    <div class="whatsapp-container">
+        <!-- Left Sidebar: Contact List -->
+        <div class="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <div class="header-user">
+                    <div class="user-avatar-badge">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.66 1.436 5.176L2 22l4.953-1.401A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18c-1.63 0-3.15-.436-4.468-1.196l-.32-.185-2.946.834.847-2.884-.207-.333A7.955 7.955 0 014 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/>
+                        </svg>
+                    </div>
+                    <span class="app-title">Chats</span>
+                </div>
+            </div>
+            
+            <!-- Search & Filter Controls -->
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input 
+                        type="text" 
+                        class="custom-search-input" 
+                        placeholder="Search or start new chat" 
+                        oninput={handleSearch}
+                        value={searchTerm}
+                    />
+                </div>
+                <!-- Filter Tabs -->
+                <div class="filter-bar">
+                    <button class={filterAllClass} data-filter="all" onclick={handleFilterSelect}>All</button>
+                    <button class={filterUnreadClass} data-filter="unread" onclick={handleFilterSelect}>Unread</button>
+                </div>
+            </div>
+
+            <!-- Contact List -->
+            <div class="contact-list">
+                <template for:each={filteredContacts} for:item="contact">
+                    <div 
+                        key={contact.Id} 
+                        class={contact.className}
+                        onclick={handleContactClick}
+                        data-id={contact.Id}>
+                        
+                        <div class="contact-avatar">
+                            {contact.Initials}
+                        </div>
+
+                        <div class="contact-details">
+                            <div class="contact-header-row">
+                                <div class="contact-name">{contact.Name}</div>
+                                <div class="contact-time">{contact.LastMessageTime}</div>
+                            </div>
+                            
+                            <div class="contact-preview-row">
+                                <div class="contact-preview">
+                                    <template if:true={contact.isFromMe}>
+                                        <span class="sent-tick">✓✓ </span>
+                                    </template>
+                                    <span>{contact.LastMessagePreview}</span>
+                                </div>
+                                <template if:true={contact.UnreadCount}>
+                                    <div class="unread-badge">{contact.UnreadCount}</div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template if:true={error}>
+                    <div class="error-message">Error loading contacts</div>
+                </template>
+                <template if:true={showNoResults}>
+                    <div class="no-results">No chats found</div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Right Chat Panel -->
+        <div class="chat-panel">
+            <template if:true={selectedContactId}>
+                <c-whats-app-message-for-user 
+                    record-id={selectedContactId}
+                    contact-name={selectedContactName}>
+                </c-whats-app-message-for-user>
+            </template>
+            <template if:false={selectedContactId}>
+                <div class="empty-chat-screen">
+                    <div class="empty-chat-card">
+                        <div class="empty-chat-graphic">
+                            <svg viewBox="0 0 300 200" width="260" height="170" fill="none">
+                                <circle cx="150" cy="100" r="80" fill="#E1F5FE" opacity="0.6"/>
+                                <rect x="95" y="45" width="110" height="110" rx="16" fill="#00A884"/>
+                                <path d="M120 75C120 70.5817 123.582 67 128 67H172C176.418 67 180 70.5817 180 75V115C180 119.418 176.418 123 172 123H135L120 133V123C120 123 120 121 120 115V75Z" fill="white"/>
+                                <path d="M135 90H165M135 100H155" stroke="#00A884" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h1 class="empty-title">WhatsApp Web</h1>
+                        <p class="empty-subtitle">Send and receive messages without keeping your phone online.<br/>Use WhatsApp on up to 4 linked devices and 1 phone at the same time.</p>
+                        <div class="encryption-badge">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                            <span>End-to-end encrypted</span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>
+

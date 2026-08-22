@@ -1,0 +1,60 @@
+.parent {
+  display: flex;
+  width: 100%;
+}
+/* AT 17APR25 - to reduce page overall height to hide unnecessary place */
+:host {
+  display: block;
+  height: 81vh;
+  overflow: hidden;
+}
+
+/* VD 23FEB24 - form buidler design changes */
+
+/* .left-column {
+      flex: 1;
+      background-color: #f0f0f0;
+      padding: 10px;
+    } */
+
+.center-column {
+  flex: 2; /* 50% width */
+  background-color: #e0e0e0;
+  padding: 10px;
+}
+
+.right-column {
+  flex: 1; /* 25% width */
+  background-color: #fff;
+  /* padding: 10px; */
+}
+
+.slds-text-heading_medium {
+  padding: 6px;
+  background: #ea4646;
+  color: white;
+  border-radius: 2px;
+}
+.form-section {
+  border: 2px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.custom-spinner-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(211, 211, 211, 0.7); /* Light grey with opacity */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* Ensure it stays on top */
+}
+
+.form-wrapper {
+  overflow-y: hidden;
+}

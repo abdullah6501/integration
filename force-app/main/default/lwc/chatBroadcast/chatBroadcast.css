@@ -1,0 +1,21 @@
+.container {
+    display: flex;
+    height: 100%;
+}
+
+.sidebar {
+    width: 200px;
+    padding: 1rem;
+    border-right: 1px solid #dcdcdc;
+}
+
+.main-content {
+    flex: 1;
+    padding: 1rem;
+}
+
+.top-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}

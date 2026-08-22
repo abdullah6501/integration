@@ -1,0 +1,27 @@
+<template>
+    <!-- VD 10NOV23 - addedrequired class --> 
+    <!-- MR 21NOV23 - print mode added -->
+    <template if:false={printMode}>
+        <div class={isRequired}>
+            <!-- VD 07DEC23 - added dynamic style-->
+            <lightning-input 
+                type="text"
+                class={classList}
+                style={styleList}
+                variant="label-hidden"
+                value={value}
+                placeholder={placeholder}
+                disabled={disabled} 
+                readonly={readOnly}
+                onchange={handleInputChange}>
+            </lightning-input>
+        </div>
+        <!-- <div if:true={error}>
+            <span class="error-msg">Required*</span>
+        </div> -->
+    </template>
+     <!-- VD 08DEC23 - dynamic style changes -->
+    <template if:true={printMode} >
+       <span class={classList} style={styleList}>{value}</span> 
+    </template>
+</template>

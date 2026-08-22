@@ -1,0 +1,28 @@
+<template>
+    <template if:true={selectedContactId}>
+        <div class="chat-header">
+            Chat with {contactName}
+        </div>
+
+        <div class="chat-messages">
+            <template for:each={messages} for:item="msg">
+                <div key={msg.id} class={msg.cssClass}>
+                    {msg.text}
+                </div>
+            </template>
+        </div>
+
+        <div class="chat-input">
+            <lightning-input value={newMessage}
+                             onchange={handleInputChange}
+                             placeholder="Type a message"></lightning-input>
+            <lightning-button variant="brand" label="Send" onclick={sendMessage}></lightning-button>
+        </div>
+    </template>
+
+    <template if:false={selectedContactId}>
+        <div class="no-chat">
+            Select a contact to start chatting
+        </div>
+    </template>
+</template>

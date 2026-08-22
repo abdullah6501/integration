@@ -1,126 +1,6 @@
 public with sharing class CreatePurchaseOrderItems {
-    
-    // Wrapper Classes for LWC
-    public class PurchaseOrderWrapper {
-        @AuraEnabled public String id { get; set; }
-        @AuraEnabled public String supplierName { get; set; }
-        @AuraEnabled public String supplierNameField { get; set; }
-        @AuraEnabled public String shippingTerms { get; set; }
-        @AuraEnabled public String paymentTerms { get; set; }
-        @AuraEnabled public Double lumpsumDiscountAmount { get; set; }
-        @AuraEnabled public Double lumpsumDiscountPercentage { get; set; }
-        @AuraEnabled public String discountMode { get; set; }
-        @AuraEnabled public String discountType { get; set; }
-        @AuraEnabled public String taxPercentage { get; set; }
-        @AuraEnabled public List<POItemWrapper> poItems { get; set; }
-        
-        public PurchaseOrderWrapper() {
-            this.poItems = new List<POItemWrapper>();
-        }
-        
-        public PurchaseOrderWrapper(Purchase_Order__c po) {
-            this.id = po.Id != null ? (String) po.Id : null;
-            this.supplierName = po.Supplier__r?.Name;
-            this.supplierNameField = po.Supplier_Name__c;
-            this.shippingTerms = po.Shipping_Terms__c;
-            this.paymentTerms = po.Payment_Terms__c;
-            this.lumpsumDiscountAmount = po.Lumpsum_Discount_Amount__c != null ? Double.valueOf(po.Lumpsum_Discount_Amount__c) : null;
-            this.lumpsumDiscountPercentage = po.Lumpsum_Discount_Percentage__c != null ? Double.valueOf(po.Lumpsum_Discount_Percentage__c) : null;
-            this.discountMode = po.Discount_Mode__c;
-            this.discountType = po.Discount_Type__c;
-            this.taxPercentage = po.Tax_Percentage__c;
-            this.poItems = new List<POItemWrapper>();
-        }
-    }
-    
-    public class  POItemWrapper {
-        @AuraEnabled public String id { get; set; }
-        @AuraEnabled public String productId { get; set; }
-        @AuraEnabled public String productName { get; set; }
-        @AuraEnabled public String productSku { get; set; }
-        @AuraEnabled public Double productQuantity { get; set; }
-        @AuraEnabled public Double listingPrice { get; set; }
-        @AuraEnabled public Double actualCost { get; set; }
-        @AuraEnabled public Double quantity { get; set; }
-        @AuraEnabled public String taxPercentage { get; set; }
-        @AuraEnabled public Double unitPrice { get; set; }
-        @AuraEnabled public Double discountAmount { get; set; }
-        @AuraEnabled public Double discountPercentage { get; set; }
-        @AuraEnabled public String purchaseOrderDiscountType { get; set; }
-        @AuraEnabled public String discountMode { get; set; }
-        @AuraEnabled public Double keyField { get; set; }
-        
-        public POItemWrapper() {}
-        
-        public POItemWrapper(PO_Item__c poItem) {
-            this.id = poItem.Id != null ? (String) poItem.Id : null;
-            this.productId = poItem.Product__c != null ? (String) poItem.Product__c : null;
-            this.productName = poItem.Product__r?.Name;
-            this.productSku = poItem.Product__r?.SKU__c;
-            this.productQuantity = poItem.Product__r?.Product_Quantity__c != null ? Double.valueOf(poItem.Product__r.Product_Quantity__c) : null;
-            this.listingPrice = poItem.Product__r?.Listing_Price__c != null ? Double.valueOf(poItem.Product__r.Listing_Price__c) : null;
-            this.actualCost = poItem.Product__r?.Actual_Cost__c != null ? Double.valueOf(poItem.Product__r.Actual_Cost__c) : null;
-            this.quantity = poItem.Quantity__c != null ? Double.valueOf(poItem.Quantity__c) : null;
-            this.taxPercentage = poItem.Tax_Percentage__c;
-            this.unitPrice = poItem.Unit_Price__c != null ? Double.valueOf(poItem.Unit_Price__c) : null;
-            this.discountAmount = poItem.Discount_Amount__c != null ? Double.valueOf(poItem.Discount_Amount__c) : null;
-            this.discountPercentage = poItem.Discount_Percentage__c != null ? Double.valueOf(poItem.Discount_Percentage__c) : null;
-            this.purchaseOrderDiscountType = poItem.Purchase_Order__r?.Discount_Type__c;
-            this.discountMode = poItem.Discount_Mode__c;
-            this.keyField = poItem.key__c != null ? Double.valueOf(poItem.key__c) : null;
-        }
-        
-        public  PO_Item__c toPOItem(String purchaseOrderId) {
-            PO_Item__c poItem = new PO_Item__c();
-            if (String.isNotBlank(this.id)) {
-                poItem.Id = this.id;
-            }
-            else{
-                poItem.Purchase_Order__c = purchaseOrderId;
-            }
-            
-            if (String.isNotBlank(this.productId)) {
-                poItem.Product__c = this.productId;
-            }
-            // Add this line to set the Name field
-            poItem.Name = this.productName;
-            
-            poItem.Quantity__c = this.quantity != null ? Decimal.valueOf(this.quantity) : null;
-            poItem.Tax_Percentage__c = this.taxPercentage;
-            poItem.Unit_Price__c = this.unitPrice != null ? Decimal.valueOf(this.unitPrice) : null;
-            poItem.Discount_Amount__c = this.discountAmount != null ? Decimal.valueOf(this.discountAmount) : null;
-            poItem.Discount_Percentage__c = this.discountPercentage != null ? Decimal.valueOf(this.discountPercentage) : null;
-            poItem.Discount_Mode__c = this.discountMode;
-            poItem.key__c = this.keyField != null ? Decimal.valueOf(this.keyField) : null;
-            poItem.Unit_of_Measure__c = 'Each';
-            return poItem;
-        }
-    }
-    
-    public class ProductWrapper {
-        @AuraEnabled public String id { get; set; }
-        @AuraEnabled public String name { get; set; }
-        @AuraEnabled public String sku { get; set; }
-        @AuraEnabled public Double productQuantity { get; set; }
-        @AuraEnabled public Double listingPrice { get; set; }
-        @AuraEnabled public Double actualCost { get; set; }
-        
-        public ProductWrapper() {}
-        
-        public ProductWrapper(Product__c product) {
-            this.id = product.Id != null ? (String) product.Id : null;
-            this.name = product.Name;
-            this.sku = product.SKU__c;
-            this.productQuantity = product.Product_Quantity__c != null ? Double.valueOf(product.Product_Quantity__c) : null;
-            this.listingPrice = product.Listing_Price__c != null ? Double.valueOf(product.Listing_Price__c) : null;
-            this.actualCost = product.Actual_Cost__c != null ? Double.valueOf(product.Actual_Cost__c) : null;
-        }
-    }
-    
     @AuraEnabled
     public static String savePurchaseOrderItemsWithWrapper( List<POItemWrapper> itemWrappers, String purchaseOrderId) {
-        System.debug('Purchase Order ID: ' + purchaseOrderId);
-        System.debug('Item Wrappers to process: ' + itemWrappers);
         try {
             List<PO_Item__c> recordsToUpsert = new List<PO_Item__c>();
             
@@ -128,7 +8,7 @@ public with sharing class CreatePurchaseOrderItems {
                 PO_Item__c item = itemWrapper.toPOItem(purchaseOrderId);
                 recordsToUpsert.add(item);
             }
-            upsert recordsToUpsert id;     // upsert  recordsToUpsert id;
+            upsert recordsToUpsert id;   
 
             return 'PO Items Created Successfully';
         } catch (Exception e) {
@@ -180,146 +60,18 @@ public with sharing class CreatePurchaseOrderItems {
     public static List<ProductWrapper> searchProductsWrapper(String searchKey) {
         List<ProductWrapper> productWrappers = new List<ProductWrapper>();
         List<Product__c> products = [
-            SELECT Id, Name, SKU__c, Product_Quantity__c, Listing_Price__c,Actual_Cost__c
+            SELECT Id, Name, SKU__c, Product_Quantity__c,Stock_Available__c,Lead_Time__c, Listing_Price__c,Actual_Cost__c
             FROM Product__c
-            WHERE Name LIKE :('%' + searchKey + '%')
-            LIMIT 10
+            WHERE Name LIKE :('%' + searchKey + '%') OR SKU__c LIKE :('%' + searchKey + '%')
+            LIMIT 10 // GV 26-06-25 --> ordering code for search
         ];
         
         for (Product__c product : products) {
             productWrappers.add(new ProductWrapper(product));
         }
-
-        System.debug('Search Results: ' + JSON.serializePretty(productWrappers));
         return productWrappers;
     }
-    
-    // Original Methods (maintained for backward compatibility)
-    // @AuraEnabled
-    // public static string savePurchaseOrderItems(List<PO_Item__c> items, Id purchaseOrderId) {
-    //     System.debug('Purchase Order ID: ' + purchaseOrderId);
-    //     System.debug('Items to upsert: ' + items);
-    //     try{
-    //         List<PO_Item__c> recordsToUpsert = new List<PO_Item__c>();
 
-    //         for (PO_Item__c item : items) {
-    //             if (item.Id == null) {
-    //                 item.Purchase_Order__c = purchaseOrderId;
-    //             }
-    //             item.Unit_of_Measure__c = 'Each';
-    //             recordsToUpsert.add(item);
-    //         }
-
-    //         upsert recordsToUpsert;
-
-    //         return 'PO Items Created Successfully';                          
-    //     }catch(Exception e){
-    //         throw new AuraHandledException(e.getMessage());
-    //     }
-    // }
-//     @AuraEnabled
-//     public static String savePurchaseOrderItemsWithWrapper(List<POItemWrapper> itemWrappers, String purchaseOrderId) {
-//     System.debug('Purchase Order ID: ' + purchaseOrderId);
-//     System.debug('Item Wrappers to process: ' + itemWrappers);
-//     try {
-//         List<PO_Item__c> recordsToUpsert = new List<PO_Item__c>();
-        
-//         for (POItemWrapper itemWrapper : itemWrappers) {
-//             if (itemWrapper != null) {
-//                 PO_Item__c item = new PO_Item__c();
-                
-//                 // Set ID if it exists (for updates)
-//                 if (String.isNotBlank(itemWrapper.id)) {
-//                     item.Id = itemWrapper.id;
-//                 }
-                
-//                 // Set Purchase Order ID
-//                 item.Purchase_Order__c = purchaseOrderId;
-                
-//                 // Map all fields from wrapper to PO Item
-//                 if (String.isNotBlank(itemWrapper.productId)) {
-//                     item.Product__c = itemWrapper.productId;
-//                 }
-//                 item.Id= itemWrapper.id;
-//                 item.Quantity__c = itemWrapper.quantity;
-//                 item.Tax_Percentage__c = itemWrapper.taxPercentage;
-//                 item.Unit_Price__c = itemWrapper.unitPrice;
-//                 item.Discount_Amount__c = itemWrapper.discountAmount;
-//                 item.Discount_Percentage__c = itemWrapper.discountPercentage;
-//                 item.Discount_Mode__c = itemWrapper.discountMode;
-//                 item.key__c = itemWrapper.keyField;
-//                 item.Unit_of_Measure__c = 'Each';
-                
-//                 recordsToUpsert.add(item);
-//             }
-//         }
-        
-//         if (!recordsToUpsert.isEmpty()) {
-
-//             // Use Database.upsert with allOrNone=false to handle partial successes
-//             Database.UpsertResult[] results = Database.upsert(recordsToUpsert, false);  
-//             // Handle errors
-//             List<String> errors = new List<String>();
-//             for (Database.UpsertResult result : results) {
-//                 if (!result.isSuccess()) {
-//                     for (Database.Error err : result.getErrors()) {
-//                         errors.add(err.getMessage());
-//                     }
-//                 }
-//             }
-            
-//             if (!errors.isEmpty()) {
-//                 throw new AuraHandledException(String.join(errors, '; '));
-//             }
-//         }
-        
-//         return 'PO Items Created Successfully';
-//     } catch (Exception e) {
-//         throw new AuraHandledException(e.getMessage());
-//     }
-// }
-    
-    @AuraEnabled
-    public static void savesPurchaseOrder(String discountTypeValue, 
-                                    String discountModeValue,
-                                    Decimal lumpsumAmount,
-                                    Decimal lumpsumPercentage, 
-                                    String lumpsumTaxPercentage,
-                                    Id purchaseOrderId
-                                    ) {
-        try {
-            Purchase_Order__c purchaseOrder = [
-                SELECT Id, Discount_Type__c, Discount_Mode__c, 
-                    Lumpsum_Discount_Amount__c, Lumpsum_Discount_Percentage__c ,Tax_Percentage__c
-                FROM Purchase_Order__c 
-                WHERE Id = :purchaseOrderId
-                LIMIT 1
-            ];
-
-            purchaseOrder.Discount_Type__c = discountTypeValue;
-            purchaseOrder.Discount_Mode__c = discountModeValue;
-            
-            if (discountTypeValue == 'Lumpsum Discount') {
-                purchaseOrder.Tax_Percentage__c = lumpsumTaxPercentage;
-                if (discountModeValue == 'Amount') {
-                    purchaseOrder.Lumpsum_Discount_Amount__c = lumpsumAmount;
-                    purchaseOrder.Lumpsum_Discount_Percentage__c = null;
-                } else if (discountModeValue == 'Percentage') {
-                    purchaseOrder.Lumpsum_Discount_Percentage__c = lumpsumPercentage;
-                    purchaseOrder.Lumpsum_Discount_Amount__c = null;
-                }
-            } else {
-                purchaseOrder.Lumpsum_Discount_Amount__c = null;
-                purchaseOrder.Lumpsum_Discount_Percentage__c = null;
-            }
-            System.debug('Purchase Order before upsert: ' + purchaseOrder);
-
-            upsert purchaseOrder;
-
-        } catch (Exception e) {
-            throw new AuraHandledException('Error updating Sales Order: ' + e.getMessage());
-        }
-    }
     
     @AuraEnabled(cacheable=true)
     public static List<Product__c> searchProducts(String searchKey) {
@@ -330,47 +82,29 @@ public with sharing class CreatePurchaseOrderItems {
             LIMIT 10
         ];
     }
-    
-    // @AuraEnabled(cacheable=true)
-    // public static List<String> getPicklistValue(String objectApiName, String fieldApiName) {
-    //     List<String> options = new List<String>();
-    //     Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
 
-    //     if (globalDescribe.containsKey(objectApiName)) {
-    //         Schema.SObjectType objType = globalDescribe.get(objectApiName);
-    //         Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
-
-    //         Schema.SObjectField fieldToken = objDescribe.fields.getMap().get(fieldApiName);
-
-    //         if (fieldToken != null) {
-    //             Schema.DescribeFieldResult fieldResult = fieldToken.getDescribe();
-    //             List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
-
-    //             for (Schema.PicklistEntry entry : picklistValues) {
-    //                 options.add(entry.getLabel());
-    //             }
-    //         }
-    //     }
-    //     return options;
-    // }
 
     @AuraEnabled(cacheable=true)
     public static Map<String, List<String>> getPicklistValue() {
         Map<String, List<String>> picklistMap = new Map<String, List<String>>();
- 
+
         Schema.DescribeFieldResult field1 = Purchase_Order__c.Tax_Percentage__c.getDescribe();
         Schema.DescribeFieldResult field2 = Purchase_Order__c.Discount_Mode__c.getDescribe();
         Schema.DescribeFieldResult field3 = Purchase_Order__c.Discount_Type__c.getDescribe();
- 
-        List<Schema.PicklistEntry> taxPercentagevalue = field1.getPicklistValues();
+        Schema.DescribeFieldResult field4 = Purchase_Order__c.Status__c.getDescribe();
+        Schema.DescribeFieldResult field5 = Purchase_Order__c.PO_Type__c.getDescribe();
+
+        List<Schema.PicklistEntry> taxPercentageValues = field1.getPicklistValues();
         List<Schema.PicklistEntry> discountModeValues = field2.getPicklistValues();
         List<Schema.PicklistEntry> discountTypeValues = field3.getPicklistValues();
- 
+        List<Schema.PicklistEntry> statusValues = field4.getPicklistValues();
+        List<Schema.PicklistEntry> poTypeValues = field5.getPicklistValues();
+
         List<String> taxOptions = new List<String>();
-        for (Schema.PicklistEntry entry : taxPercentagevalue) {
+        for (Schema.PicklistEntry entry : taxPercentageValues) {
             taxOptions.add(entry.getLabel());
         }
- 
+
         List<String> discOptions = new List<String>();
         for (Schema.PicklistEntry entry : discountModeValues) {
             discOptions.add(entry.getLabel());
@@ -380,37 +114,25 @@ public with sharing class CreatePurchaseOrderItems {
         for (Schema.PicklistEntry entry : discountTypeValues) {
             discountType.add(entry.getLabel());
         }
- 
+
+        List<String> statusOptions = new List<String>();
+        for (Schema.PicklistEntry entry : statusValues) {
+            statusOptions.add(entry.getLabel());
+        }
+
+        List<String> poType = new List<String>();
+        for (Schema.PicklistEntry entry : poTypeValues) {
+            poType.add(entry.getLabel());
+        }
+
         picklistMap.put('taxOptions', taxOptions);
         picklistMap.put('discOptions', discOptions);
         picklistMap.put('discountType', discountType);
-        System.debug('Picklist Map: ' + JSON.serializePretty(picklistMap));
+        picklistMap.put('statusOptions', statusOptions);
+        picklistMap.put('poType', poType);
+
         return picklistMap;
     }
-    
-    // Enhanced wrapper methods for individual data retrieval
-    @AuraEnabled
-    public static PurchaseOrderWrapper getPurchaseOrder(String purchaseOrderId) {
-        try {
-            List<Purchase_Order__c> poList = [
-                SELECT Id,Supplier__r.Name,Supplier_Name__c,Shipping_Terms__c,Payment_Terms__c,
-                Lumpsum_Discount_Amount__c,Lumpsum_Discount_Percentage__c,Discount_Mode__c,
-                Discount_Type__c,Tax_Percentage__c
-                FROM Purchase_Order__c
-                WHERE Id = :purchaseOrderId
-                LIMIT 1
-            ];
-            
-            if (poList.isEmpty()) {
-                throw new AuraHandledException('Purchase Order not found');
-            }
-            
-            return new PurchaseOrderWrapper(poList[0]);
-        } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage());
-        }
-    }
-
     @AuraEnabled
     public static List<POItemWrapper> getpurchaseOrderItems(String purchaseOrderId) {
         try {
@@ -435,33 +157,134 @@ public with sharing class CreatePurchaseOrderItems {
         }
     }
 
-    // Original methods (maintained for backward compatibility)
-    // @AuraEnabled
-    // public static List<Purchase_Order__c> getPurchaseOrder(Id purchaseOrderId) {
-    //     return [
-    //         SELECT Id,Supplier__r.Name,Supplier_Name__c,Shipping_Terms__c,Payment_Terms__c,Lumpsum_Discount_Amount__c,Lumpsum_Discount_Percentage__c,Discount_Mode__c,Discount_Type__c,
-    //         Tax_Percentage__c
-    //         FROM Purchase_Order__c
-    //         WHERE Id = :purchaseOrderId
-    //     ];
-    // }
-
-    // @AuraEnabled
-    // public static List<PO_Item__c> getpurchaseOrderItems(Id purchaseOrderId) {
-    //     return [
-    //         SELECT Id, Product__c, Product__r.Name, Product__r.SKU__c,
-    //         Product__r.Product_Quantity__c, Product__r.Listing_Price__c,Product__r.Actual_Cost__c, 
-    //         Quantity__c, Tax_Percentage__c,Unit_Price__c,Discount_Amount__c,Discount_Percentage__c,
-    //         Purchase_Order__r.Discount_Type__c,Discount_Mode__c,key__c
-    //         FROM PO_Item__c
-    //         WHERE Purchase_Order__c = :purchaseOrderId ORDER BY key__c ASC
-    //     ];
-    // }
-    
     @AuraEnabled
     public static void deletePoItem(Id itemId) {
         try {
             delete [SELECT Id FROM PO_Item__c WHERE Id = :itemId];
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+
+@AuraEnabled
+public static Id savePurchaseOrder(PurchaseOrderWrapper wrapper) {
+    Savepoint sp = Database.setSavepoint();
+    try {
+        System.debug('PurchaseOrderWrapper wrapper: ' + JSON.serialize(wrapper));
+        
+        Purchase_Order__c po = new Purchase_Order__c();
+        if (wrapper.id != null) {
+            po.Id = Id.valueOf(wrapper.id);
+        }
+        
+        po.Name = wrapper.poName;
+        po.Required_Date__c = wrapper.requiredDate;
+        po.Status__c = wrapper.status;
+        po.PO_Type__c = wrapper.poType;
+        po.Title__c = wrapper.title;
+        po.Vendor_Account__c = wrapper.vendorId;
+        po.Shipping_Terms__c = wrapper.shippingTerms;
+        po.Discount_Type__c = wrapper.discountType;
+        po.Discount_Mode__c = wrapper.discountMode;
+        po.Lumpsum_Discount_Amount__c = wrapper.lumpsumDiscountAmount;
+        po.Lumpsum_Discount_Percentage__c = wrapper.lumpsumDiscountPercentage;
+        po.Tax_Percentage__c = wrapper.taxPercentage;
+        
+        upsert po;
+        
+        if (wrapper.poItems != null && !wrapper.poItems.isEmpty()) {
+            List<PO_Item__c> itemsToInsert = new List<PO_Item__c>();
+            List<PO_Item__c> itemsToUpdate = new List<PO_Item__c>();
+            Map<Id, PO_Item__c> existingItems = new Map<Id, PO_Item__c>();
+            
+            if (po.Id != null) {
+                existingItems = new Map<Id, PO_Item__c>(
+                    [SELECT Id FROM PO_Item__c WHERE Purchase_Order__c = :po.Id]
+                );
+            }
+            
+            Set<Id> processedIds = new Set<Id>();
+            
+            for (POItemWrapper itemWrapper : wrapper.poItems) {
+                PO_Item__c poItem = new PO_Item__c();
+                
+                if (String.isNotBlank(itemWrapper.id)) {
+                    poItem.Id = itemWrapper.id;
+                    processedIds.add(poItem.Id);
+                    
+                    poItem.Product__c = itemWrapper.productId;
+                    poItem.Name = itemWrapper.productName;
+                    poItem.Quantity__c = itemWrapper.quantity;
+                    poItem.Tax_Percentage__c = itemWrapper.taxPercentage;
+                    poItem.Unit_Price__c = itemWrapper.unitPrice;
+                    poItem.Discount_Amount__c = itemWrapper.discountAmount;
+                    poItem.Discount_Percentage__c = itemWrapper.discountPercentage;
+                    poItem.Discount_Mode__c = itemWrapper.discountMode;
+                    poItem.key__c = itemWrapper.keyField;
+                    poItem.Unit_of_Measure__c = 'Each';
+                    itemsToUpdate.add(poItem);
+                } 
+                else {
+                    poItem.Purchase_Order__c = po.Id;
+                    poItem.Product__c = itemWrapper.productId;
+                    poItem.Name = itemWrapper.productName;
+                    poItem.Quantity__c = itemWrapper.quantity;
+                    poItem.Tax_Percentage__c = itemWrapper.taxPercentage;
+                    poItem.Unit_Price__c = itemWrapper.unitPrice;
+                    poItem.Discount_Amount__c = itemWrapper.discountAmount;
+                    poItem.Discount_Percentage__c = itemWrapper.discountPercentage;
+                    poItem.Discount_Mode__c = itemWrapper.discountMode;
+                    poItem.key__c = itemWrapper.keyField;
+                    poItem.Unit_of_Measure__c = 'Each';
+                    
+                    itemsToInsert.add(poItem);
+                }
+            }
+            
+            List<PO_Item__c> itemsToDelete = new List<PO_Item__c>();
+            for (PO_Item__c existingItem : existingItems.values()) {
+                if (!processedIds.contains(existingItem.Id)) {
+                    itemsToDelete.add(existingItem);
+                }
+            }
+            
+            if (!itemsToDelete.isEmpty()) {
+                delete itemsToDelete;
+            }
+            
+            if (!itemsToUpdate.isEmpty()) {
+                update itemsToUpdate;
+            }
+            
+            if (!itemsToInsert.isEmpty()) {
+                insert itemsToInsert;
+            }
+        }
+       return po.Id; 
+    } catch (Exception e) {
+        Database.rollback(sp);
+        String errorMsg = 'Error saving Purchase Order: ' + e.getMessage();
+        System.debug('Error: ' + errorMsg);
+        throw new AuraHandledException(errorMsg);
+    }
+}
+    @AuraEnabled
+    public static PurchaseOrderWrapper getPurchaseOrder(String purchaseOrderId) {
+        try {
+            Purchase_Order__c po = [
+                SELECT Id, Name, Required_Date__c, Status__c, PO_Type__c, Title__c,
+                    Vendor_Account__c, Vendor_Account__r.Name,Vendor_Account__r.Shipping_Terms__c, Shipping_Terms__c,
+                    Vendor_Account__r.Shipping_Terms__c, Vendor_Account__r.Payment_Terms__c,
+                    Supplier__r.Name, Discount_Type__c, Discount_Mode__c,
+                    Lumpsum_Discount_Amount__c, Lumpsum_Discount_Percentage__c,
+                    Tax_Percentage__c
+                FROM Purchase_Order__c
+                WHERE Id = :purchaseOrderId
+                LIMIT 1
+            ];
+            
+            return new PurchaseOrderWrapper(po);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }

@@ -1,0 +1,192 @@
+<template>
+    <lightning-card title="Journal Entry">
+        <div class="slds-m-around_medium">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-8">
+                    <lightning-input
+                        label="Journal Event Name"
+                        value={header.name}
+                        placeholder="Enter Event Name"
+                        onchange={handleHeaderChange}
+                        data-field="name" disabled={disableFlag}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-8">
+                    <lightning-input
+                        type="date"
+                        label="Date"
+                        placeholder="DD/MM/YYYY"
+                        value={header.date}
+                        onchange={handleHeaderChange}
+                        data-field="date" disabled={disableFlag}>
+                    </lightning-input>
+                </div>
+                 <div class="slds-col slds-size_1-of-8" style="position: relative; top: 11px;left: 10px;">
+                    <lightning-input
+                        type="checkbox"
+                        label="Foreign Exchange?"
+                        help-text="Enable this if the transaction involves foreign currency."
+                        variant="label-stacked"
+                        checked={header.isforeignexchange}
+                        onchange={handleHeaderChange}
+                        data-field="isforeignexchange"
+                        disabled={disableFlag}>
+                    </lightning-input>
+                    <!-- <lightning-input
+                        type="checkbox"
+                        label="Foreign Exchange?"
+                        checked={header.isforeignexchange}
+                        onchange={handleHeaderChange}
+                        data-field="isforeignexchange"
+                        disabled={disableFlag}>
+                    </lightning-input> -->
+                </div>
+                <template if:true={showForeignExchangeFields}>
+                    <div class="slds-col slds-size_1-of-8">
+                        <lightning-combobox
+                            label="Currency"
+                            value={header.currency}
+                            placeholder="Select Currency"
+                            options={currencyOptions}
+                            onchange={handleHeaderChange}
+                            data-field="currency" 
+                            disabled={disableFlag}>
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-8">
+                        <lightning-input
+                            type="number"
+                            label="Amount"
+                            value={header.amount}
+                            onchange={handleHeaderChange}
+                            data-field="amount"
+                            disabled={disableFlag}>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-8">
+                        <lightning-input 
+                            label="Exchange Rate"
+                            value={header.exchangerate}
+                            onchange={handleHeaderChange}
+                            data-field="exchangerate" 
+                            disabled={disableFlag}>
+                        </lightning-input>
+                    </div>
+                </template>
+                <div class="slds-m-around_medium slds-grid slds-grid_align-end">
+                    <lightning-button 
+                        label="Add Debit" 
+                        onclick={handleAddDebit} 
+                        class="slds-m-right_small" 
+                        disabled={disableFlag}>
+                    </lightning-button>
+                    <lightning-button 
+                        label="Add Credit" 
+                        onclick={handleAddCredit} 
+                        disabled={disableFlag}>
+                    </lightning-button>
+                </div>
+            </div>
+        </div>    
+        <c-journal-entries
+            record-id={recordId}
+            disable={disableFlag}
+            freeze-flag={freezeFlag}
+            onjournalrecordsupdate={handleJournalRecordsUpdate}>
+        </c-journal-entries>
+        <div class="slds-m-around_medium slds-grid slds-grid_align-end">
+            <div class="slds-m-around_medium slds-grid slds-grid_align-spread slds-wrap">
+            <div class="slds-m-left_medium">
+                <lightning-file-upload
+                    label="Upload Files"
+                    variant="brand"
+                    name="fileUploader"
+                    multiple
+                    onuploadfinished={handleUploadFinished}
+                    accept=".pdf,.png,.jpg,.jpeg" style="position: absolute;bottom: 5px;left: 30px;"
+                    disabled={freezeFlag}>
+                    
+                </lightning-file-upload>
+            </div>
+            <div>
+            <div class="slds-grid slds-wrap slds-align-start" style="position: absolute;bottom: 6px;left: 258px;;">
+                <template for:each={files} for:item="file">
+                    <div key={file.documentId} class="slds-m-left_medium slds-grid slds-align-center">
+                        <lightning-icon icon-name="doctype:attachment" size="small" class="slds-m-right_xx-small"></lightning-icon>
+                        <span>{file.fileName}</span>
+                        <lightning-button-icon
+                            icon-name="utility:close"
+                            alternative-text="Remove"
+                            class="slds-m-left_xx-small"
+                            onclick={handleRemove}
+                            data-id={file.documentId}>
+                        </lightning-button-icon>
+                    </div>
+                </template>
+            </div>
+        </div>
+        </div>
+           
+            <div class="slds-m-right_small">
+                <lightning-button
+                    label="Clear All"
+                    variant="brand"
+                    onclick={handleclear}
+                    disabled={isClearDisabled}>
+                </lightning-button>
+            </div>
+            <div class="slds-m-left_small">
+                <lightning-button
+                    label="Reverse"
+                    variant="brand"
+                    onclick={openReverseModal}
+                    disabled={isReverseDisabled}
+                    style="position: relative; right: 12px;">
+                </lightning-button>
+            </div>
+            <div>
+                <lightning-button
+                    label="Save"
+                    variant="brand"
+                    onclick={handleSave}
+                    disabled={freezeFlag}>
+                </lightning-button>
+            </div>
+            <div class="slds-m-left_small">
+                <lightning-button
+                    label="Save & Post"
+                    variant="brand"
+                    onclick={handlesavepost}
+                    disabled={disableFlag}>
+                </lightning-button>
+            </div>
+        </div>
+    </lightning-card>
+  
+    <c-journal-entry-attachments record-id={recordId}></c-journal-entry-attachments>
+
+    <!-- Reverse Modal -->
+    <template if:true={showReverseModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Reverse</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-textarea
+                        label="*Comments"
+                        value={reverseComment}
+                        required
+                        message-when-value-missing="Comments are required."
+                        onchange={handleReverseCommentChange}>
+                    </lightning-textarea>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeReverseModal} class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Create" variant="brand" onclick={submitReverse} disabled={isReverseCreateDisabled}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

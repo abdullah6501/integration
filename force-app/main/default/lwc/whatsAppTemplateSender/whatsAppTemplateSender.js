@@ -61,18 +61,49 @@ export default class WhatsAppTemplateSender extends LightningElement {
     //     this[field] = event.target.value;
     // }
 
+    // async handleTemplateSelection(event) {
+    //     this.templateName = event.target.value;
+    //     const selectedOption = this.templateOptions.find(option => option.value === this.templateName);
+    //     this.language = selectedOption ? selectedOption.language : null;
+        
+    //     try {
+    //         const paramString = await getTemplateParameters({ templateName: this.templateName });
+
+    //         if (paramString) {
+    //             const paramArray = paramString.split(','); 
+    //             this.maxParameters = paramArray.length;
+    //             this.parameters = paramArray.map((param, index) => ({ index, value: '', name: param.trim() }));
+    //         } else {
+    //             this.maxParameters = 0;
+    //             this.parameters = [];
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching template parameters:', error);
+    //         this.maxParameters = 0;
+    //         this.parameters = [];
+    //     }
+    // }
+
     async handleTemplateSelection(event) {
         this.templateName = event.target.value;
         const selectedOption = this.templateOptions.find(option => option.value === this.templateName);
         this.language = selectedOption ? selectedOption.language : null;
-        
+    
         try {
             const paramString = await getTemplateParameters({ templateName: this.templateName });
-
+    
             if (paramString) {
-                const paramArray = paramString.split(','); 
+                const paramArray = paramString.split(',');
                 this.maxParameters = paramArray.length;
-                this.parameters = paramArray.map((param, index) => ({ index, value: '', name: param.trim() }));
+    
+                this.parameters = paramArray.map((param, index) => {
+                    return {
+                        index,
+                        value: '',          // user-entered value
+                        name: param.trim(), // original name without extra parsing
+                        type: 'any'         // no longer separating body/button
+                    };
+                });
             } else {
                 this.maxParameters = 0;
                 this.parameters = [];
@@ -83,23 +114,104 @@ export default class WhatsAppTemplateSender extends LightningElement {
             this.parameters = [];
         }
     }
+    
+    // async handleTemplateSelection(event) {
+    //     this.templateName = event.target.value;
+    //     const selectedOption = this.templateOptions.find(option => option.value === this.templateName);
+    //     this.language = selectedOption ? selectedOption.language : null;
+    
+    //     try {
+    //         const paramString = await getTemplateParameters({ templateName: this.templateName });
+    
+    //         if (paramString) {
+    //             const paramArray = paramString.split(',');
+    //             this.maxParameters = paramArray.length;
+    
+    //             this.parameters = paramArray.map((param, index) => {
+    //                 const trimmed = param.trim();
+    //                 let type = 'body';
+    //                 let cleanName = trimmed;
+    //                 if (trimmed.toLowerCase().startsWith('button -')) {
+    //                     type = 'button';
+    //                     cleanName = trimmed.replace(/^button\s*-\s*/i, '');
+    //                 } else if (trimmed.toLowerCase().startsWith('body -')) {
+    //                     type = 'body';
+    //                     cleanName = trimmed.replace(/^body\s*-\s*/i, '');
+    //                 }
+    //                 return { index, value: '', name: cleanName, type };
+    //             });
+    //         } else {
+    //             this.maxParameters = 0;
+    //             this.parameters = [];
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching template parameters:', error);
+    //         this.maxParameters = 0;
+    //         this.parameters = [];
+    //     }
+    // }    
 
     handleParameterChange(event) {
         const index = event.target.dataset.index;
         this.parameters[index].value = event.target.value;
     }
 
-    async sendMessage() {
-        const paramValues = this.parameters.map(param => param.value);
+    // async sendMessage() {
+    //     const paramValues = this.parameters.map(param => param.value);
 
+    //     for (const number of this.selectedPhoneNumbers) {
+    //         try {
+    //             const result = await sendTemplateMessage({
+    //                 phoneNumber: number.value,
+    //                 templateName: this.templateName,
+    //                 language: this.language,
+    //                 parameters: paramValues            
+    //             });
+    //             this.responseMessage = `Message sent to ${number.label}: ${result}`;
+    //             this.dispatchEvent(
+    //                 new ShowToastEvent({
+    //                     title: 'Success',
+    //                     message: this.responseMessage,
+    //                     variant: 'success'
+    //                 })
+    //             );
+    //             // this.templateName = '';
+    //             // this.selectedPhoneNumbers = [];
+    //             // this.parameters = [];
+    //             // this.phoneOptions = [];
+    //             console.log(this.responseMessage);
+    //         } catch (error) {
+    //             console.error(error);
+    //             this.responseMessage = `Error sending message to ${number.label}.`;
+    //             this.dispatchEvent(
+    //                 new ShowToastEvent({
+    //                     title: 'Error',
+    //                     message: this.responseMessage,
+    //                     variant: 'error'
+    //                 })
+    //             );
+    //         }
+    //     }
+    // }
+    async sendMessage() {
+        // const bodyParams = this.parameters.filter(p => p.type === 'body').map(p => p.value);
+        // const buttonParams = this.parameters.filter(p => p.type === 'button').map(p => p.value);
+        const bodyParams = this.parameters.map(param => param.value);
+        const buttonParams = this.parameters.map(param => param.value);
+        
+        console.log(bodyParams);
+        console.log(buttonParams);
+        
         for (const number of this.selectedPhoneNumbers) {
             try {
                 const result = await sendTemplateMessage({
                     phoneNumber: number.value,
                     templateName: this.templateName,
                     language: this.language,
-                    parameters: paramValues            
+                    bodyParams: bodyParams,
+                    buttonParams: buttonParams
                 });
+    
                 this.responseMessage = `Message sent to ${number.label}: ${result}`;
                 this.dispatchEvent(
                     new ShowToastEvent({
@@ -108,11 +220,6 @@ export default class WhatsAppTemplateSender extends LightningElement {
                         variant: 'success'
                     })
                 );
-                this.templateName = '';
-                this.selectedPhoneNumbers = [];
-                this.parameters = [];
-                this.phoneOptions = [];
-                console.log(this.responseMessage);
             } catch (error) {
                 console.error(error);
                 this.responseMessage = `Error sending message to ${number.label}.`;
@@ -125,7 +232,7 @@ export default class WhatsAppTemplateSender extends LightningElement {
                 );
             }
         }
-    }
+    }    
 
     async fetchTemplates() {
         try {

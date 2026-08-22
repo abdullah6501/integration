@@ -1,202 +1,258 @@
 <template>
-    <lightning-card title="Chat">
-        <div class="slds-p-around_medium chat-container">
-            <div class="chat-messages">
-                <template for:each={messages} for:item="message">
-                    <div key={message.Id} class={message.cssClass}>
-                        <template if:true={message.isImage}>
-                            <img 
-                                src={message.File_Show__c}  
-                                class="chat-image" 
-                                data-image-url={message.File_Show__c} 
-                                onclick={handleImageClick}
-                            />
-                        </template>
-                        <template if:true={message.isVideo}>
-                            <video 
-                                class="chat-video" 
-                                controls 
-                                src={message.File_Show__c}>
-                            </video>
-                        </template>
-                        <template if:true={message.isDocument}>
-                            <a 
-                                href={message.File_Show__c} 
-                                class="download-link" 
-                                data-image-url={message.File_Show__c}>
-                                Open Document
-                            </a>
-                        </template>
-                        <!-- <template if:true={message.isDocument}>
-                            <a href="javascript:void(0);" data-id={message.documentId} onclick={previewFile}>
-                                {message.documentTitle}
-                            </a>
-                        </template> -->
-                        <!-- <template if:false={message.isImage} :false={message.isDocument}> -->
-                        <template if:true={message.isText}>
-                            <p>{message.Message_Body__c}</p>
-                        </template>
-                        <small>{message.CreatedDate}</small>
-                    </div>
-                </template>
+    <div class="chat-container">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="contact-info">
+                <div class="contact-avatar">{contactInitials}</div>
+                <div class="contact-details">
+                    <div class="contact-name">{contactName}</div>
+                    <div class="contact-status">online</div>
+                </div>
             </div>
-            <!-- Image preview before send -->
-            <template if:true={uploadedImageUrl}>
-                <div class="image-preview">
-                    <img src={uploadedImageUrl} alt="Uploaded Image" class="preview-image" />
-                    <lightning-button 
-                        label="X" 
-                        variant="destructive" 
-                        onclick={cancelImageUpload}>
-                    </lightning-button>
+            <div class="chat-actions">
+                <button class="icon-btn" title="Send Template Message" onclick={openTemplateModal}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                </button>
+                <button class="icon-btn" title="Attach" onclick={togglePopup}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path d="M1.816 15.556v.002a4.772 4.772 0 004.77 4.77 4.776 4.776 0 003.37-1.397l8.28-8.282a3.02 3.02 0 000-4.271 3.02 3.02 0 00-4.272 0l-7.464 7.466a1.27 1.27 0 00.316 1.942 1.267 1.267 0 001.482-.143l6.568-6.57a.75.75 0 111.06 1.06l-6.568 6.57a2.766 2.766 0 01-3.914-3.915l7.465-7.466a4.52 4.52 0 016.392 0 4.52 4.52 0 010 6.392l-8.28 8.282a6.276 6.276 0 01-8.877-8.877l7.87-7.872a.75.75 0 111.06 1.06l-7.87 7.872a4.775 4.775 0 00-1.398 3.372z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat Messages Area -->
+        <div class="chat-messages">
+            <!-- Date Separator -->
+            <div class="date-badge-container">
+                <span class="date-badge">TODAY</span>
+            </div>
+
+            <template for:each={messages} for:item="message">
+                <div key={message.Id} class={message.cssClass}>
+                    <div class="bubble-content">
+                        <!-- Image Message -->
+                        <template if:true={message.isImage}>
+                            <div class="media-bubble image-bubble" data-image-url={message.File_Show__c} onclick={handleImageClick}>
+                                <img src={message.File_Show__c} class="chat-image" alt="Uploaded Image" />
+                                <div class="image-scrim"></div>
+                            </div>
+                        </template>
+
+                        <!-- Video Message -->
+                        <template if:true={message.isVideo}>
+                            <div class="media-bubble video-bubble">
+                                <video class="chat-video" controls src={message.File_Show__c}></video>
+                            </div>
+                        </template>
+
+                        <!-- Document Message -->
+                        <template if:true={message.isDocument}>
+                            <div class="document-card">
+                                <div class="doc-icon-wrapper">
+                                    <svg viewBox="0 0 24 24" width="28" height="28" fill="#7f66ff">
+                                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                    </svg>
+                                </div>
+                                <div class="doc-info">
+                                    <div class="doc-title">{message.fileName}</div>
+                                    <div class="doc-meta">Document</div>
+                                </div>
+                                <a href={message.File_Show__c} target="_blank" class="doc-download-btn" title="Download Document">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </template>
+
+                        <!-- Text Message -->
+                        <template if:true={message.isText}>
+                            <p class="message-text">{message.Message_Body__c}</p>
+                        </template>
+
+                        <!-- Timestamp & Status Checkmark -->
+                        <div class="message-meta">
+                            <span class="message-time">{message.formattedTime}</span>
+                            <template if:true={message.isMe}>
+                                <span class="message-status">
+                                    <svg viewBox="0 0 16 11" width="16" height="11" fill="none" class="tick-icon">
+                                        <path d="M11.16 0.84a.75.75 0 0 0-1.06 0L4.75 6.19 2.4 3.84a.75.75 0 0 0-1.06 1.06l2.88 2.88a.75.75 0 0 0 1.06 0l5.88-5.88a.75.75 0 0 0 0-1.06z" fill="#53bdeb"/>
+                                        <path d="M14.66 0.84a.75.75 0 0 0-1.06 0L8.25 6.19l-.78-.78a.75.75 0 1 0-1.06 1.06l1.31 1.31a.75.75 0 0 0 1.06 0l5.88-5.88a.75.75 0 0 0 0-1.06z" fill="#53bdeb"/>
+                                    </svg>
+                                </span>
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </template>
-            <!-- video preview before send -->
+
+            <!-- Media/Doc Previews before Send -->
+            <template if:true={uploadedImageUrl}>
+                <div class="preview-banner">
+                    <img src={uploadedImageUrl} alt="Uploaded Image" class="preview-thumb" />
+                    <span class="preview-label">Image attached</span>
+                    <button class="close-preview-btn" onclick={cancelImageUpload}>✕</button>
+                </div>
+            </template>
+
             <template if:true={uploadedVideoUrl}>
-                <div class="video-preview">
-                    <video controls class="preview-video">
-                        <source src={uploadedVideoUrl} type="video/mp4" />
-                        Your browser does not support the video tag.
+                <div class="preview-banner">
+                    <video controls class="preview-thumb">
+                        <source src={uploadedVideoUrl} />
                     </video>
-                    <lightning-button 
-                        class="video-preview-close"
-                        label="X" 
-                        variant="destructive" 
-                        onclick={cancelVideoUpload}>
-                    </lightning-button>
+                    <span class="preview-label">Video attached</span>
+                    <button class="close-preview-btn" onclick={cancelVideoUpload}>✕</button>
                 </div>
             </template>
 
             <template if:true={uploadedDocUrl}>
-                <div class="doc-preview">
-                    <!-- <img src={uploadedDocUrl} alt="Uploaded Image" class="preview-image" /> -->
-                     <p>{uploadedDocUrl}</p>
-                    <lightning-button 
-                        label="X" 
-                        variant="destructive" 
-                        onclick={cancelDocUpload}>
-                    </lightning-button>
+                <div class="preview-banner">
+                    <div class="doc-icon-small">📄</div>
+                    <span class="preview-label">Document attached</span>
+                    <button class="close-preview-btn" onclick={cancelDocUpload}>✕</button>
                 </div>
             </template>
-
-            <div class="chat-input">
-                <lightning-textarea
-                    class="messagetextarea"
-                    placeholder="Type your message here"
-                    value={messageBody}
-                    onchange={handleMessageChange}
-                    onkeydown={handleKeyPress}
-                ></lightning-textarea>
-
-                <lightning-button  
-                    class="upload-iconn"
-                    variant="neutral" 
-                    icon-name="utility:upload" 
-                    icon-position="left" 
-                    onclick={togglePopup}
-                ></lightning-button>
-
-                <template if:true={showPopup}>
-                    <div class="popup-menu">
-                        <div class="file-image-container">
-                            <lightning-file-upload
-                                name="fileUploader"
-                                accept=".jpg,.jpeg,.png,.mp4,.avi,.3gp,.mov,.gif,.mkv,.flv,.wmv"
-                                label=""
-                                title="Image"
-                                onuploadfinished={handleImageUpload}>
-                            </lightning-file-upload>
-                            <lightning-icon
-                                icon-name="doctype:image"
-                                alternative-text="Upload Image"
-                                class="file-upload-icon">
-                            </lightning-icon>
-                        </div>
-                        <div class="file-doc-container">
-                            <lightning-file-upload
-                                name="fileUploader"
-                                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv"
-                                label=""
-                                title="Document"
-                                onuploadfinished={handleDocUpload}>
-                            </lightning-file-upload>
-                            <lightning-icon
-                                icon-name="doctype:xml"
-                                alternative-text="Upload Image"
-                                class="file-upload-icon-doc">
-                            </lightning-icon>
-                        </div>
+        </div>
+        
+        <!-- Attachment Popover Menu -->
+        <template if:true={showPopup}>
+            <div class="attachment-popover">
+                <div class="popover-item">
+                    <div class="popover-icon doc-bg">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        <lightning-file-upload
+                            name="fileUploader"
+                            accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv"
+                            label=""
+                            onuploadfinished={handleDocUpload}>
+                        </lightning-file-upload>
                     </div>
-                </template>
+                    <span class="popover-text">Document</span>
+                </div>
 
-                <lightning-button  
-                    class="template-icon"
-                    variant="neutral" 
-                    label="Template"
-                    onclick={openTemplateModal}
-                ></lightning-button>
+                <div class="popover-item">
+                    <div class="popover-icon image-bg">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                        <lightning-file-upload
+                            name="fileUploader"
+                            accept=".jpg,.jpeg,.png,.mp4,.avi,.3gp,.mov,.gif,.mkv"
+                            label=""
+                            onuploadfinished={handleImageUpload}>
+                        </lightning-file-upload>
+                    </div>
+                    <span class="popover-text">Photos & Videos</span>
+                </div>
 
-                <!-- Template Modal -->
-                <template if:true={showTemplateModal}>
-                    <div class="modal-backdrop">
-                        <div class="template-modal-content">
-                            <h2>Send Template Message</h2>
-                            <lightning-combobox 
-                                name="templateName"
-                                label="Template Name"
-                                placeholder="Select a template"
-                                options={templateOptions}
-                                value={templateName}
-                                onchange={handleTemplateSelection}>
-                            </lightning-combobox>
+                <div class="popover-item" onclick={openTemplateModal}>
+                    <div class="popover-icon template-bg">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                    </div>
+                    <span class="popover-text">Template</span>
+                </div>
+            </div>
+        </template>
 
+        <!-- Chat Input Footer -->
+        <div class="chat-input-container">
+            <button class="input-icon-btn" title="Emoji">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="#54656f">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                </svg>
+            </button>
+            
+            <button class="input-icon-btn" title="Attach File" onclick={togglePopup}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="#54656f">
+                    <path d="M1.816 15.556v.002a4.772 4.772 0 004.77 4.77 4.776 4.776 0 003.37-1.397l8.28-8.282a3.02 3.02 0 000-4.271 3.02 3.02 0 00-4.272 0l-7.464 7.466a1.27 1.27 0 00.316 1.942 1.267 1.267 0 001.482-.143l6.568-6.57a.75.75 0 111.06 1.06l-6.568 6.57a2.766 2.766 0 01-3.914-3.915l7.465-7.466a4.52 4.52 0 016.392 0 4.52 4.52 0 010 6.392l-8.28 8.282a6.276 6.276 0 01-8.877-8.877l7.87-7.872a.75.75 0 111.06 1.06l-7.87 7.872a4.775 4.775 0 00-1.398 3.372z"/>
+                </svg>
+            </button>
+
+            <div class="message-input-wrapper">
+                <input
+                    type="text"
+                    class="custom-chat-input"
+                    placeholder="Type a message"
+                    value={messageBody}
+                    oninput={handleMessageChange}
+                    onkeydown={handleKeyPress}
+                />
+            </div>
+            
+            <button class={sendButtonClass} title="Send Message" onclick={sendMessage}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Image Lightbox Modal -->
+        <template if:true={showImageModal}>
+            <div class="lightbox-backdrop" onclick={closeImageModal}>
+                <div class="lightbox-container" onclick={stopBubble}>
+                    <div class="lightbox-header">
+                        <span class="lightbox-title">Image View</span>
+                        <button class="lightbox-close" onclick={closeImageModal}>✕</button>
+                    </div>
+                    <div class="lightbox-body">
+                        <img src={selectedImage} alt="Preview Image" class="lightbox-image" />
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- WhatsApp Template Modal -->
+        <template if:true={showTemplateModal}>
+            <div class="modal-backdrop">
+                <div class="template-modal-card">
+                    <div class="template-modal-header">
+                        <div class="template-header-title">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="#00a884" style="margin-right: 8px;">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
+                            <span>Send WhatsApp Template</span>
+                        </div>
+                        <button class="modal-close-icon" onclick={closeTemplateModal}>✕</button>
+                    </div>
+
+                    <div class="template-modal-body">
+                        <lightning-combobox 
+                            name="templateName"
+                            label="Select Template"
+                            placeholder="Choose a registered template..."
+                            options={templateOptions}
+                            value={templateName}
+                            onchange={handleTemplateSelection}>
+                        </lightning-combobox>
+
+                        <template if:true={parameters.length}>
+                            <div class="params-section-title">Template Parameters</div>
                             <template for:each={parameters} for:item="param">
                                 <lightning-input 
                                     key={param.index}
                                     label={param.name}
+                                    placeholder="Enter parameter value"
                                     value={param.value} 
                                     onchange={handleParameterChange} 
                                     data-index={param.index}>
                                 </lightning-input>
                             </template>
-
-                            <div class="template-modal-buttons">
-                                <lightning-button 
-                                    label="Cancel" 
-                                    variant="neutral" 
-                                    onclick={closeTemplateModal}
-                                    class="slds-m-right_x-small">
-                                </lightning-button>
-                                <lightning-button 
-                                    label="Send Template" 
-                                    variant="brand" 
-                                    onclick={sendTemplateMessage}>
-                                </lightning-button>
-                            </div>
-                        </div>
+                        </template>
                     </div>
-                </template>
 
-                <lightning-button
-                    class="send-icon"
-                    label="Send"
-                    variant="brand"
-                    onclick={sendMessage}
-                ></lightning-button>
-            </div>
-        </div>
-
-        <template if:true={showImageModal}>
-            <div class="modal-backdrop">
-                <div class="modal-content">
-                    <img src={selectedImage} alt="Preview Image" class="modal-image" />
-                    <lightning-button
-                        label="Close" 
-                        variant="neutral" 
-                        onclick={closeImageModal}
-                    ></lightning-button>
+                    <div class="template-modal-footer">
+                        <button class="btn-cancel" onclick={closeTemplateModal}>Cancel</button>
+                        <button class="btn-send-template" onclick={sendTemplateMessage}>Send Template</button>
+                    </div>
                 </div>
             </div>
         </template>
-    </lightning-card>
+    </div>
 </template>

@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title="E-Way Bill Authentication" icon-name="custom:custom14">
+        <div class="slds-p-around_medium">
+            <lightning-input label="Username" name="Username" value={request.Username} onchange={handleChange}></lightning-input>
+            <lightning-input type="password" label="Password" name="Password" value={request.Password} onchange={handleChange}></lightning-input>
+            <lightning-input label="Client ID" name="clientId" value={request.clientId} onchange={handleChange}></lightning-input>
+            <lightning-input label="Client Secret" name="clientSecret" value={request.clientSecret} onchange={handleChange}></lightning-input>
+            <lightning-input label="GSTIN" name="gstIn" value={request.gstIn} onchange={handleChange}></lightning-input>
+            <lightning-input type="email" label="Email" name="emailId" value={request.emailId} onchange={handleChange}></lightning-input>
+
+            <lightning-button variant="brand" label="Generate" onclick={handleSubmit} class="slds-m-top_medium"></lightning-button>
+        </div>
+
+        <template if:true={response}>
+            <div class="slds-p-around_medium slds-box slds-theme_success">
+                <pre>{response}</pre>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="slds-p-around_medium slds-box slds-theme_error">
+                <p>{error}</p>
+            </div>
+        </template>
+    </lightning-card>
+</template>

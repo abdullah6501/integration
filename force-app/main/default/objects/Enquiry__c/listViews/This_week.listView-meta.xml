@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>This_week</fullName>
+    <columns>Date_of_Enquiry__c</columns>
+    <columns>NAME</columns>
+    <columns>Enquiry_Reference_Number1__c</columns>
+    <columns>Status__c</columns>
+    <columns>Notes__c</columns>
+    <columns>Company__c</columns>
+    <columns>Enquiry_Type__c</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>CREATED_DATE</field>
+        <operation>equals</operation>
+        <value>THIS_WEEK</value>
+    </filters>
+    <label>This Week Leads</label>
+</ListView>

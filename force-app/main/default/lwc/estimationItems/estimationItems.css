@@ -1,0 +1,225 @@
+/* AAB 11JUL25 PURCHASE ORDER FORM COMPONENT STYLING */
+/* AAB 18JUL25 COMPONENT STYLING */
+/* AAB 25JUL25 delete icon styling */
+/*29JUL25 delete icon styling - PR-00001-D-000000053 */
+.tdClass{
+    text-align:initial;
+    border-top:none;
+    border-bottom:none;
+  }
+  .column {
+    flex: 50%;
+    height: auto; 
+  }
+  .columnRightStyling{
+    width:20rem;
+    font-size:1rem;
+    border:none;
+    float:right;
+  }
+  .calculation-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.calculation-table {
+    width: 300px;
+}
+
+.calculation-table table {
+    background: white;
+}
+
+.tdClass {
+    padding: 8px 16px;
+    text-align: left;
+    border: none !important;
+}
+
+.value-cell {
+    padding: 8px 16px;
+    text-align: right;
+    border: none !important;
+}
+
+.slds-table tr {
+    border: none;
+}
+
+.slds-table td {
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+/* --- BillItemsTab grand total inline styles for PO header --- */
+/*AP-04AUG25 padding removed: padding: 0.75rem 1rem; */ /* background removed: background-color: #f8f9fa; */
+.grand-total-section-inline {
+    text-align: right;
+    min-height: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
+    margin-top: 0.125rem;
+    position: relative;
+    bottom: 43px;
+    left: 70px;
+    width: 350px;
+}
+
+.grand-total-label-inline {
+    color: #706e6b;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.grand-total-value-inline {
+    font-size: 1.625rem;
+    font-weight: 600;
+    color: #032d60;
+    line-height: 1.2;
+}
+
+.words-label-inline {
+    color: #706e6b;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    line-height: 1.1;
+    opacity: 0.8;
+}
+
+/* PO Items and Discount alignment row */
+.po-items-discount-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.po-items-card-wrapper {
+    flex-grow: 1;
+    margin-right: 2rem;
+}
+
+.custom-card-style {
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: white;
+}
+
+.custom-card-header {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+
+/* Discount Toggle positioned in horizontal row like the image */
+.discount-toggle-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.discount-toggle-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    min-height: auto;
+    order: 1; /* This ensures the toggle appears last (rightmost) */
+}
+
+.discount-toggle-container .compact-label {
+    white-space: nowrap;
+    color: #706e6b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0;
+    line-height: 1.2;
+}
+
+.compact-toggle {
+    margin: 0;
+}
+
+/* Discount inputs section - positioned horizontally to the LEFT of toggle */
+.discount-inputs-section {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+    margin-top: -2rem;
+    margin-bottom: 1rem;
+}
+
+.discount-input-wrapper {
+    min-width: 200px;
+    order: 2; /* This ensures the inputs appear before the toggle */
+}
+
+/* Specific styling for discount fields to appear left of toggle */
+.discount-fields-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    order: 2;
+    position: relative;
+    bottom: 20px;
+} /* Appears before toggle */
+/* AAB 29AUG25 Delete icon position fix */
+/* .delete{
+    position: absolute;
+    top: 62%;
+} */
+
+.delete-icon-container {
+    background-color: #ff69b4 !important;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    margin-top: 17px;
+    justify-content: center;
+    align-items: center;
+}
+
+.slds-m-left_xx-small{
+    margin-left: 0;
+}
+  /* AP-05AUG25 - total amount section */
+.total-amount-section {
+    display: inline-grid;
+    background-color: #f3f3f3;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 0 1rem;
+    padding: 1.5rem 2rem;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+}
+
+.currency {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #080707;
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #080707;
+    font-family: monospace;
+    min-width: 150px;
+    text-align: right;
+}

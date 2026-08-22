@@ -1,0 +1,154 @@
+<!-- AB 26JUN25 Reusable Attachment View Component -->
+<template>
+    <lightning-card title={cardTitle} icon-name="utility:attach">        
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-gutters">
+                <!-- Left side - Data Table -->
+                <div class="slds-col slds-size_1-of-2">
+                    <template if:true={isLoading}>
+                        <div class="slds-align_absolute-center slds-p-around_medium">
+                            <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                        </div>
+                    </template>
+                    <template if:true={hasAttachments}>
+                        <lightning-datatable
+                            key-field="id"
+                            data={attachments}
+                            columns={columns}
+                            onrowaction={handleRowAction}
+                            hide-checkbox-column="true"
+                            show-row-number-column="true">
+                        </lightning-datatable>
+                    </template>
+                    <template if:false={hasAttachments}>
+                        <template if:false={isLoading}>
+                            <div class="slds-align_absolute-center slds-p-around_large">
+                                <div class="slds-text-color_weak">
+                                    <lightning-icon icon-name="utility:file" size="large"></lightning-icon>
+                                    <p class="slds-m-top_small">{noAttachmentsMessage}</p>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+                <!-- Right side - File Preview -->
+                <div class="slds-col slds-size_1-of-2">
+                    <template if:true={showPreview}>
+                        <div class="preview-container">
+                            <div class="slds-card">
+                                <div class="slds-card__body slds-card__body_inner slds-p-around_none">
+                                    <div class="preview-iframe-container">
+                                        <template if:true={isPreviewLoading}>
+                                            <lightning-spinner alternative-text="Loading preview..." size="small"></lightning-spinner>
+                                        </template>
+                                        <template if:true={isImageFile}>
+                                            <template if:false={isPreviewLoading}>
+                                                <template if:true={fileContent}>
+                                                    <img src={fileContent} alt="Attachment Preview" style="max-width:100%; max-height:400px; display:block; margin:auto;" />
+                                                    <div class="slds-text-align_center slds-m-top_small">
+                                                        <lightning-button label="Open in New Tab" onclick={handlePreviewInNewTab} class="slds-m-right_small"></lightning-button>
+                                                        <lightning-button label="Download" onclick={handleDownloadFile}></lightning-button>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </template>
+                                        <template if:true={isPdfFile}>
+                                            <div class="slds-text-align_center slds-m-around_medium">
+                                                <lightning-icon icon-name="doctype:pdf" size="large" class="slds-m-bottom_small"></lightning-icon>
+                                                <p>This is a PDF file. <lightning-button label="Preview PDF" onclick={handlePreviewInNewTab} class="slds-m-left_small"></lightning-button>
+                                                <lightning-button label="Download" onclick={handleDownloadFile} class="slds-m-left_small"></lightning-button></p>
+                                            </div>
+                                        </template>
+                                        <template if:true={showPreview}>
+                                            <template if:false={isImageFile}>
+                                                <template if:false={isPdfFile}>
+                                                    <div class="slds-text-align_center slds-m-around_medium">
+                                                        <lightning-icon icon-name="utility:info" size="small" class="slds-m-bottom_small"></lightning-icon>
+                                                        <p>Preview not available for this file type.</p>
+                                                        <lightning-button label="Download" onclick={handleDownloadFile} class="slds-m-top_small"></lightning-button>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:false={showPreview}>
+                        <div class="preview-container">
+                            <div class="preview-placeholder slds-align_absolute-center">
+                                <div class="slds-text-align_center">
+                                    <lightning-icon icon-name="utility:preview" size="large" class="slds-m-bottom_small"></lightning-icon>
+                                    <p class="slds-text-color_weak slds-text-heading_small">Select a file to preview</p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <!-- Error Message -->
+        <template if:true={error}>
+            <div class="slds-m-around_medium">
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <lightning-icon icon-name="utility:error" size="x-small" variant="inverse"></lightning-icon>
+                    <h2>Error loading attachments: {errorMessage}</h2>
+                </div>
+            </div>
+        </template>
+    </lightning-card>
+    <!-- Delete Confirmation Modal -->
+    <template if:true={showDeleteModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon 
+                        class="slds-modal__close"
+                        title="Close"
+                        icon-name="utility:close"
+                        icon-class="slds-button_icon-inverse"
+                        onclick={handleDeleteCancel}>
+                    </lightning-button-icon>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        {deleteModalTitle}
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-text-align_center">
+                        <lightning-icon icon-name="utility:warning" size="large" variant="warning" class="slds-m-bottom_medium"></lightning-icon>
+                        <p class="slds-text-heading_small slds-m-bottom_small">
+                            Are you sure you want to delete this file?
+                        </p>
+                        <p class="slds-text-body_regular slds-text-color_weak">
+                            <strong>{fileToDelete.fileName}</strong>
+                        </p>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                            This action cannot be undone.
+                        </p>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button 
+                        variant="neutral" 
+                        label="Cancel" 
+                        onclick={handleDeleteCancel}
+                        disabled={isDeleting}>
+                    </lightning-button>
+                    <lightning-button 
+                        variant="destructive" 
+                        label="Delete" 
+                        onclick={handleDeleteConfirm}
+                        disabled={isDeleting}
+                        class="slds-m-left_x-small">
+                        <template if:true={isDeleting}>
+                            <lightning-spinner alternative-text="Deleting..." size="small"></lightning-spinner>
+                        </template>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

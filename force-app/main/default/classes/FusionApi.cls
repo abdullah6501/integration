@@ -1,5 +1,5 @@
 global class FusionApi {
-    private static final String NAMED_CREDENTIAL_NAME = 'FusionApi';
+    private static final String NAMED_CREDENTIAL_NAME = 'chat_service_credential';
 
     private static final String FUSION_API_URL = 'callout:' + NAMED_CREDENTIAL_NAME + '/dbops/crud/document?table=';
 
@@ -72,21 +72,23 @@ global class FusionApi {
             } else if (objectName == 'salesorder') {
                 System.debug('entering salesorder block with id: ' + id);
                 RFAB__Sales_Order__c so = [
-                    SELECT Id, Name, Payment_Terms__c, Customer_Po_Ref__c, Shipping_Terms__c,
-                        Order_Date__c, RFAB__Status__c, RFAB__Sales__c, RFAB__Title__c
+                    SELECT Id, Name, RFAB__Payment_Terms__c, RFAB__Customer_Po_Ref__c, RFAB__Shipping_Terms__c,
+                        // Order_Date__c, 
+                        RFAB__Status__c, RFAB__Sales__c, RFAB__Title__c
                     FROM RFAB__Sales_Order__c WHERE Id = :id
                 ];
 
                 JsonSalesOrder jsonData = new JsonSalesOrder();
                 jsonData.externalId = so.Id;
                 jsonData.name = so.Name;
-                jsonData.paymentTerms = so.Payment_Terms__c;
-                jsonData.customerPORef = so.Customer_Po_Ref__c;
-                jsonData.shippingTerms = so.Shipping_Terms__c;
-                jsonData.orderDate = String.valueOf(so.Order_Date__c);
+                jsonData.paymentTerms = so.RFAB__Payment_Terms__c;
+                jsonData.customerPORef = so.RFAB__Customer_Po_Ref__c;
+                jsonData.shippingTerms = so.RFAB__Shipping_Terms__c;
                 jsonData.status = so.RFAB__Status__c;
                 jsonData.soType = so.RFAB__Sales__c;
                 jsonData.title = so.RFAB__Title__c;
+                //jsonData.orderDate = String.valueOf(so.Order_Date__c);
+
                 System.debug('Serialized JSON Data: ' + JSON.serialize(jsonData, true));
 
                 jsonStr = JSON.serialize(jsonData, true);
@@ -98,39 +100,41 @@ global class FusionApi {
                 jsonData.assetID = asset.Id;
                 jsonData.assetName = asset.Name;
                 jsonData.status = asset.Status;
-                // jsonData.price = asset.Price;
-                // jsonData.quantity = asset.Quantity;
                 jsonData.purchaseDate = String.valueOf(asset.PurchaseDate);
                 jsonData.notes = asset.Description;
+                // jsonData.price = asset.Price;
+                // jsonData.quantity = asset.Quantity;
 
                 jsonStr = JSON.serialize(jsonData, true);
 
             } else if (objectName == 'expense') {
                 RFAB__Expense__c exp = [
-                    SELECT Id, Name, RFAB__Employee__c, RFAB__Date__c, RFAB__Total_Amount__c, Tax_Treatment__c,
-                        RFAB__Description__c, RFAB__Status__c, Category__c, Expense_Account__c, Sales_Order__c,
-                        Tax_Amount__c, Paid_Thru__c, RFAB__Comments__c, Vehicle__c
+                    SELECT Id, Name, RFAB__Employee__r.Name, RFAB__Date__c, RFAB__Total_Amount__c, 
+                    // Tax_Treatment__c,Category__c, Expense_Account__c,Sales_Order__c,Paid_Thru__c,Vehicle__c,Tax_Amount__c,
+                        RFAB__Description__c, RFAB__Status__c,  
+                          RFAB__Comments__c
                     FROM RFAB__Expense__c WHERE Id = :id
                 ];
 
                 JsonExpense jsonData = new JsonExpense();
                 jsonData.externalId = exp.Id;
                 jsonData.name = exp.Name;
-                jsonData.employeeId = exp.RFAB__Employee__c;
+                jsonData.employeeId = exp.RFAB__Employee__r.Name;
                 jsonData.expenseDate = String.valueOf(exp.RFAB__Date__c);
                 jsonData.amount = exp.RFAB__Total_Amount__c;
-                jsonData.taxTreatment = exp.Tax_Treatment__c;
                 jsonData.description = exp.RFAB__Description__c;
                 jsonData.status = exp.RFAB__Status__c;
-                jsonData.category = exp.Category__c;
-                jsonData.chartOfAccountCode = exp.Expense_Account__c;
-                jsonData.salesOrderId = exp.Sales_Order__c;
-                jsonData.taxAmount = exp.Tax_Amount__c;
-                jsonData.paidThru = exp.Paid_Thru__c;
                 jsonData.comments = exp.RFAB__Comments__c;
-                jsonData.assetID = exp.Vehicle__c;
+                //jsonData.taxTreatment = exp.Tax_Treatment__c;
+                //jsonData.category = exp.Category__c;
+                //jsonData.chartOfAccountCode = exp.Expense_Account__c;
+                //jsonData.salesOrderId = exp.Sales_Order__c;
+                //jsonData.taxAmount = exp.Tax_Amount__c;
+                //jsonData.paidThru = exp.Paid_Thru__c;
+                //jsonData.assetID = exp.Vehicle__c;
 
                 jsonStr = JSON.serialize(jsonData, true);
+                System.debug('JSON String' + jsonStr);
             }
         }
         if (methodType == 'POST' || methodType == 'PATCH') {

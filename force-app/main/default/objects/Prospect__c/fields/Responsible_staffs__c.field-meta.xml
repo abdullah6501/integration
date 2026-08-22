@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Responsible_staffs__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>this Field use to lookup user</description>
+    <label>Responsible staff</label>
+    <referenceTo>User</referenceTo>
+    <relationshipName>Enquiries</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,206 @@
+<template>
+    <lightning-card title="Select Report Type" icon-name="utility:user">
+        <!-- Filter Section -->
+        <div class="slds-p-around_medium slds-border_bottom">
+            <div class="slds-grid slds-wrap slds-gutters slds-align_center">
+                
+                <!-- Report Type -->
+                <div class="slds-col slds-size_1-of-5 slds-p-horizontal_small">
+                    <lightning-input
+                        name="reportType"
+                        label="Report Type"
+                        value={reportType}
+                        disabled
+                        variant="label-stacked">
+                    </lightning-input>
+                </div>
+
+                <!-- Start Date -->
+                <div class="slds-col slds-size_1-of-5 slds-p-horizontal_small">
+                    <lightning-input 
+                        type="date" 
+                        name="startDate"
+                        label="Start Date"
+                        value={startDate}
+                        onchange={handleStartDateChange}
+                        variant="label-stacked">
+                    </lightning-input>
+                </div>
+
+                <!-- End Date -->
+                <div class="slds-col slds-size_1-of-5 slds-p-horizontal_small">
+                    <lightning-input 
+                        type="date" 
+                        name="endDate"
+                        label="End Date"
+                        value={endDate}
+                        onchange={handleEndDateChange}
+                        variant="label-stacked">
+                    </lightning-input>
+                </div>
+
+                <!-- Report Format -->
+                <div class="slds-col slds-size_1-of-5 slds-p-horizontal_small">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label slds-text-body_small">Get Report As</label>
+                        <lightning-radio-group
+                            name="reportMode"
+                            options={reportModes}
+                            value={reportMode}
+                            type="radio"
+                            onchange={handleReportModeChange}>
+                        </lightning-radio-group>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="slds-col slds-size_1-of-5 slds-p-horizontal_small slds-align_absolute-center">
+                    <div class="slds-m-top_medium">
+                        <lightning-button 
+                            variant="brand"
+                            label="Get Report"
+                            icon-name="utility:search"
+                            onclick={handleGetReport}
+                            class="slds-m-bottom_x-small">
+                        </lightning-button>
+                
+                        <lightning-button 
+                            variant="neutral"
+                            label="Download Report"
+                            icon-name="utility:download"
+                            onclick={handleDownload}
+                            class="slds-m-left_small slds-m-bottom_x-small">
+                        </lightning-button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Accordion Report Content -->
+        <template if:true={showReport}>
+            <div class="slds-p-around_medium">
+                <lightning-accordion allow-multiple-sections-open active-section-name="output">
+
+                    <!-- Output VAT Section -->
+                    <lightning-accordion-section name="output" label="Output VAT">
+                        <template if:true={outputVat}>
+                            <div class="slds-scrollable_x">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th class="slds-truncate" style="width:100px;">Date</th>
+                                            <th class="slds-truncate" style="width:140px;">Invoice</th>
+                                            <th class="slds-truncate" style="width:100px;">Amount</th>
+                                            <th class="slds-truncate" style="width:100px;">Tax</th>
+                                            <th class="slds-truncate" style="width:100px;">Tax Amount</th>
+                                            <th class="slds-truncate" style="width:140px;">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={outputVat} for:item="row">
+                                            <tr key={row.id}>
+                                                <td>{row.createdDate}</td>
+                                                <td><a href={row.invoiceUrl} target="_blank">{row.invoiceName}</a></td>
+                                                <td>{row.total}</td>
+                                                <td><a href={row.taxUrl} target="_blank">{row.taxName}</a></td>
+                                                <td>{row.amount}</td>
+                                                <td>{row.remarks}</td>
+                                            </tr>
+                                        </template>
+                                        <tr class="slds-theme_shade slds-text-title_bold">
+                                            <td colspan="2">Total</td>
+                                            <td>{outputTotal}</td>
+                                            <td></td>
+                                            <td>{outputTaxTotal}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                    </lightning-accordion-section>
+
+                    <!-- Input VAT Section -->
+                    <lightning-accordion-section name="input" label="Input VAT">
+                        <template if:true={inputVat}>
+                            <div class="slds-scrollable_x">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th class="slds-truncate" style="width:100px;">Date</th>
+                                            <th class="slds-truncate" style="width:140px;">Bill</th>
+                                            <th class="slds-truncate" style="width:100px;">Amount</th>
+                                            <th class="slds-truncate" style="width:100px;">Tax</th>
+                                            <th class="slds-truncate" style="width:100px;">Tax Amount</th>
+                                            <th class="slds-truncate" style="width:140px;">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={inputVat} for:item="row">
+                                            <tr key={row.id}>
+                                                <td>{row.createdDate}</td>
+                                                <td><a href={row.billUrl} target="_blank">{row.billName}</a></td>
+                                                <td>{row.billtotal}</td>
+                                                <td><a href={row.taxUrl} target="_blank">{row.taxName}</a></td>
+                                                <td>{row.amount}</td>
+                                                <td>{row.remarks}</td>
+                                            </tr>
+                                        </template>
+                                        <tr class="slds-theme_shade slds-text-title_bold">
+                                            <td colspan="2">Total</td>
+                                            <td>{inputTotal}</td>
+                                            <td></td>
+                                            <td>{inputTaxTotal}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                    </lightning-accordion-section>
+
+                    <!-- Reverse Charges Section -->
+                    <lightning-accordion-section name="reverse" label="Reverse Charges">
+                        <template if:true={reverseChargesVat}>
+                            <div class="slds-scrollable_x">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th class="slds-truncate" style="width:100px;">Date</th>
+                                            <th class="slds-truncate" style="width:140px;">Bill</th>
+                                            <th class="slds-truncate" style="width:100px;">Amount</th>
+                                            <th class="slds-truncate" style="width:100px;">Tax</th>
+                                            <th class="slds-truncate" style="width:100px;">Tax Amount</th>
+                                            <th class="slds-truncate" style="width:140px;">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={reverseChargesVat} for:item="row">
+                                            <tr key={row.id}>
+                                                <td>{row.createdDate}</td>
+                                                <td><a href={row.billUrl} target="_blank">{row.billName}</a></td>
+                                                <td>{row.billtotal}</td>
+                                                <td><a href={row.taxUrl} target="_blank">{row.taxName}</a></td>
+                                                <td>{row.amount}</td>
+                                                <td>{row.remarks}</td>
+                                            </tr>
+                                        </template>
+                                        <tr class="slds-theme_shade slds-text-title_bold">
+                                            <td colspan="2">Total</td>
+                                            <td>{reverseTotal}</td>
+                                            <td></td>
+                                            <td>{reverseTaxTotal}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                    </lightning-accordion-section>
+
+                </lightning-accordion>
+            </div>
+        </template>
+    </lightning-card>
+</template>

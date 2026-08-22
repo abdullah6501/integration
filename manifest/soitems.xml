@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <!--<types>
+    <name>LightningComponentBundle</name>
+    <members>soItems</members>
+  </types>
+  <types>
+    <name>ApexClass</name>
+    <members>SOItemWrapper</members>
+    <members>SalesOrderWrapper</members>
+    <members>CreateSalesOrderItems</members>
+  </types>
+  <types>
+<members>EstimationItemController</members>
+<members>EstimationWrapper</members>
+<members>ESItemWrapper</members>
+<name>ApexClass</name>
+</types>-->
+<!--<types>
+<members>estimationItems</members>
+<name>LightningComponentBundle</name>
+</types>-->
+<types>
+<members>Estimation__c.Preferred_Currency__c</members>
+<members>Estimation__c.Tax__c</members>
+<members>Estimation__c.Tax_Percentage__c</members>
+<members>Estimation_Item__c.Tax__c</members>
+<members>Estimation_Item__c.Tax_Percentage__c</members>
+<name>CustomField</name>
+</types>
+  <version>64.0</version>
+</Package>

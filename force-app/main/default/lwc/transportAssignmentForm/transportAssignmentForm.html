@@ -1,0 +1,94 @@
+<template>
+    <lightning-card title="Transport Assignment">
+        <div class="slds-p-around_medium">
+
+            <!-- Product Lookup -->
+            <RFAB-reusable-lookup 
+                label="Product"
+                selected-icon-name="standard:product"
+                object-label="Product"
+                object-api-name="Product__c"
+                field-api-name="Name"
+                selected-record-id={assignment.productId}
+                onvalueselected={handleProductSelect}>
+            </RFAB-reusable-lookup>
+
+            <!-- Quantity -->
+            <lightning-input 
+                label="Quantity" 
+                type="number" 
+                data-field="quantity" 
+                value={assignment.quantity} 
+                onchange={handleChange}>
+            </lightning-input>
+
+            <!-- Driver Lookup -->
+            <RFAB-reusable-lookup 
+                label="Driver"
+                selected-icon-name="standard:contact"
+                object-label="Contact"
+                object-api-name="Contact"
+                field-api-name="Name"
+                other-field-api-name="MobilePhone"
+                selected-record-id={assignment.driverId}
+                onvalueselected={handleDriverSelect}>
+            </RFAB-reusable-lookup>
+
+            <!-- Driver Number (auto-fill) -->
+            <lightning-input 
+                label="Driver Number" 
+                type="phone" 
+                value={assignment.driverNumber} 
+                disabled>
+            </lightning-input>
+
+            <!-- Vendor Lookup -->
+            <RFAB-reusable-lookup 
+                label="Transport Vendor"
+                selected-icon-name="standard:account"
+                object-label="Vendor"
+                object-api-name="Vendor__c"
+                field-api-name="Name"
+                other-field-api-name="GSTIN__c"
+                additional-field-api-name="Description__c"
+                selected-record-id={assignment.vendorId}
+                onvalueselected={handleVendorSelect}>
+            </RFAB-reusable-lookup>
+
+            <!-- Vehicle Number -->
+            <lightning-input 
+                label="Vehicle Number" 
+                data-field="vehicleNumber" 
+                value={assignment.vehicleNumber} 
+                onchange={handleChange}>
+            </lightning-input>
+
+            <lightning-button 
+                variant="brand" 
+                label="Save" 
+                onclick={handleSave} 
+                class="slds-m-top_small">
+            </lightning-button>
+        </div>
+
+        <!-- Saved Assignment -->
+        <template if:true={savedAssignment}>
+            <div class="slds-p-around_medium slds-box slds-m-around_medium">
+                <h3 class="slds-text-heading_small">Saved Transport Assignment</h3>
+                <p><b>Product:</b> {savedAssignment.productId}</p>
+                <p><b>Quantity:</b> {savedAssignment.quantity}</p>
+                <p><b>Driver:</b> {savedAssignment.driverId}</p>
+                <p><b>Driver Number:</b> {savedAssignment.driverNumber}</p>
+                <p><b>Vendor:</b> {savedAssignment.vendorId}</p>
+                <p><b>Vehicle:</b> {savedAssignment.vehicleNumber}</p>
+
+                <lightning-button 
+                    variant="neutral" 
+                    label="Edit" 
+                    onclick={editRecord} 
+                    class="slds-m-top_small">
+                </lightning-button>
+            </div>
+        </template>
+    </lightning-card>
+</template>

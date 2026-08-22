@@ -1,0 +1,535 @@
+<!-- AAB 25SEP2025 UI Changes and Tax Changes-->
+<template>
+    <lightning-card title="Create GRN" icon-name="custom:custom14">
+        <div class="slds-m-around_medium">
+            <!-- PO Fields -->
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning-input type="text" label="Po Number" value={purchaseOrder.Name} disabled></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning-input type="text" label="Supplier" value={purchaseOrder.Supplier} disabled></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-5">
+                    <lightning-input 
+                        type="date" 
+                        label="Delivery Date" 
+                        value={grnDeliveryDate}
+                        name="RFAB__Date__c"
+                        onchange={handleGRNFieldChange}>
+                    </lightning-input>
+                </div>
+                
+                <!-- NEW: Chart of Account Field -->
+                <div class="slds-col slds-size_1-of-5">
+                    <lightning-input 
+                        type="search" 
+                        label="Chart Of Account" 
+                        value={grnChartOfAccountSearchKey}
+                        name="Chart_of_Accounts__c"
+                        placeholder="Search COA"
+                        onchange={handleGRNChartOfAccountSearch}>
+                    </lightning-input>
+                    <div if:true={grnChartOfAccountResults.length} class="search-results slds-box slds-theme_shade">
+                        <template for:each={grnChartOfAccountResults} for:item="coa">
+                            <div 
+                                key={coa.Id} 
+                                data-id={coa.Id} 
+                                data-name={coa.Name}
+                                class="search-result-item" 
+                                onclick={selectGRNChartOfAccount}>
+                                {coa.Name}
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                
+                <!-- NEW: File Upload for GRN -->
+                <div class="slds-col slds-size_1-of-5">
+                    <label class="slds-form-element__label">GRN Files</label>
+                    <div class="slds-text-align_left" style="margin-top: 8px;">
+                        <template if:false={grnUploadedFileIds.length}>
+                            <lightning-button-icon 
+                                icon-name="utility:upload" 
+                                variant="border-filled" 
+                                alternative-text="Upload GRN Files" 
+                                onclick={handleGRNUploadIconClick}
+                                class="blue-icon">
+                            </lightning-button-icon>
+                        </template>
+                        
+                        <template if:true={grnUploadedFileIds.length}>
+                            <div class="file-box" onclick={handleGRNFileBoxClick}>
+                                <lightning-icon 
+                                    icon-name="doctype:attachment" 
+                                    alternative-text="File" 
+                                    size="xx-small" 
+                                    class="slds-m-right_xx-small">
+                                </lightning-icon>
+                                File +{grnUploadedFileCount}
+                            </div>
+                        </template>
+                        
+                        <input 
+                            type="file" 
+                            multiple 
+                            accept={acceptedFormats} 
+                            style="display: none;" 
+                            class="grn-upload-input" 
+                            onchange={handleGRNFileUpload}>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PurchaseOrder Items Table -->
+            <div class="slds-m-top_medium">
+                <h2 class="slds-text-heading_medium slds-m-bottom_small">Stock Information</h2>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col" style="width: 32%;" class="slds-text-align_left">
+                                <div class="slds-truncate" title="Product Name">Product Name</div>
+                            </th>
+                            <th scope="col" style="width: 20%;">
+                                <div class="slds-truncate" title="Ordering Code">Ordering Code</div>
+                            </th>
+                            <th scope="col" style="width: 15%;">
+                                <div class="slds-truncate" title="SerialNumber">Serial Number</div>
+                            </th>
+                            <th scope="col" style="width: 15%;" class="slds-text-align_left">
+                                <div class="slds-truncate" title="Qty">Qty</div>
+                            </th>
+                            <th scope="col" style="width: 15%;" class="slds-text-align_left">
+                                <div class="slds-truncate" title="Unit Price">Unit Price</div>
+                            </th>
+                            <th  if:true={isTaxEnabled} scope="col" style="width: 15%;" class="slds-text-align_left">
+                                <div class="slds-truncate" title="Tax %">Tax %</div>
+                            </th>
+                            <th scope="col" style="width: 8%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Actions">Actions</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={purchaseOrderItems} for:item="item" for:index="index">
+                            <tr key={item.id}>
+                                <td>
+                                    <!-- AAB 25OCT25 CHNAGED TO TEXTAREA TO INCREASE WIDTH -->
+                                    <lightning-textarea type="text" value={item.Name} 
+                                        data-index={index} name="RFAB__Product__c" disabled>
+                                    </lightning-textarea>
+                                </td>
+                                <!-- <td>
+                                    <lightning-input type="Search" 
+                                        data-index={index} 
+                                        name="RFAB__Location__c" 
+                                        value={item.RFAB__Location__r.Name}
+                                        onchange={handleLocationSearch}>
+                                    </lightning-input>
+                                    <div if:true={item.searchResults.length} class="search-results">
+                                        <template for:each={item.searchResults} for:item="location">
+                                            <div key={location.Id} data-id={location.Id} data-index={index} onclick={selectlocation}>
+                                                {location.Name}
+                                            </div>
+                                        </template>
+                                    </div>
+                                </td> -->
+                                <!--<td>
+                                    <lightning-input type="text" value={item.Serial_Number__c} 
+                                        data-index={index} name="Serial_Number__c"  onchange={handleInputChange}>
+                                    </lightning-input>
+                                </td>-->
+                                <td>
+                                    <!-- AAB 25OCT25 CHNAGED TO TEXTAREA TO INCREASE WIDTH -->
+                                    <lightning-textarea type="text" value={item.SKU} disabled>
+                                    </lightning-textarea>
+                                </td>
+                                <td>
+                                    <lightning-input type="text" value={item.Serial_Number__c} data-index={index}
+                                        name="Serial_Number__c" onchange={handleInputChange} 
+                                        disabled={item.isSerialDisabled}
+                                        required={item.isSerial}>
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-input type="number" value={item.RFAB__Quantity__c} 
+                                        data-index={index} name="RFAB__Quantity__c" step="1"
+                                        onchange={handleInputChange} class="right-align-input">
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-input type="number" value={item.RFAB__Unit_Price__c} 
+                                        data-index={index} name="RFAB__Unit_Price__c" step="0.01"
+                                        onchange={handleInputChange} class="right-align-input">
+                                    </lightning-input>
+                                </td>
+                                <td if:true={isTaxEnabled}>
+                                    <lightning-combobox value={item.RFAB__Tax__c} 
+                                        data-index={index} name="RFAB__Tax__c"
+                                        onchange={handleInputChange}
+                                        options={taxOptions}>
+                                    </lightning-combobox>
+                                </td>
+                                <td style="padding-top:5px;">
+                                    <lightning-button-icon icon-name="utility:delete" 
+                                        alternative-text="Delete" title="Delete" variant="border-filled" 
+                                        data-index={index} onclick={handleDeleteRow} 
+                                        class="slds-align_absolute-center slds-m-around_small">
+                                    </lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+              <!-- Expense Items Table -->
+            <div class="slds-m-top_medium">
+                <h2 class="slds-text-heading_medium slds-m-bottom_small">Expense Information</h2>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col" style="width: 20%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Product Name">Expense Name</div>
+                            </th>
+                            <th scope="col" style="width: 10%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Date">Date</div>
+                            </th>
+                            <th scope="col" style="width: 10%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Description">Description</div>
+                            </th>
+                            <th scope="col" style="width: 8%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Amount">Amount</div>
+                            </th>
+                            <th scope="col" style="width: 8%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Tax Amount">Tax Amount</div>
+                            </th>
+                            <th scope="col" style="width: 8%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Total Amount">Total Amount</div>
+                            </th>
+                            <th scope="col" style="width: 10%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Chart of Account">Chart Of Account</div>
+                            </th>
+                            <th scope="col" style="width: 6%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Attachment">Files</div>
+                            </th>
+                            <th scope="col" style="width: 4%;" class="slds-text-align_center">
+                                <div class="slds-truncate" title="Action">Action</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={expenseItems} for:item="item" for:index="index">
+                            <tr key={item.id}>
+                                <td >
+                                    <lightning-input type="text" value={item.Name} 
+                                        data-index={index} name="Name" onchange={handleInputExpenseChange} 
+                                        disabled={item.isNameEditable}>
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-input type="Date" value={item.RFAB__Date__c}
+                                        data-index={index} name="RFAB__Date__c" step="1"
+                                        onchange={handleInputExpenseChange} class="right-align-input">
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-input type="text" value={item.RFAB__Description__c}
+                                        data-index={index} name="RFAB__Description__c"
+                                        onchange={handleInputExpenseChange} class="right-align-input">
+                                    </lightning-input>
+                                </td>
+                                
+                                <td class="slds-text-align_right">
+                                    <lightning-input type="number" value={item.RFAB__Amount_excluding__c}
+                                        data-index={index} name="RFAB__Amount_excluding__c" step="0.01"
+                                        onchange={handleInputExpenseChange} class="right-align-input">
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-input type="number" value={item.Tax_Amount__c}
+                                        data-index={index} name="Tax_Amount__c" step="0.01"
+                                        onchange={handleInputExpenseChange} class="right-align-input">
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-input type="number" value={item.RFAB__Total_Amount__c}
+                                        data-index={index} name="RFAB__Total_Amount__c" step="0.01"
+                                        onchange={handleInputExpenseChange} class="right-align-input" disabled>
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-input 
+                                        type="search"
+                                        value={item.chartOfAccountSearchKey}
+                                        data-index={index}
+                                        name="chartOfAccountSearchKey"
+                                        placeholder="Search COA"
+                                        onchange={handleChartOfAccountSearch}
+                                        oninput={handleChartOfAccountSearch}>
+                                    </lightning-input>
+                                
+                                    <div if:true={item.chartOfAccountResults.length} class="search-results slds-box slds-theme_shade">
+                                        <template for:each={item.chartOfAccountResults} for:item="coa">
+                                            <div 
+                                                key={coa.Id} 
+                                                data-id={coa.Id} 
+                                                data-name={coa.Name}
+                                                data-index={index}
+                                                class="search-result-item"
+                                                onclick={selectChartOfAccount}>
+                                                {coa.Name}
+                                            </div>
+                                        </template>
+                                    </div>
+                                </td>
+                                <!-- <td class="slds-text-align_right">
+                                    <lightning-input 
+                                        type="search"
+                                        value={item.chartOfAccountSearchKey}
+                                        data-index={index}
+                                        name="chartOfAccountSearchKey"
+                                        placeholder="Search COA"
+                                        onchange={handleChartOfAccountSearch}>
+                                    </lightning-input>
+
+                                    <div if:true={item.chartOfAccountResults.length} class="search-results slds-box slds-theme_shade">
+                                        <template for:each={item.chartOfAccountResults} for:item="coa">
+                                            <div 
+                                                key={coa.Id} 
+                                                data-id={coa.Id} 
+                                                data-name={coa.Name}
+                                                data-index={index}
+                                                class="search-result-item"
+                                                onclick={selectChartOfAccount}>
+                                                {coa.Name}
+                                            </div>
+                                        </template>
+                                    </div>
+                                </td> -->
+                                <td class="slds-text-align_center" style="padding-top:5px;">
+                                    <template if:false={item.uploadedFileIds.length}>
+                                        <lightning-button-icon
+                                            icon-name="utility:upload"
+                                            variant="border-filled"
+                                            alternative-text="Upload"
+                                            onclick={handleUploadIconClick}
+                                            data-index={index}
+                                            class="slds-align_absolute-center slds-m-around_small blue-icon">
+                                        </lightning-button-icon>
+                                    </template>
+                                    <!-- File box shown when files are uploaded -->
+                                    <template if:true={item.uploadedFileIds.length}>
+                                        <div class="file-box  extra-top-space" data-index={index} onclick={handleFileBoxClick}>
+                                            <lightning-icon icon-name="doctype:attachment" alternative-text="File" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                            File +{item.uploadedFileCount}
+                                        </div>
+                                    </template>
+                                    <input 
+                                            type="file"
+                                            multiple
+                                            accept={acceptedFormats}
+                                            style="display: none;"
+                                            class="upload-input"
+                                            data-index={index}
+                                            onchange={handleFileUpload}>
+                                    <!-- Modal popup -->
+                                    <template if:true={showModal}>
+                                        <section class="modal-backdrop">
+                                            <div class="modal-container">
+                                                <header class="modal-header">
+                                                    <h2 style="font-weight: bold; font-size:18px;">Files Preview</h2>
+                                                    <button class="close-button" onclick={handleCloseModal}>×</button>
+                                                </header>
+                                                <div class="modal-body">
+                                                    <div class="file-list-container">
+                                                        <div class="file-list">
+                                                            <template for:each={selectedFiles} for:item="file" for:index="i">                                                                <div key={file.id} class="slds-grid slds-grid_align-spread">
+                                                                    <div 
+                                                                        class={file.itemClass} 
+                                                                        data-index={i} 
+                                                                        onclick={handlePreviewFile}>
+                                                                        <lightning-icon icon-name="doctype:attachment" size="x-small"></lightning-icon>
+                                                                        <span>{file.name}</span>
+                                                                    </div>
+                                                                    <lightning-button-icon
+                                                                        icon-name="utility:close"
+                                                                        variant="error"
+                                                                        size="small"
+                                                                        alternative-text="Remove file"
+                                                                        data-id={file.id}
+                                                                        data-index={i}
+                                                                        onclick={handleRemoveFile}
+                                                                        class="slds-m-left_x-small remove-file">
+                                                                    </lightning-button-icon>
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                        <div class="file-actions">
+                                                            <div class="slds-grid slds-gutters slds-p-top_medium">
+                                                                <div class="slds-col">
+                                                                    <lightning-button 
+                                                                    label="Add More Files" 
+                                                                    icon-name="utility:add"
+                                                                    variant="brand" 
+                                                                    onclick={handleAddMoreFiles}
+                                                                    class="slds-button_stretch">
+                                                                    </lightning-button>
+                                                                </div>
+                                                                <div class="slds-col">
+                                                                    <lightning-button 
+                                                                    label="Cancel" 
+                                                                    variant="neutral"
+                                                                    onclick={handleCloseModal}
+                                                                    class="slds-button_stretch">
+                                                                    </lightning-button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="file-preview">
+                                                        <template if:true={previewFileUrl}>
+                                                            <template if:true={isImage}>
+                                                                <img src={previewFileUrl} alt="Preview" style="max-width: 100%; max-height: 500px;" />
+                                                            </template>
+                                                            <template if:false={isImage}>
+                                                                <iframe src={previewFileUrl} style="width: 50%; height: 100vh; overflow-y: auto;" frameborder="0"></iframe>
+                                                            </template>
+                                                        </template>
+                                                        <template if:false={previewFileUrl}>
+                                                            <div class="slds-align_absolute-center slds-p-around_medium">
+                                                                <p>Select a file to preview</p>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </template>
+                                </td>
+
+                                <td style="padding-top:5px;">
+                                    <lightning-button-icon
+                                        icon-name="utility:delete"
+                                        alternative-text="Delete"
+                                        variant="border-filled"
+                                        title="Delete"
+                                        data-index={index}
+                                        onclick={handleDeleteExpenseRow}
+                                        class="slds-align_absolute-center slds-m-around_small">
+                                    </lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <div class="slds-m-top_medium slds-grid slds-grid_align-end">
+                    <lightning-button
+                        label="Add Expense"
+                        variant="brand"
+                        title="Add Expense"
+                        icon-name="utility:add"
+                        onclick={handleAddNewExpense}>
+                    </lightning-button>
+                </div>
+                
+            </div>
+
+            <template if:true={showGRNFileModal}>
+                <section class="modal-backdrop">
+                    <div class="modal-container">
+                        <header class="modal-header">
+                            <h2 style="font-weight: bold; font-size:18px;">GRN Files Preview</h2>
+                            <button class="close-button" onclick={handleCloseGRNFileModal}>×</button>
+                        </header>
+                        <div class="modal-body">
+                            <div class="file-list-container">
+                                <div class="file-list">
+                                    <template for:each={grnSelectedFiles} for:item="file" for:index="i">
+                                        <div key={file.id} class="slds-grid slds-grid_align-spread">
+                                            <div class={file.itemClass} data-index={i} onclick={handleGRNPreviewFile}>
+                                                <lightning-icon icon-name="doctype:attachment" size="x-small"></lightning-icon>
+                                                <span>{file.name}</span>
+                                            </div>
+                                            <lightning-button-icon 
+                                                icon-name="utility:close" 
+                                                variant="error" 
+                                                size="small" 
+                                                alternative-text="Remove file" 
+                                                data-id={file.id}
+                                                data-index={i}
+                                                onclick={handleRemoveGRNFile}
+                                                class="slds-m-left_x-small remove-file">
+                                            </lightning-button-icon>
+                                        </div>
+                                    </template>
+                                </div>
+                                <div class="file-actions">
+                                    <div class="slds-grid slds-gutters slds-p-top_medium">
+                                        <div class="slds-col">
+                                            <lightning-button 
+                                                label="Add More Files" 
+                                                icon-name="utility:add" 
+                                                variant="brand" 
+                                                onclick={handleAddMoreGRNFiles}
+                                                class="slds-button_stretch">
+                                            </lightning-button>
+                                        </div>
+                                        <div class="slds-col">
+                                            <lightning-button 
+                                                label="Cancel" 
+                                                variant="neutral" 
+                                                onclick={handleCloseGRNFileModal}
+                                                class="slds-button_stretch">
+                                            </lightning-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="file-preview">
+                                <template if:true={grnPreviewFileUrl}>
+                                    <template if:true={isGRNImage}>
+                                        <img src={grnPreviewFileUrl} alt="Preview" style="max-width: 100%; max-height: 500px;" />
+                                    </template>
+                                    <template if:false={isGRNImage}>
+                                        <iframe src={grnPreviewFileUrl} style="width: 50%; height: 100vh; overflow-y: auto;" frameborder="0"></iframe>
+                                    </template>
+                                </template>
+                                <template if:false={grnPreviewFileUrl}>
+                                    <div class="slds-align_absolute-center slds-p-around_medium">
+                                        <p>Select a file to preview</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </template>
+
+            <!-- Create/Update Button -->
+            <div class="slds-m-top_medium slds-text-align_center">
+                <lightning-button 
+                    label="Save" 
+                    variant="neutral"
+                    onclick={handleSaveDraft}
+                    disabled={isButtonDisabled}
+                    class="slds-m-left_x-small">
+                </lightning-button>
+                
+                <lightning-button variant="brand" label="Save & Complete" 
+                    onclick={handleSave}
+                    disabled={isButtonDisabled}
+                    class="slds-m-left_x-small"> 
+                </lightning-button>
+
+                <lightning-button 
+                    variant="neutral"
+                    label="Cancel" 
+                    onclick={handleClose}
+                    class="slds-m-left_x-small">
+                </lightning-button>
+                
+            </div>
+        </div>
+    </lightning-card>
+</template>

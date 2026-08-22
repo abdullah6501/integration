@@ -1,195 +1,145 @@
-/* table, th, td {
-    border: 1px solid black;
-    text-align: center;
-  } */
+import { LightningElement, api, track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import extract_doc_url from '@salesforce/apex/Document_Extract_Helper.extract_doc_url';
 
-  /* .slds-table_bordered tbody td {
-    border-top: none;
-    border-bottom: none;
-  } */
+export default class ChatBot extends LightningElement {
+    @api chatloading = false;
+    @api isVisible = false;
+    @api messages = [];
+    @track isExpanded = false;
+    @track newMessage = '';
+    @track uploadedFiles = [];
+    @track attachment_url = '';
+    @track showTemplate = false;
 
-  .tableStyle {
-    border: 1px solid black;
-    text-align: center;
-  }
+    get chatContainerClass() {
+        return `chat-container ${this.isExpanded ? 'expanded' : ''}`;
+    }
 
-  input{
-    text-align: left;
-    border:none;
-    padding:0;
-  }
+    get chatStyle() {
+        return this.isExpanded ? 'height: 80vh; width: 80%;' : '';
+    }
 
-  thead{
-      height:40px;
-      font-size: 12px;
-  }
+    get expandIcon() {
+        return this.isExpanded ? 'utility:contract' : 'utility:expand';
+    }
 
-  lightning-button.button {
-    width: 150px;
-  } 
+    expandChat() {
+        this.isExpanded = !this.isExpanded;
+    }
 
-  button{
-    width: 130px;
-    border: 1px solid;
-    justify-content: center;
-  }
+    closeChat() {
+        this.dispatchEvent(new CustomEvent('closechat'));
+    }
 
-  .slds-button[disabled], .slds-button:disabled{
-    border-color: lightgrey;
-    color:lightgrey;
-  }
+    handleMessageChange(event) {
+        this.newMessage = event.target.value;
+    }
 
-  .subTotalDiv{
-    margin-top:10px;
-    font-size:18px;
-    width:20%;
-  }
+    async handleFileUpload(event) {
+        const uploadedFiles = event.detail.files;
+        if (this.uploadedFiles.length > 1) {
+            this.showToast('Warning', 'You can upload only one document per message.', 'warning');
+            return;
+        }
+        if (uploadedFiles.length > 0) {
+            let docId = uploadedFiles[0].documentId;
+            try {
+                this.attachment_url = await extract_doc_url({ docId });
+            } catch (error) {
+                console.error('Error on attaching document:', error);
+            }
+            this.uploadedFiles = [...this.uploadedFiles, {
+                name: uploadedFiles[0].name,
+                documentId: uploadedFiles[0].documentId
+            }];
+        }
+    }
 
-  .subTotalSpan{
-    font-weight:bold;
-  }
+    removeFile(event) {
+        const docIdToRemove = event.currentTarget.dataset.id;
+        this.uploadedFiles = this.uploadedFiles.filter(file => file.documentId !== docIdToRemove);
+    }
 
-  * {
-    box-sizing: border-box;
-  }
-  
-  .row {
-    display: flex;
-  }
-  
-  /* Create two equal columns that sits next to each other */
-  .column {
-    flex: 50%;
-    /* padding-top: 10px; */
-    height: auto; /* 300px Should be removed. Only for demonstration */
-  }
+    checkFileLimit(event) {
+        if (this.uploadedFiles.length >= 1) {
+            event.preventDefault();
+            this.showToast('Warning', 'You can upload only one document per message.', 'warning');
+        }
+    }
 
+    sendMessage() {
+        if (this.newMessage.trim() !== '') {
+            const newMsg = {
+                id: Date.now(),
+                senderName: 'You',
+                message: this.newMessage,
+                class: 'message sent',
+                attachments: this.uploadedFiles,
+                attachment_url: this.attachment_url
+            };
+            const history = {
+                role: "user",
+                content: [{ type: "text", text: this.newMessage }]
+            };
 
-/* .tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-}
+            this.dispatchEvent(new CustomEvent('newmessage', {
+                detail: {
+                    message: newMsg,
+                    history: history
+                }
+            }));
 
-.tooltip .tooltiptext {
-  visibility: visible;
-  width: 18rem;
-  background-color: white;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 0.5rem;
-  border: 1px solid #cfc6c5;
+            this.newMessage = '';
+            this.uploadedFiles = [];
+            this.attachment_url = '';
+        }
+    }
 
-  /* Position the tooltip */
-  /*position: absolute;
-  z-index: 10;
-  top: -5px;
-  left: 105%;
-}
+    @api
+    handleResponse(response) {
+        this.showTemplate = response && response.isTemplate;
+    }
 
-.tooltip .tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: white transparent transparent transparent;
-}
+    handleFormSubmit(event) {
+        const formData = event.detail;
+        const newMsg = {
+            id: Date.now(),
+            senderName: 'You',
+            message: 'Form submitted with data: ' + JSON.stringify(formData),
+            class: 'message sent'
+        };
 
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-} */
+        this.dispatchEvent(new CustomEvent('newmessage', {
+            detail: {
+                message: newMsg,
+                history: {
+                    role: "user",
+                    content: [{ type: "form", data: formData }]
+                }
+            }
+        }));
 
+        this.showTemplate = false;
+    }
 
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-}
+    handleVoiceInput() {
+        this.showToast('Info', 'Voice input feature coming soon!', 'info');
+    }
 
-.tooltip .tooltiptext {
-  width: 18rem;
-  background-color: #ededed;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 0.5rem;
-  position: absolute;
-  z-index: 10;
-  top: -440%;
-  left: 110%;
-  border: 1px solid black;
-}
+    showToast(title, message, variant) {
+        this.dispatchEvent(new ShowToastEvent({
+            title,
+            message,
+            variant,
+            mode: 'dismissable'
+        }));
+    }
 
-/* .tooltip .ccBccSec {
-  content: " ";
-  position: absolute;
-  top: 50%;
-  right: 100%;
-  margin-top: -5px;
-  border-width: 5px;
-  border-style: outset;
-  border-color: transparent #ededed transparent transparent;
-} */
-
-.tooltip .tooltiptext::before {
-  content: " ";
-  position: absolute;
-  top: 50%;
-  right: 100%;  /* To the left of the tooltip */
-  margin-top: -5px;
-  border-width: 5px;
-  border-style: outset;
-  border-color: transparent #ededed transparent transparent;
-}
-
-/* .tooltip:hover .tooltiptext {
-  visibility: visible;
-} */
-
-.ccBccInputSecOriginal {
-  text-align:start;
-  font-weight:bold;
-  color:black;
-}
-
-/* Chrome, Safari, Edge, Opera ==> To remove up/down OR increment/decrement toggles */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox ==> To remove up/down OR increment/decrement toggles */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-.custom-textarea {
-  --sds-c-textarea-sizing-min-height:12rem;
-  width:20rem;
-}
-
-.invoiceItemtextarea {
-  --sds-c-textarea-sizing-min-height:2rem;
-}
-
-.greyed-out {
-  opacity: 0.2; /* Adjust the opacity value as needed */
-  pointer-events: none; /* Optionally, disable interaction with the component */
-}
-
-.columnRightStyling{
-  width:20rem;
-  font-size:1rem;
-  border:none;
-  float:right;
-}
-.tdClass{
-  text-align:initial;
-  border-top:none;
-  border-bottom:none;
+    renderedCallback() {
+        const messagesContainer = this.template.querySelector('.chat-messages');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }
 }

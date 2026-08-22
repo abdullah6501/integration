@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Group__c</fullName>
+    <label>Group</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>benefits</fullName>
+                <default>false</default>
+                <label>Benefits Costs</label>
+            </value>
+            <value>
+                <fullName>salary</fullName>
+                <default>false</default>
+                <label>Salary Costs</label>
+            </value>
+            <value>
+                <fullName>Onboarding</fullName>
+                <default>false</default>
+                <label>Onboarding Costs</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other Costs</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

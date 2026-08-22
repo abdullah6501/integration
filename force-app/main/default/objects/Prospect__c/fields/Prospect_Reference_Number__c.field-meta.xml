@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prospect_Reference_Number__c</fullName>
+    <description>This field store Prospect Reference Number.</description>
+    <displayFormat>CB/PRN/{YY}/{0000}</displayFormat>
+    <externalId>false</externalId>
+    <label>Prospect Reference Number</label>
+    <trackTrending>false</trackTrending>
+    <type>AutoNumber</type>
+</CustomField>

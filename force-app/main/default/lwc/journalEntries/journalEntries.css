@@ -1,0 +1,29 @@
+.delete{
+    position: relative;
+    top:15px;
+}
+
+.delete-icon-container {
+    display: flex;
+    /* justify-content: center; */
+    /* align-items: center; */
+    width: 32px;
+    height: 32px;
+    background-color: #ff69b4 !important;
+    border-radius: 9px;
+    margin-left: 12px;
+    margin-top: 5px;
+    position: relative;
+    z-index: 1;
+  }
+   
+  /* Force the icon to maintain its background */
+  .delete-icon-container lightning-button-icon {
+    background-color: #ff69b4 !important;
+    border-radius: 4px;
+  }
+/* 
+.slds-table_bordered, .slds-table--bordered {
+border-collapse: separate;
+border-top: var(--lwc-borderWidthThin, 1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder, rgb(229, 229, 229)));
+} */

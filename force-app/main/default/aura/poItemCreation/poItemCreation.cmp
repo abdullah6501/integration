@@ -1,0 +1,5 @@
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,lightning:actionOverride"
+access="global">
+<c:poItems 
+/> 
+</aura:component>

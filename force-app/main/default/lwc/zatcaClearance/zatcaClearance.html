@@ -1,0 +1,18 @@
+<template>
+    <div class="slds-p-around_medium">
+        <p class="slds-text-heading_small">Are you sure you want to Clearance the invoice?</p>
+        <div class="slds-m-top_medium">
+            <lightning-button
+                variant="brand"
+                label="Sure"
+                onclick={handleConfirm}>
+            </lightning-button>
+            <lightning-button
+                variant="neutral"
+                label="Cancel"
+                onclick={handleCancel}
+                class="slds-m-left_small">
+            </lightning-button>
+        </div>
+    </div>
+</template>

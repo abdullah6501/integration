@@ -1,0 +1,53 @@
+<template>
+    <template if:true={ischatvisible}>
+        <div class="chat-container">
+            <div class="chat-messages">
+                <template for:each={chatmessages} for:item="msg">
+                    <div key={msg.id} class={msg.class}>
+                        {msg.message}
+                    </div>
+                </template>
+
+                <template if:true={chatloading}>
+                    <div class="loading-container">
+                        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                        <div class="loading-text">Replying...</div>
+                    </div>
+                </template>
+            </div>
+            <div class="input-area">
+                <template if:true={uploadedFiles.length}>
+                    <div class="uploaded-files">
+                        <template for:each={uploadedFiles} for:item="file">
+                            <div key={file.documentId} class="file-badge-container">
+                                <lightning-badge label={file.name} class="file-badge"></lightning-badge>
+                                <lightning-button-icon 
+                                    icon-name="utility:close" 
+                                    variant="bare"
+                                    size="small"        
+                                    alternative-text="Remove File" 
+                                    title="Remove File" 
+                                    onclick={removeFile} 
+                                    data-id={file.documentId}
+                                    class="remove-file-button">
+                                </lightning-button-icon>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <div class="input-row">
+                    <lightning-input value={newMessage} onchange={handleInputChange} placeholder="ask your assistant..." variant="label-hidden" class="input-box"></lightning-input>
+
+                    <div class="file-upload-container">
+                        <lightning-button-icon icon-name="utility:attach" alternative-text="Upload File" title="Upload File" class="file-upload-button"></lightning-button-icon>
+                        <lightning-file-upload name="fileUploader" accept=".pdf,.html" label="" title="upload Document" onuploadfinished={handleDocUpload} onclick={checkFileLimit} data-id="hiddenUploader" class="chat-file-content"></lightning-file-upload>
+                    </div>
+
+                    <lightning-button-icon icon-name="utility:send" alternative-text="Send" title="Send" onclick={sendMessage} class="send-button"></lightning-button-icon>
+                </div>
+            </div>
+
+        </div>
+    </template>
+</template>

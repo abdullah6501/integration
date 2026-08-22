@@ -1,4 +1,5 @@
 <template>
+    <div style="background-color: white;">
     <lightning-combobox
         label="Select Chart Type"
         value={chartType}
@@ -14,8 +15,16 @@
         width={width}
         height={height}
         bar-color={color}
-        label-orientation={angle}>
+        label-orientation={angle}
+        comparison-colors={comparisonColors}
+        compare-fields={compareFields} >
     </c-chart-component>
     <br>
     <br>
+</div>
 </template>
+<!-- comparison-colors={comparisonColors}
+        compare-fields={compareFields} 
+        
+        start-date="2025-06-01"
+        end-date="2025-12-01"-->

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Final_Total_Amount__c</fullName>
+    <formula>IF(ISPICKVAL( Discount_Type__c,&apos;Lumpsum Discount&apos; ), Grand_Total_After_Discount__c   +  Tax_Amount__c  ,
+IF(ISPICKVAL( Discount_Type__c,&apos;Line Item Discount&apos; ), Total_Amount_with_Tax__c ,Total_Amount_with_Tax__c))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Final Total Amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>
