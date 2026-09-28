@@ -1,0 +1,20 @@
+<template>
+    <lightning-card title="Integration Logs">
+        <template if:true={hasData}>
+            <lightning-datatable
+                key-field="Integration_Id__c"
+                data={logs}
+                columns={columns}
+                hide-checkbox-column="true">
+            </lightning-datatable>
+        </template>
+
+        <template if:false={hasData}>
+            <p class="slds-p-around_medium">No logs found.</p>
+        </template>
+
+        <template if:true={error}>
+            <p class="slds-text-color_error slds-p-around_medium">{error}</p>
+        </template>
+    </lightning-card>
+</template>

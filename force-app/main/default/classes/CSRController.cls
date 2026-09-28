@@ -65,11 +65,11 @@ public with sharing class CSRController {
             if (parsedJson.containsKey('onbordingCSIDResponse')) {
                 Map<String, Object> onbordingCSIDResponse = (Map<String, Object>) parsedJson.get('onbordingCSIDResponse');
 
-                if (onbordingCSIDResponse.containsKey('complianceCSID')) {
-                    Map<String, Object> complianceCSID = (Map<String, Object>) onbordingCSIDResponse.get('complianceCSID');
+                // if (onbordingCSIDResponse.containsKey('complianceCSID')) {
+                //     Map<String, Object> complianceCSID = (Map<String, Object>) onbordingCSIDResponse.get('complianceCSID');
 
-                    if (complianceCSID.containsKey('productionCSID')) {
-                        Map<String, Object> productionCSID = (Map<String, Object>) complianceCSID.get('productionCSID');
+                    if (onbordingCSIDResponse.containsKey('productionCSID')) {
+                        Map<String, Object> productionCSID = (Map<String, Object>) onbordingCSIDResponse.get('productionCSID');
                         
                         String binarySecurityToken = (String) productionCSID.get('binarySecurityToken');
                         String secret = (String) productionCSID.get('secret');
@@ -89,7 +89,7 @@ public with sharing class CSRController {
                             throw new SecurityException('Insufficient permissions to update CSR_Configuration__c records.');
                         }
                     }
-                }
+                // }
             }
         } catch (Exception e) {
             System.debug('Error processing JSON: ' + e.getMessage());

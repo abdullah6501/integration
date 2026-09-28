@@ -1,0 +1,315 @@
+/* KK 18/Jul/25 UI changes */
+/* Inline Total Amount section styling - matches second image layout */
+/* AAB 25JUL25 delete icon styling */
+/*AP-06AUG25 padding removed: padding: 0.75rem 1rem; */ /* background removed: background-color: #f8f9fa; */
+.grand-total-section-inline {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 0.125rem;
+    position: relative;
+    bottom: 50px;
+    left: 70px;
+    width: 370px;
+    height: 110px;
+}
+
+.grand-total-label-inline {
+    color: #706e6b;
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+.grand-total-value-inline {
+    font-size: 1.625rem;
+    font-weight: 600;
+    color: #032d60;
+    line-height: 1.2;
+}
+
+.words-label-inline {
+    color: #706e6b;
+    font-size: 0.75rem;
+    margin-top: -0.9rem;
+    line-height: 1.1;
+    opacity: 0.8;
+}
+
+/* Separate Total Amount section styling - for backward compatibility */
+.grand-total-section-separate {
+    text-align: right;
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    border: 1px solid #e8eaed;
+    min-height: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.grand-total-label-separate {
+    color: #706e6b;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.grand-total-value-separate {
+    font-size: 1.625rem;
+    font-weight: 600;
+    color: #032d60;
+    line-height: 1.2;
+}
+
+.words-label-separate {
+    color: #706e6b;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    line-height: 1.1;
+    opacity: 0.8;
+}
+
+/* Keep the original compact styles for backward compatibility */
+.grand-total-section-compact {
+    text-align: right;
+    padding: 0.5rem 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    border: 1px solid #e8eaed;
+    margin-top: 0.25rem;
+}
+
+.grand-total-label-compact {
+    color: #706e6b;
+    font-size: 0.875rem;
+    margin-bottom: 0.125rem;
+    font-weight: 500;
+}
+
+.grand-total-value-compact {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #032d60;
+    line-height: 1.2;
+}
+
+.words-label-compact {
+    color: #706e6b;
+    font-size: 0.75rem;
+    margin-top: 0.125rem;
+    line-height: 1.1;
+}
+
+/* Reduce spacing between form rows */
+.slds-m-top_xx-small {
+    margin-top: 0.125rem !important;
+}
+
+/* Ensure consistent form element spacing */
+.slds-form-element {
+    margin-bottom: 0.25rem;
+}
+
+/* Space sno */
+.slds-cell_action-mode {
+    padding: 0.25rem 0.5rem;
+}
+
+.tableStyle {
+    width: 2rem;
+    min-width: 2rem;
+}
+
+.tableStyle.headerColor th,
+.slds-table .headerColor th {
+    background-color: #eff6fc !important;
+}
+
+/* Updated compact control styling to match second image */
+.compact-control-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.compact-label {
+    font-size: 0.85rem;
+    color: #706e6b;
+    font-weight: 500;
+    white-space: nowrap;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.compact-combobox {
+    --sds-c-combobox-sizing-min-height: 1.75rem;
+}
+
+.compact-combobox .slds-combobox__form-element {
+    min-height: 1.75rem;
+}
+
+.compact-combobox .slds-input {
+    height: 1.75rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+}
+
+.compact-combobox .slds-combobox__input {
+    height: 1.75rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.reverse-charge-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.compact-toggle {
+    --sds-c-toggle-sizing-height: 1.25rem;
+    --sds-c-toggle-sizing-width: 2.25rem;
+    position: relative;
+    top: 10px;
+}
+
+.compact-toggle .slds-checkbox_toggle {
+    height: 1.25rem;
+    width: 2.25rem;
+}
+
+.compact-toggle .slds-checkbox_faux {
+    height: 1.25rem;
+    width: 2.25rem;
+    border-radius: 0.75rem;
+}
+
+.compact-toggle .slds-checkbox_faux:after {
+    height: 1rem;
+    width: 1rem;
+    top: 0.125rem;
+    left: 0.125rem;
+    border-radius: 50%;
+}
+
+.compact-toggle .slds-checkbox_toggle[aria-checked="true"] .slds-checkbox_faux:after {
+    left: 1.125rem;
+}
+
+/* Ensure the controls are properly aligned inline */
+.slds-grid_align-end .slds-col.slds-shrink {
+    display: flex;
+    align-items: center;
+}
+
+.createVoucherEntries {
+    position: relative;
+    top: 15px;
+}
+
+.delete-icon-container {
+    background-color: #ff69b4 !important;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    margin-top: 14px;
+    justify-content: center;
+    align-items: center;
+}
+
+.slds-m-left_xx-small{
+    margin-left: 0;
+}
+   
+  /* Prevent SLDS hover from affecting the icon background */
+  /* tr.slds-hint-parent:hover .delete-icon-container {
+    background-color: #ff69b4 !important;
+    pointer-events: none; /* Prevents hover effect on container */
+   
+  /* tr.slds-hint-parent:hover .delete-icon-container lightning-button-icon {
+    background-color: #ff69b4 !important;
+  } */
+  
+   
+  /* tr.slds-hint-parent:hover .delete-icon-container lightning-button-icon {
+    background-color: #ff69b4 !important;
+  } */
+
+  .custom-message-box-wrapper {
+    padding: 1rem;
+    background-color: #f8faff;
+    border: 1px solid #dce3ea;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  }
+  
+.custom-message-box lightning-textarea {
+    --sds-c-textarea-sizing-min-height: 5rem; 
+    --sds-c-textarea-sizing-border-radius: 0.5rem;
+    --sds-c-textarea-color-background: #ffffff;
+    --sds-c-textarea-color-border: #cfd8dc;
+}
+  
+  .createVoucherEntries {
+    position: relative;
+    top: 15px;
+}
+
+.header-cell {
+    background-color: #0a2642 !important;
+    color: #2e2e2e;
+    font-weight: 600;
+}
+
+.custom-header-row th {
+    background-color: #eff6fc !important; /* dark navy */
+    color: #000000 !important;
+    font-weight: 600;
+    /* border: 1px solid #d8dde6; */
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+}
+
+.custom-header-row th .slds-truncate {
+    color: #000000 !important;
+}
+
+/* AP-05AUG25 - total amount section */
+.total-amount-section {
+    display: inline-grid;
+    background-color: #f3f3f3;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 0 1rem;
+    padding: 1.5rem 2rem;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+}
+
+.currency {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #080707;
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #080707;
+    font-family: monospace;
+    min-width: 150px;
+    text-align: right;
+}

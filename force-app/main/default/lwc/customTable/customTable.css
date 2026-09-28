@@ -1,5 +1,125 @@
+/* RT 29JUL25 - Print Style changes */
 .add-record {
   margin-right: 10%;
   margin-top: 10px;
   text-align: right;
+}
+
+.table-container {
+  position: relative;
+  overflow: visible;
+}
+
+/* VD 21May25 row draggable styling changes */
+.draggable-row {
+  cursor: move;
+}
+
+.dots-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2px;
+  width: 12px;
+  margin: auto;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  background-color: #a7a7a7;
+  border-radius: 50%;
+}
+
+.dots-container:hover {
+  background-color: #f3f3f3;
+  border-radius: 4px;
+}
+
+/* Base print styles */
+@media print {
+  /* Hide non-printable elements */
+  .slds-no-print {
+    display: none !important;
+  }
+
+  /* Table container adjustments for print */
+  .table-container {
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  /* Table print optimizations */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  /* Ensure proper page breaks */
+  tr {
+    page-break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tbody {
+    display: table-row-group !important;
+  }
+
+  /* Hide drag handles and action buttons in print */
+  .dots-container,
+  .draggable-row,
+  lightning-icon[icon-name="utility:delete"] {
+    display: none !important;
+  }
+
+  /* Modal and overlay elements should be hidden in print */
+  .slds-modal,
+  .slds-spinner {
+    display: none !important;
+  }
+
+  /* Default print optimizations for all table cells */
+  th,
+  td {
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Default print styles that can be overridden by dynamic CSS */
+  th {
+    font-size: 11px;
+    padding: 4px !important;
+    /* border: 1px solid #000 !important; */
+    background-color: #f8f9fa !important;
+    background: #f8f9fa !important;
+    color: #000 !important;
+    font-weight: bold !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  td {
+    font-size: 10px;
+    padding: 4px !important;
+    /* border: 1px solid #000 !important; */
+    background-color: #fff !important;
+    background: #fff !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Force background colors for all table elements */
+  table * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
 }

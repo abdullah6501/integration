@@ -1,0 +1,172 @@
+<template>
+    <div class="fullscreen-container">
+        <!-- <div class="slds-grid slds-size_1-of-1 slds-text-align_left"> -->
+        <div class="slds-size_1-of-1 slds-text-align_right slds-m-bottom_small slds-box slds-theme_shade">
+            <c-filter-panel project-costing-flag="true" project-actual-flag="true" onfilterchange={handleFilterChange}></c-filter-panel>
+        </div>
+        <lightning-card >
+            <div slot="actions" if:true ={selectedFilter}>
+                <lightning-button label="Add Record" onclick={handleAddOpenModal} variant="brand"></lightning-button>
+            </div>
+            <template if:true={isAddModalOpen}>
+                <section role="dialog" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 class="slds-modal__title">Add New Record</h2>
+                        </header>
+
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <div class="slds-section slds-is-open">
+                                <h3 class="slds-section__title slds-theme_shade slds-p-left_medium">
+                                    <span class="slds-truncate" title="Information">Information</span>
+                                </h3>
+                                <div class="slds-section__content">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-1">
+                                            <!-- Lookup -->
+                                            <c-reusable-lookup if:true={labor} label="Employee Name" selected-icon-name="standard:account" object-label="Employee"
+                                                object-api-name={employeeObjectApiName}
+                                                selected-record-id={newRecord.employeeId}
+                                                field-api-name={employeeFieldApiName}
+                                                other-field-api-name={employeeOtherFieldApiName}
+                                                additional-field-api-name={employeeAdditionalFieldApiName}
+                                                data-field = "employeeId"
+                                                onvalueselected={handleAddInputChange} 
+                                                required>
+                                            </c-reusable-lookup> 
+                                            <c-reusable-lookup if:true={material} label="Product Name" selected-icon-name="standard:account" object-label="Product"
+                                                object-api-name={productObjectApiName}
+                                                selected-record-id={newRecord.productId}
+                                                field-api-name={productFieldApiName}
+                                                other-field-api-name={productOtherFieldApiName}
+                                                additional-field-api-name={productAdditionalFieldApiName}
+                                                data-field="productId"
+                                                onvalueselected={handleAddInputChange} required>
+                                            </c-reusable-lookup> 
+                                            <c-reusable-lookup if:true={equipment} label="Asset Name" selected-icon-name="standard:account" object-label="Asset"
+                                                object-api-name={assetObjectApiName}
+                                                selected-record-id={newRecord.assetId}
+                                                field-api-name={assetFieldApiName}
+                                                other-field-api-name={assetOtherFieldApiName}
+                                                additional-field-api-name={assetAdditionalFieldApiName}
+                                                data-field="assetId"
+                                                onvalueselected={handleAddInputChange} required>
+                                            </c-reusable-lookup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Section -->
+                            <div class="slds-section slds-is-open slds-m-top_medium">
+                                <h3 class="slds-section__title slds-theme_shade slds-p-left_medium">
+                                    <span class="slds-truncate" title="Additional Information">Additional Information</span>
+                                </h3>
+                                <div class="slds-section__content" >
+                                    <div class="slds-grid slds-gutters slds-m-top_small" >
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input type="date" class="validate" label="Start Date" value={newRecord.startDate} data-field="startDate" onchange={handleAddInputChange} required></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input type="date" label="End Date" value={newRecord.endDate} data-field="endDate" onchange={handleAddInputChange}></lightning-input>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-top_small">
+                                        <template if:true={labor}>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <lightning-input type="number" class="validate" label="% of Allocation" value={newRecord.allocationPercentage} data-field="allocationPercentage" onchange={handleAddInputChange} required></lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <div class="slds-p-top_medium">
+                                                    <lightning-input type="checkbox" label="Is Billing" checked={newRecord.isBillable} data-field="isBillable" onchange={handleAddInputChange}></lightning-input>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-top_small" if:true={labor}>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox label="Cost Type" class="validate" value={newRecord.costType} options={laborCostType} data-field="costType" onchange={handleAddInputChange} required></lightning-combobox>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox label="Rate Type" class="validate" value={newRecord.rateType} options={laborRateType} data-field="rateType" onchange={handleAddInputChange} required={newRecord.isBillable}></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-top_small" if:true={equipment}>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox label="Cost Type" class="validate" value={newRecord.costType} options={equipmentCostType} data-field="costType" onchange={handleAddInputChange} required></lightning-combobox>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox label="Rate Type" class="validate" value={newRecord.rateType} options={equipmentRateType} data-field="rateType" onchange={handleAddInputChange} ></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-top_small">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input type="number" label="Cost" class="validate" value={newRecord.amount} data-field="amount" onchange={handleAddInputChange} required></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input type="number" label="Rate" class="validate" value={newRecord.rate} data-field="rate" onchange={handleAddInputChange} required ={newRecord.isBillable}></lightning-input>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-top_small">
+                                        <template if:true={equipment}>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <lightning-input type="number" class="validate" label="% of Allocation" value={newRecord.allocationPercentage} data-field="allocationPercentage" onchange={handleAddInputChange} required></lightning-input>
+                                            </div>
+                                        </template>
+                                        <template if:true={material}>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <lightning-input type="number" class="validate" label="Quantity" value={newRecord.quantity} data-field="quantity" onchange={handleAddInputChange} required></lightning-input>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Cancel" onclick={handleCloseModal}></lightning-button>
+                            <lightning-button label="Save" variant="brand" onclick={handleAddRecord} class="slds-m-left_small"></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+            <div class="slds-size_1-of-1 " if:true={rows}>
+                <c-project-actual-list 
+                    rows={rows} 
+                    filter={selectedFilter} 
+                    onsavecosts={handleSaveCosts}
+                    onrowchange={handleRowChange}
+                    labor-rate-type ={laborRateType}
+                    labor-cost-type ={laborCostType}
+                    equipment-rate-type ={equipmentRateType}
+                    equipment-cost-type ={equipmentCostType}
+                    ondeletecost={handleDeleteCost}>
+                </c-project-actual-list>
+            </div>
+            <template if:true={error}>
+                <div class="slds-text-color_error">{error}</div>
+            </template>
+
+            <!-- Delete Modal -->
+            <template if:true={isDeleteModalOpen}>
+                <section role="dialog" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 class="slds-modal__title">Remove Actuals</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            Are you sure you want to remove "<strong>{deleteRecordName}</strong>"?
+                        </div>
+                        <footer class="slds-modal__footer slds-text-align_center">
+                            <lightning-button label="Cancel" onclick={closeDeleteModal}></lightning-button>
+                            <lightning-button label="Delete" variant="destructive" onclick={confirmDelete} class="slds-m-left_small"></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </lightning-card>
+    </div>
+</template>

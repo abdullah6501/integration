@@ -1,0 +1,106 @@
+.form-group.content-box {
+  background: #ffffff;
+  padding-left: 5px;
+  padding-right: 5px;
+  /* padding: 10px; */
+  /* VD 07DEC23 - removd static book border  */
+  /* border: 1px solid #e8e8e8; */
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.col-lg-6 {
+  width: 100%;
+}
+.question-section {
+  padding-top: 10px;
+}
+.shengel-myt-font3 {
+  padding-bottom: 5px;
+  padding-top: 5px;
+  padding-right: 15px;
+  padding-left: 2px;
+  color: #9a9a9a;
+  font-size: 14px;
+  font-weight: 400;
+}
+.myt-font7 {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.q-hide {
+  display: none;
+}
+/* VD 07DEC23 - replaced to padding-right  */
+.input-align {
+  padding-left: 5px;
+  padding-right: 5px;
+  width: 100%;
+}
+.label-content-min-width {
+  min-width: 100px;
+}
+.input-required {
+  --slds-c-input-color-border: red;
+}
+.ques-icon {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-right: 8px;
+  margin-top: 5px;
+}
+@media (min-width: 1200px) {
+  .col-lg-6 {
+    width: 50% !important;
+  }
+  .form-row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+}
+
+/* VD 16NDEC23 - print media changes for header and footer */
+.display {
+  /* display: none; */
+}
+@media print {
+  .form-row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+
+  .display {
+    display: block;
+  }
+
+  .header-space,
+  thead {
+    height: 0;
+  }
+  @page {
+    margin-top: 10mm;
+    margin-bottom: 0;
+  }
+
+  .header {
+    position: fixed;
+    color: red;
+    top: 0;
+  }
+  .footer {
+    position: fixed;
+    bottom: 0;
+  }
+
+  /* .footer,.footer-space {
+        height: calc(20mm + 34px);
+    }
+    .header,.header-space {
+        height: calc(20mm + 34px);
+    } */
+}

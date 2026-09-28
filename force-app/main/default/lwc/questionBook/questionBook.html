@@ -1,0 +1,298 @@
+<template>
+  <!-- VD 19DEC23 - header changes -->
+  <!-- AP 09DEC24 - key changes -->
+  <table>
+    <thead if:true={bookHead}>
+      <tr>
+        <td><div class="display" style={headerSpaceStyle}>&nbsp;</div></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class={formStyleClass}>
+            <div class="form-row" style={style}>
+              <!-- VD 07DEC23 - added book style-->
+              <div
+                for:each={orginalQuestions}
+                for:item="ques"
+                for:index="i"
+                key={ques.id}
+                class={ques.styleClass}
+              >
+                <!-- // VD 12Jun24 - readonly change-->
+                <!-- MR 23NOV23 Label Handling -->
+                <div
+                  if:false={ques.isHidden}
+                  class={ques.style.labelClass}
+                  style={ques.style.labelStyle}
+                >
+                  <template if:true={ques.errorFlag}>
+                    <span style="color: red"> {ques.errorMessage}</span>
+                  </template>
+                  <!-- VD 07DEC23 - dynamic style changes-->
+                  <!-- SA - updating the label towards input box left to right - 2Dec23 -->
+                  <template if:true={isTitle}>
+                    <h1 class="shengel-myt-font3">{ques.title}</h1>
+                  </template>
+                  <template if:true={ques.style.showLabel}
+                    ><!-- VD 07DEC23 - dynamic style changes-->
+                    <!-- VD 17Jan24 - help text changes-->
+                    <!-- RT 29JUL25 - Added index for print styles -->
+                    <span
+                      class={ques.style.labelValueClass}
+                      style={ques.style.labelValueStyle}
+                      data-question-id={ques.id}
+                      data-print-index={i}
+                      ><div if:true={isQuesNo} style="padding-right: 4px">
+                        {ques.questionNumber}.
+                      </div>
+                      {ques.questionText}
+                      <div if:true={ques.isOptional}>*</div>
+                      <lightning-helptext
+                        style="margin-left: 5px"
+                        if:true={ques.helpText}
+                        content={ques.helpText}
+                      ></lightning-helptext
+                    ></span>
+                  </template>
+                  <div if:true={ques.inputText} class="input-align" style={ques.style.inputAlign}>
+                    <!-- VD 21NOV23 - passed printmode input -->
+                    <!-- VD 24NOV23 - passed record Id to ge the org details -->
+                    <!-- VD 30NOV23 - updated to pageId-->
+                    <!-- RT 27MAY25 - row index for dependent field handling -->
+                    <c-custom-input
+                      value={ques.input}
+                      question={ques}
+                      row-index={i}
+                      print-mode={ques.isPrintMode}
+                      record-id={pageId}
+                      id-value={ques.trackingId}
+                      disabled={ques.isReadOnly}
+                      error={ques.error}
+                      placeholder={ques.question}
+                      oninputchange={childEventCapture}
+                    >
+                    </c-custom-input>
+                  </div>
+                  <div if:true={ques.inputDropdown} class="input-align" style={ques.style.inputAlign}>
+                    <!-- //VD 07Mar25 Dropdown data read and printmode-->
+                    <c-custom-dropdown
+                      options={ques.options}
+                      print-mode={ques.isPrintMode}
+                      record-id={pageId}
+                      selected-value={ques.input}
+                      question={ques}
+                      api-meta={ques.subText}
+                      disabled={ques.isReadOnly}
+                      id={ques.id}
+                      placeholder="---Select---"
+                      error-message={ques.errorMessage}
+                      error={ques.error}
+                      onselectchange={childEventCapture}
+                    >
+                    </c-custom-dropdown>
+                  </div>
+                  <div if:true={ques.textArea} class="input-align" style={ques.style.inputAlign}>
+                    <!-- // VD 29jun24 richText Support-->
+                    <c-custom-text-area
+                      value={ques.input}
+                      is-rich-text={ques.isRichText}
+                      question={ques}
+                      placeholder={ques.question}
+                      errormessage={ques.errorMessage}
+                      error={ques.error}
+                      ontextareachange={childEventCapture}
+                    ></c-custom-text-area>
+                  </div>
+                  <div if:true={ques.inputDate} class="input-align">
+                    <c-custom-date
+                      value={ques.input}
+                      disabled={ques.isReadOnly}
+                      question={ques}
+                      error={ques.error}
+                      placeholder={ques.question}
+                      ondatechange={childEventCapture}
+                    >
+                    </c-custom-date>
+                  </div>
+                  <div if:true={ques.inputDateTime} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-date-time
+                      value={ques.input}
+                      question={ques}
+                      disabled={ques.isReadOnly}
+                      error={ques.error}
+                      placeholder={ques.question}
+                      ondatetimechange={childEventCapture}
+                    >
+                    </c-custom-date-time>
+                  </div>
+                  <!-- AS 13JAN24 - Custom Calendar Changes-->
+                  <div if:true={ques.CustomCalendar} class="input-align" style={ques.style.inputAlign}>
+                    <c-Custom-Calendar
+                      question={ques}
+                      oncalendareventselected={handleCalendarEvent}
+                      ondateselected={handleCalendarDate}
+                      onopenmodal={openCalendarModal}
+                      onclosemodal={closeCalendarModal}
+                      oncalendarchange={childEventCapture}
+                    >
+                    </c-Custom-Calendar>
+                  </div>
+                  <div if:true={ques.inputCheckbox} class="input-align">
+                    <c-custom-checkbox
+                      error={ques.error}
+                      record-id={pageId}
+                      oncheckboxchange={childEventCapture}
+                      options={ques.options}
+                      selected-values={ques.input}
+                    >
+                    </c-custom-checkbox>
+                  </div>
+                  <div if:true={ques.inputAttachment} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-attachment
+                      question={ques}
+                      name={ques.id}
+                      value={ques.input}
+                      onattachmentchange={childEventCapture}
+                    >
+                    </c-custom-attachment>
+                  </div>
+                  <div if:true={ques.customLookup} class="input-align" style={ques.style.inputAlign}>
+                    <!-- VD 16NOV23 - pass the page Id -->
+                    <!-- VD 13FEB handle the clear-->
+                    <!--VD 25Feb25 handle lookup-->
+                    <c-r-custom-lookup
+                      question={ques}
+                      record-id={pageId}
+                      disabled={ques.isReadOnly}
+                      selected-records={ques.input}
+                      onselect={childEventCapture}
+                      onunselect={childEventCapture}
+                      onretrieve={childEventCapture}
+                      onsearchclear={childEventCapture}
+                    >
+                    </c-r-custom-lookup>
+                  </div>
+                  <div if:true={ques.customTable} class="input-align" style={ques.style.inputAlign}>
+                    <!-- VD 16NOV23 - pass the page Id -->
+                    <!-- VD NOV23 - event name update -->
+                    <!-- VD table filter-->
+                    <!--  // VD 05MAR25 table action changes-->
+                    <!-- VD 19Mar25 s.no changes-->
+                    <!-- VD 21May25 row draggable changes -->
+                    <c-custom-table
+                      is-sno={ques.isSno}
+                      is-row-draggable={ques.isRowDraggable}
+                      is-add-row-action={ques.isAddRowAction}
+                      is-delete-row-action={ques.isDeleteRowAction}
+                      question={ques}
+                      record-id={pageId}
+                      filter-query={tableFilterQuery}
+                      print-mode={printMode}
+                      place-holder={ques.placeholder}
+                      ontabledata={childEventCapture}
+                    >
+                    </c-custom-table>
+                  </div>
+                  <div if:true={ques.email} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-email
+                      question={ques}
+                      disabled={ques.isReadOnly}
+                      placeholder={ques.question}
+                      value={ques.input}
+                      onemailchange={childEventCapture}
+                    >
+                    </c-custom-email>
+                  </div>
+                  <div if:true={ques.number} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-number
+                      question={ques}
+                      disabled={ques.isReadOnly}
+                      placeholder={ques.question}
+                      value={ques.input}
+                      onnumberchange={childEventCapture}
+                    >
+                    </c-custom-number>
+                  </div>
+                  <div if:true={ques.multiPickList} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-multi-select
+                      options={ques.options}
+                      selectedvalues={ques.input}
+                      question={ques}
+                      onmultichange={childEventCapture}
+                    >
+                    </c-custom-multi-select>
+                  </div>
+                  <!--VD 17NOV23 - added image and label component -->
+                  <div if:true={ques.image} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-image
+                      alt="My Image"
+                      question={ques}
+                    ></c-custom-image>
+                  </div>
+                  <div if:true={ques.label} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-label
+                      label={ques.questionText}
+                      font-size="16"
+                      text-color="#333"
+                    ></c-custom-label>
+                  </div>
+                  <!-- VD 02FEB24 - radion type added -->
+                  <div if:true={ques.radio} class="input-align" style={ques.style.inputAlign}>
+                    <c-custom-radio
+                      options={ques.options}
+                      selected-value={ques.input}
+                      question={ques}
+                      onradiochange={childEventCapture}
+                    ></c-custom-radio>
+                  </div>
+                  <!-- Text <div if:true={ques.Type__c === 'Text'}>-->
+                  <div if:true={ques.book}>
+                    <div if:true={dataFlag}>
+                      <!-- VD 07DEC23 - removed static variable
+                        onselecteddata={processBookTypeData} -->
+                      <c-question-book
+                        qb-item={ques.qbItem}
+                        questions={ques.questions}
+                        onselecteddata={processBookTypeData}
+                      ></c-question-book>
+                    </div>
+                  </div>
+                  <div if:true={showQuestionEdit} class="ques-icon">
+                    <lightning-button-icon
+                      icon-name="utility:edit"
+                      data-key={ques.key}
+                      onclick={handleEditClick}
+                      alternative-text="Delete"
+                      class="slds-button_icon slds-button"
+                      title="Delete"
+                    ></lightning-button-icon>
+                    <lightning-button-icon
+                      icon-name="utility:delete"
+                      data-key={ques.key}
+                      onclick={handleDeleteClick}
+                      alternative-text="Delete"
+                      class="slds-button_icon slds-button"
+                      title="Edit"
+                    ></lightning-button-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <!-- VD 19DEC23 - footer changes -->
+    <tfoot if:true={bookFoot}>
+      <tr>
+        <td>
+          <div class="display" style={footerSpaceStyle}>
+            <!-- VD 30JAN23 - removed buttons -->
+          </div>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</template>

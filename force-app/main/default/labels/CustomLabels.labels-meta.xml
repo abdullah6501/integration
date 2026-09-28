@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
     <labels>
-        <fullName>USERKEY</fullName>
+        <fullName>ValarHrToken</fullName>
         <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>USERKEY</shortDescription>
-        <value>B78HKG8R</value>
-    </labels>
-    <labels>
-        <fullName>subuserid</fullName>
-        <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>subuserid</shortDescription>
-        <value>thangarasu</value>
+        <protected>false</protected>
+        <shortDescription>ValarHrToken</shortDescription>
+        <value>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOiIyTFBzT2ZyZzgwQ2JDczVxa1giLCJ1c2VyTmFtZSI6ImZtdGNAcmFuZ2VyLmZ1c2lvbiIsInVfaWQiOiI2ODFiMGRkYTdiYWQzZTAyNDM5NDM2MWIiLCJwZXJtaXNzaW9ucyI6WyJTdXBlciBVc2VyIiwiRVNTIFVzZXIiLCJBcHAgVXNlciIsIkNSTSBNYW5hZ2VyIiwiQ1JNIFVzZXIiXSwiZW1wbG95ZWVJZCI6IkUtMDAwMSIsInVzZXJuYW1lIjoiZm10YyBmbXRjIiwiY29tcGFueU5hbWUiOiJmbXRjIiwiaWF0IjoxNzQ3ODA0Nzk0LCJleHAiOjE3NTI5ODg3OTR9.vPBcMTplxSh_5I_18FJawJDAIcEx_Eci9J0VJLFTBeA</value>
     </labels>
 </CustomLabels>

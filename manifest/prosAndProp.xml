@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Proposal_Detail__c.Description__c</members>
+        <members>Proposal_Detail__c.Index__c</members>
+        <members>Proposal_Detail__c.Proposal__c</members>
+        <members>Proposal_Detail__c.Title__c</members>
+        <members>Proposal_Detail__c.Type__c</members>
+        <members>Proposal__c.Account__c</members>
+        <members>Proposal__c.Amount__c</members>
+        <members>Proposal__c.Contact__c</members>
+        <members>Proposal__c.Date__c</members>
+        <members>Proposal__c.Prospect__c</members>
+        <members>Proposal__c.Status__c</members>
+        <members>Proposal__c.Timeline__c</members>
+        <members>Prospect__c.Address__c</members>
+        <members>Prospect__c.Company__c</members>
+        <members>Prospect__c.Date_of_Enquiry__c</members>
+        <members>Prospect__c.Email__c</members>
+        <members>Prospect__c.Enquiry_Reference_Number1__c</members>
+        <members>Prospect__c.Enquiry_Reference_Number__c</members>
+        <members>Prospect__c.Enquiry_Type__c</members>
+        <members>Prospect__c.Estimation_Ref_Number__c</members>
+        <members>Prospect__c.Expected_Amount__c</members>
+        <members>Prospect__c.Expected_Date__c</members>
+        <members>Prospect__c.Notes__c</members>
+        <members>Prospect__c.Offer_Value__c</members>
+        <members>Prospect__c.Project_Reference__c</members>
+        <members>Prospect__c.Quotation_Date_Sent__c</members>
+        <members>Prospect__c.Responsible_staffs__c</members>
+        <members>Prospect__c.Serial_Number__c</members>
+        <members>Prospect__c.Status__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Proposal_Detail__c</members>
+        <members>Proposal__c</members>
+        <members>Prospect__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Proposal_Detail__c.All</members>
+        <members>Proposal__c.All</members>
+        <members>Prospect__c.All</members>
+        <name>ListView</name>
+    </types>
+    <types>
+        <members>Proposal_Detail__c-Proposal Detail Layout</members>
+        <members>Proposal__c-Proposal Layout</members>
+        <members>Prospect__c-Prospect Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Proposal_Record_Page</members>
+        <name>FlexiPage</name>
+    </types>
+    <version>63.0</version>
+</Package>

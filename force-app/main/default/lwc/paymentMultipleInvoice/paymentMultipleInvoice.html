@@ -1,0 +1,61 @@
+<!--AR 29/05/2025 Multiple invoice paymentComponent  -->
+<template>
+    <lightning-card>
+        <template if:true={fullyInvoiced}>
+            <div class="slds-grid slds-grid_align-center slds-m-vertical_medium">
+                <p class="slds-text-heading_small slds-text-color_success">Payment Amount fully invoiced</p>
+            </div>
+        </template>
+        <div class="slds-grid slds-grid_align-spread slds-p-horizontal_medium slds-p-top_small slds-p-bottom_small">
+            <h2 class="slds-text-heading_small">Related Invoices</h2>
+            <span class="slds-text-title_bold" style="color: #0070d2;">
+                Amount in Account: {formattedPaymentAmount}
+            </span>
+        </div>
+
+        <div class="slds-grid slds-wrap slds-text-title_caps slds-p-horizontal_medium slds-m-bottom_x-small slds-border_bottom">
+            <div class="slds-col slds-size_1-of-6"><strong>Invoice Number</strong></div>
+            <div class="slds-col slds-size_1-of-6"><strong>Total Cost</strong></div>
+            <div class="slds-col slds-size_1-of-6"><strong>Paid Cost</strong></div>
+            <div class="slds-col slds-size_1-of-6"><strong>Due Balance</strong></div>
+            <div class="slds-col slds-size_1-of-6"><strong>Last Paid Date</strong></div>
+            <div class="slds-col slds-size_1-of-6"><strong>Payment Amount</strong></div>
+        </div>
+
+        <div class="slds-p-horizontal_medium">
+            <template for:each={invoiceList} for:item="invoice" for:index="index">
+                <div key={invoice.id} class="slds-grid slds-wrap slds-border_bottom slds-p-vertical_x-small">
+                    <div class="slds-col slds-size_1-of-6">{invoice.invoiceNumber}</div>
+                    <div class="slds-col slds-size_1-of-6"> {invoice.totalCost}</div>
+                    <div class="slds-col slds-size_1-of-6"> {invoice.paidCost}</div>
+                    <div class="slds-col slds-size_1-of-6"> {invoice.dueBalance}</div>
+                    <div class="slds-col slds-size_1-of-6">{invoice.lastPaidDate}</div>
+                    <div class="slds-col slds-size_1-of-6">
+                        <lightning-input
+                            type="number"
+                            step="0.01"
+                            variant="label-hidden"
+                            value={invoice.paymentAmount}
+                            data-index={index}
+                            onchange={handlePaymentChange}>
+                        </lightning-input>
+                    </div>
+                </div>
+            </template>
+            <div class="slds-grid slds-grid_align-end slds-m-top_medium">
+                <lightning-button 
+                    label="Cancel" 
+                    onclick={handleCancel} 
+                    class="slds-m-right_small">
+                </lightning-button>
+
+                <lightning-button 
+                    label="Save" 
+                    variant="brand" 
+                    onclick={handleSave}
+                    disabled={isSaveDisabled}>
+                </lightning-button>
+            </div>
+        </div>
+    </lightning-card>
+</template>

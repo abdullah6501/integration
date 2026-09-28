@@ -1,0 +1,47 @@
+/* .chart-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.chart-container {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.chart-container svg {
+    font-family: Arial, sans-serif;
+}
+
+.chart-container .axis {
+    font-size: 12px;
+}
+
+.chart-container .axis path,
+.chart-container .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.chart-container .grid-line {
+    stroke: #e0e0e0;
+    stroke-dasharray: 2,2;
+}
+
+.chart-container .bar:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    white-space: nowrap;
+} */

@@ -1,0 +1,22 @@
+.input-container {
+    position: relative;
+}
+
+.edit-icon {
+    display: none;
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.input-container:hover .edit-icon,
+.input-container:focus-within .edit-icon {
+    display: inline-flex;
+}
+
+/* Make the input padding-right larger to accommodate the icon */
+.payment-input {
+    --slds-c-input-spacing-horizontal-end: 2rem;
+}

@@ -1,0 +1,31 @@
+<template>
+    <lightning-card title="Create Post" class="slds-p-around_medium">
+        <div class="slds-grid slds-wrap slds-gutters">
+            <!-- Message Input -->
+            <div class="slds-col slds-size_1-of-1">
+                <lightning-textarea label="Message" value={message} onchange={handleMessageChange}></lightning-textarea>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="slds-col slds-size_1-of-1">
+                <lightning-file-upload
+                    label="Upload Image"
+                    name="imageUploader"
+                    accept={acceptedFormats}
+                    onuploadfinished={handleUploadFinished}
+                    record-id={recordId}>
+                </lightning-file-upload>
+            </div>
+
+            <!-- Comments Box -->
+            <div class="slds-col slds-size_1-of-1">
+                <lightning-textarea label="Comments" value={comments} onchange={handleCommentsChange}></lightning-textarea>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="slds-m-top_medium slds-align_absolute-center">
+            <lightning-button label="Submit" variant="brand" onclick={handleSubmit}></lightning-button>
+        </div>
+    </lightning-card>
+</template>

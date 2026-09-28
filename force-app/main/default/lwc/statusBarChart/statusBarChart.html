@@ -1,0 +1,152 @@
+<template>     
+    <lightning-card>   
+        <div class="header">
+            <h1>Actual VS Planning</h1>
+            <div class="header-controls">
+                <lightning-combobox
+                    name="viewSelector"
+                    label=""
+                    value={selectedView}
+                    options={viewOptions}
+                    onchange={handleViewChange}>
+                </lightning-combobox>
+                <lightning-button-icon 
+                    icon-name="utility:refresh" 
+                    variant="border-filled" 
+                    alternative-text="Refresh"
+                    title="Refresh"
+                    onclick={handleRefresh}
+                    class="refresh-button">
+                </lightning-button-icon>
+            </div>
+        </div>
+        
+        <template if:true={isIndividualView}>   
+            <div class="grid">             
+                <div class="section">                 
+                    <h3>Labor Costing</h3>                 
+                    <c-chart-component                     
+                        chart-type="horizontal-bar"                     
+                        x-axis="label"                     
+                        y-axis=""                     
+                        width="500"                     
+                        height="200"                     
+                        bar-color="#0070d2"                     
+                        comparison-colors={comparisonColors}                     
+                        compare-fields={compareFields}                     
+                        chart-data={labourData}>                 
+                    </c-chart-component>             
+                </div>             
+                <div class="section">                 
+                    <h3>Equipment's</h3>                 
+                    <c-chart-component                     
+                        chart-type="horizontal-bar"                     
+                        x-axis="label"                     
+                        y-axis=""                     
+                        width="500"                     
+                        height="200"                     
+                        bar-color="#0070d2"                     
+                        comparison-colors={comparisonColors}                     
+                        compare-fields={compareFields}                     
+                        chart-data={equipmentData}>                 
+                    </c-chart-component>             
+                </div>             
+                <div class="section">                 
+                    <h3>Materials Cost</h3>                 
+                    <c-chart-component                     
+                        chart-type="horizontal-bar"                     
+                        x-axis="label"                     
+                        y-axis=""                     
+                        width="500"                     
+                        height="200"                     
+                        bar-color="#0070d2"                     
+                        comparison-colors={comparisonColors}                     
+                        compare-fields={compareFields}                     
+                        chart-data={materialData}>                 
+                    </c-chart-component>             
+                </div>         
+            </div>  
+        </template>
+       
+        <template if:true={isOverallView}>
+            <div class="overall-container">
+                <div class="treemap-section">
+                    <div class="treemap-container">
+                        <div class="treemap-box">
+                            <h3>Planned</h3>
+                            <div class="treemap-chart">
+                                <c-chart-component
+                                    chart-type="treemap"
+                                    x-axis="label"
+                                    y-axis="value"
+                                    width="400"
+                                    height="250"
+                                    chart-data={planningTreemapData}>
+                                </c-chart-component>
+                            </div>
+                        </div>
+        
+                        <div class="treemap-box">
+                            <h3>Actual</h3>
+                            <div class="treemap-chart">
+                                <c-chart-component
+                                    chart-type="treemap"
+                                    x-axis="label"
+                                    y-axis="value"
+                                    width="400"
+                                    height="250"
+                                    chart-data={actualTreemapData}>
+                                </c-chart-component>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="table-section">
+                    <div class="table-container">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Title">Title</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Planned">Planned</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Actual">Actual</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Differ">Differ</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={summaryRows} for:item="row" for:index="index">
+                                    <tr key={row.label} class="slds-hint-parent">
+                                        <td data-label="Title">
+                                            <div class="slds-truncate row-number">
+                                                <span class="row-index">{row.index}</span>
+                                                <span class="row-label">{row.label}</span>
+                                            </div>
+                                        </td>
+                                        <td data-label="Planned">
+                                            <div class="slds-truncate">{row.plannedFormatted}</div>
+                                        </td>
+                                        <td data-label="Actual">
+                                            <div class="slds-truncate">{row.actualFormatted}</div>
+                                        </td>
+                                        <td data-label="Differ">
+                                            <div class="slds-truncate">{row.differenceFormatted}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+    </lightning-card> 
+</template>

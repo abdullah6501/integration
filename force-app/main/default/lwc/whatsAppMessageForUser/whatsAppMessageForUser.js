@@ -3,8 +3,6 @@ import { refreshApex } from '@salesforce/apex';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import sendImageToWhatsApp from '@salesforce/apex/WhatsAppImageSenderController.sendImageToWhatsApp';
-// import sendDocToWhatsApp from '@salesforce/apex/WhatsAppDocSender.sendDocToWhatsApp';
-// import docPreview from '@salesforce/apex/WhatsAppDocSender.docPreview';
 import docPreview from '@salesforce/apex/WhatsAppImageSenderController.docPreview';
 import imagePreview from '@salesforce/apex/WhatsAppImageSenderController.imagePreview';
 import videoPreview from '@salesforce/apex/WhatsAppImageSenderController.videoPreview';
@@ -14,11 +12,10 @@ import getMessagesForPhoneNumber from '@salesforce/apex/WhatsAppOutMessage.getMe
 import getTemplateNames from '@salesforce/apex/WhatsAppTemplateController.getTemplateNames';
 import getTemplateParameters from '@salesforce/apex/WhatsAppTemplateController.getTemplateParameters';
 import sendTemplateMessage from '@salesforce/apex/WhatsAppTemplateController.sendTemplateMessage';
-// import { NavigationMixin } from 'lightning/navigation'; 
 
-// export default class WhatsAppMessageForUser extends NavigationMixin(LightningElement) {
 export default class WhatsAppMessageForUser extends LightningElement {
     @api recordId;
+    @api contactName;
     @track phoneNumber;
     @track messages = [];
     @track messageBody = '';
@@ -40,12 +37,17 @@ export default class WhatsAppMessageForUser extends LightningElement {
     subscription = null;
     wiredMessagesResult;
 
-    renderedCallback() {
-        console.log('before');
-        if (this.messageListUpdated) {
-            this.scrollToLastMessage();
-            this.messageListUpdated = false;
-        }
+    get contactInitials() {
+        if (!this.contactName) return 'WA';
+        return this.contactName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    get hasPendingAttachment() {
+        return !!(this.uploadedImageUrl || this.uploadedVideoUrl || this.uploadedDocUrl);
+    }
+
+    get sendButtonClass() {
+        return (this.messageBody.trim() || this.hasPendingAttachment) ? 'send-button-active' : 'send-button-disabled';
     }
 
     @wire(getPhoneNumberForRecord, { recordId: '$recordId' })
@@ -62,22 +64,27 @@ export default class WhatsAppMessageForUser extends LightningElement {
     wiredMessages(result) {
         this.wiredMessagesResult = result;
         if (result.data) {
-            console.log('result.data : ' + JSON.stringify(result.data));
-            
-            this.messages = result.data.map((message) => ({
-                ...message,
-                CreatedDate: new Date(message.CreatedDate).toLocaleString(),
-                cssClass: message.Sender__c === 'Me' ? 'message message-right' : 'message message-left',
-                isImage: message.Type__c == 'image' && message.File_Show__c ? true : false,
-                isVideo: message.Type__c == 'video' && message.File_Show__c ? true : false,
-                isDocument: message.Type__c == 'document' && message.File_Show__c ? true : false,
-                isText: message.Type__c == 'text' && message.Message_Body__c ? true : false,
-                // documentTitle: message.File_Name__c,
-                // documentId: message.ContentDocumentId,
-            }));
-            console.log('messages : ' + JSON.stringify(this.messages));
+            this.messages = result.data.map((message) => {
+                const dateObj = new Date(message.CreatedDate);
+                const formattedTime = isNaN(dateObj.getTime())
+                    ? message.CreatedDate
+                    : dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            this.messageListUpdated = true;
+                const isMe = message.Sender__c === 'Me';
+
+                return {
+                    ...message,
+                    formattedTime: formattedTime,
+                    cssClass: isMe ? 'message message-right' : 'message message-left',
+                    isMe: isMe,
+                    isImage: message.Type__c === 'image' && message.File_Show__c ? true : false,
+                    isVideo: message.Type__c === 'video' && message.File_Show__c ? true : false,
+                    isDocument: message.Type__c === 'document' && message.File_Show__c ? true : false,
+                    isText: (message.Type__c === 'text' || !message.Type__c) && message.Message_Body__c ? true : false,
+                    fileName: message.File_Name__c || 'Document'
+                };
+            });
+            this.scrollToBottom();
         } else if (result.error) {
             console.error('Error fetching messages:', result.error);
         }
@@ -96,16 +103,21 @@ export default class WhatsAppMessageForUser extends LightningElement {
         }
     }
 
-    scrollToLastMessage() {
-        console.log('enter to scroll');
-        const chatContainer = this.template.querySelector('.chat-messages');
-        if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+    scrollToBottom() {
+        setTimeout(() => {
+            const container = this.template.querySelector('.chat-messages');
+            if (container) {
+                container.scrollTop = container.scrollHeight;
+            }
+        }, 100);
     }
 
     togglePopup() {
         this.showPopup = !this.showPopup;
+    }
+
+    closePopup() {
+        this.showPopup = false;
     }
 
     async handleImageUpload(event) {
@@ -113,29 +125,21 @@ export default class WhatsAppMessageForUser extends LightningElement {
         if (uploadedFiles.length > 0) {
             this.fileId = uploadedFiles[0].documentId;
             this.previewId = uploadedFiles[0].documentId;
-            console.log('file preview id : ' + this.previewId);
-
             const fileExtension = uploadedFiles[0].name.split('.').pop().toLowerCase();
 
             try {
-                if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
-                    const previewUrl = await imagePreview({
-                        previewId: this.previewId,
-                    });
+                if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                    const previewUrl = await imagePreview({ previewId: this.previewId });
                     this.uploadedImageUrl = previewUrl;
                     this.uploadedVideoUrl = null;
-                } else if (['mp4', 'avi', 'mov'].includes(fileExtension)) {
-                    const previewUrl = await videoPreview({
-                        previewId: this.previewId,
-                    });
+                } else if (['mp4', 'avi', 'mov', 'mkv'].includes(fileExtension)) {
+                    const previewUrl = await videoPreview({ previewId: this.previewId });
                     this.uploadedVideoUrl = previewUrl;
                     this.uploadedImageUrl = null;
-                } else {
-                    this.responseMessage = 'Unsupported file type.';
                 }
             } catch (error) {
                 console.error('Error previewing media:', error);
-                this.responseMessage = 'Error previewing media. Please try again.';
+                this.showToast('Error', 'Error previewing media', 'error');
             }
             this.showPopup = false;
         }
@@ -145,19 +149,12 @@ export default class WhatsAppMessageForUser extends LightningElement {
         const uploadedFiles = event.detail.files;
         if (uploadedFiles.length > 0) {
             this.docId = uploadedFiles[0].documentId;
-            console.log('doc id : ' + this.docId);
             try {
-                const previewDocUrl = await docPreview({
-                    docId: this.docId,
-                });
-                console.log('preview doc url : ' + previewDocUrl);
-
+                const previewDocUrl = await docPreview({ docId: this.docId });
                 this.uploadedDocUrl = previewDocUrl;
-                console.log('uploaded doc url : ' + this.uploadedDocUrl);
-
             } catch (error) {
-                console.error('Error sending image:', error);
-                this.responseMessage = 'Error sending image. Please try again.';
+                console.error('Error uploading document:', error);
+                this.showToast('Error', 'Error previewing document', 'error');
             }
             this.showPopup = false;
         }
@@ -179,12 +176,11 @@ export default class WhatsAppMessageForUser extends LightningElement {
     }
 
     handleImageClick(event) {
-        console.log(event);
-        console.log(event.target.dataset.imageUrl);
-
-        const imageUrl = event.target.dataset.imageUrl;
-        this.selectedImage = imageUrl;
-        this.showImageModal = true;
+        const imageUrl = event.currentTarget.dataset.imageUrl;
+        if (imageUrl) {
+            this.selectedImage = imageUrl;
+            this.showImageModal = true;
+        }
     }
 
     closeImageModal() {
@@ -205,7 +201,7 @@ export default class WhatsAppMessageForUser extends LightningElement {
 
     async sendMessage() {
         if (!this.messageBody && !this.fileId && !this.docId) {
-            this.showToast('Error', 'Please enter a message or upload an image/document.', 'warning');
+            this.showToast('Notice', 'Please enter a message or select a file to send', 'warning');
             return;
         }
 
@@ -215,32 +211,33 @@ export default class WhatsAppMessageForUser extends LightningElement {
                 this.fileId = null;
                 this.uploadedImageUrl = null;
                 this.uploadedVideoUrl = null;
-                this.showToast('Success', 'Media Sent Successfully', 'success');
+                this.showToast('Success', 'Media sent successfully', 'success');
             }
 
             if (this.docId) {
                 await sendImageToWhatsApp({ phoneNumber: this.phoneNumber, fileId: this.docId });
                 this.docId = null;
                 this.uploadedDocUrl = null;
-                this.showToast('Success', 'Document Sent Successfully', 'success');
+                this.showToast('Success', 'Document sent successfully', 'success');
             }
 
-            if (this.messageBody) {
+            if (this.messageBody && this.messageBody.trim()) {
                 await sendMessage({ phoneNumber: this.phoneNumber, message: this.messageBody });
                 this.messageBody = '';
-                this.showToast('Success', 'Message Sent Successfully', 'success');
+                this.showToast('Success', 'Message sent successfully', 'success');
             }
-            this.scrollToLastMessage();
 
             await refreshApex(this.wiredMessagesResult);
+            this.scrollToBottom();
         } catch (error) {
-            console.error('Error sending message or image:', error);
-            this.showToast('Failed', 'Message Failed', 'error');
+            console.error('Error sending message:', error);
+            this.showToast('Error', 'Failed to send message', 'error');
         }
     }
 
     openTemplateModal() {
         this.showTemplateModal = true;
+        this.showPopup = false;
     }
 
     closeTemplateModal() {
@@ -253,15 +250,16 @@ export default class WhatsAppMessageForUser extends LightningElement {
         this.templateName = event.target.value;
         const selectedOption = this.templateOptions.find(option => option.value === this.templateName);
         this.language = selectedOption ? selectedOption.language : null;
-        
+    
         try {
             const paramString = await getTemplateParameters({ templateName: this.templateName });
             if (paramString) {
                 const paramArray = paramString.split(',');
-                this.parameters = paramArray.map((param, index) => ({ 
-                    index, 
-                    value: '', 
-                    name: param.trim() 
+                this.parameters = paramArray.map((param, index) => ({
+                    index,
+                    value: '',
+                    name: param.trim(),
+                    type: 'any'
                 }));
             } else {
                 this.parameters = [];
@@ -274,22 +272,32 @@ export default class WhatsAppMessageForUser extends LightningElement {
 
     handleParameterChange(event) {
         const index = event.target.dataset.index;
-        this.parameters[index].value = event.target.value;
+        if (this.parameters[index]) {
+            this.parameters[index].value = event.target.value;
+        }
     }
 
     async sendTemplateMessage() {
+        if (!this.templateName) {
+            this.showToast('Warning', 'Please select a template first', 'warning');
+            return;
+        }
+
         try {
-            const paramValues = this.parameters.map(param => param.value);
+            const bodyParams = this.parameters.map(param => param.value);
+            const buttonParams = this.parameters.map(param => param.value);
             await sendTemplateMessage({
                 phoneNumber: this.phoneNumber,
                 templateName: this.templateName,
                 language: this.language,
-                parameters: paramValues
+                bodyParams: bodyParams,
+                buttonParams: buttonParams
             });
 
             this.showToast('Success', 'Template message sent successfully', 'success');
             this.closeTemplateModal();
             await refreshApex(this.wiredMessagesResult);
+            this.scrollToBottom();
         } catch (error) {
             console.error('Error sending template message:', error);
             this.showToast('Error', 'Failed to send template message', 'error');
@@ -299,16 +307,14 @@ export default class WhatsAppMessageForUser extends LightningElement {
     subscribeToMessages() {
         const channel = '/data/Message__ChangeEvent';
         subscribe(channel, -1, (message) => {
-            console.log('Received change event:', message);
             this.handleCDCEvent(message);
         })
-            .then((response) => {
-                console.log('Subscribed to CDC channel:', response.channel);
-                this.subscription = response;
-            })
-            .catch((error) => {
-                console.error('Error subscribing to CDC:', error);
-            });
+        .then((response) => {
+            this.subscription = response;
+        })
+        .catch((error) => {
+            console.error('Error subscribing to CDC:', error);
+        });
 
         onError((error) => {
             console.error('CDC error:', error);
@@ -322,36 +328,21 @@ export default class WhatsAppMessageForUser extends LightningElement {
 
         if (receiver === this.phoneNumber || sender === this.phoneNumber) {
             refreshApex(this.wiredMessagesResult);
+            this.scrollToBottom();
         }
     }
 
     disconnectedCallback() {
         if (this.subscription) {
-            unsubscribe(this.subscription, (response) => {
-                console.log('Unsubscribed from CDC:', response);
-            });
+            unsubscribe(this.subscription);
         }
     }
 
     showToast(title, message, variant) {
-        const toastEvent = new ShowToastEvent({
+        this.dispatchEvent(new ShowToastEvent({
             title,
             message,
             variant,
-        });
-        this.dispatchEvent(toastEvent);
+        }));
     }
-
-    // previewFile(event) {
-    //     const contentDocumentId = event.currentTarget.dataset.id;
-    //     this[NavigationMixin.Navigate]({
-    //         type: 'standard__namedPage',
-    //         attributes: {
-    //             pageName: 'filePreview'
-    //         },
-    //         state: {
-    //             selectedRecordId: contentDocumentId
-    //         }
-    //     });
-    // }
 }

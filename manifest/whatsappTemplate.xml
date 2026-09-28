@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>WhatsApp_Template__c.Meta_Template_ID__c</members>
+        <members>WhatsApp_Template__c.Parameter_Format__c</members>
+        <members>WhatsApp_Template__c.Parameters__c</members>
+        <members>WhatsApp_Template__c.Status__c</members>
+        <members>WhatsApp_Template__c.Template_Body__c</members>
+        <members>WhatsApp_Template__c.Template_Name__c</members>
+        <members>WhatsApp_Template__c.language__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>WhatsApp_Template__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>WhatsApp_Template__c.All</members>
+        <name>ListView</name>
+    </types>
+    <version>63.0</version>
+</Package>

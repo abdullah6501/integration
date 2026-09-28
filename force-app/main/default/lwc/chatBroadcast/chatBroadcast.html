@@ -1,0 +1,39 @@
+<template>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <lightning-button label="New Chat" variant="brand" onclick={handleNewChat}></lightning-button>
+            <!-- Future chat list can go here -->
+        </div>
+
+        <!-- Right Content -->
+        <div class="main-content">
+            <!-- Top Controls -->
+            <div class="top-bar">
+                <lightning-combobox
+                    name="templateName"
+                    label="Template Name"
+                    value={selectedTemplate}
+                    options={templateOptions}
+                    onchange={handleTemplateChange}>
+                </lightning-combobox>
+
+                <lightning-input
+                    type="file"
+                    label="Upload CSV"
+                    accept=".csv"
+                    onchange={handleFileUpload}>
+                </lightning-input>
+            </div>
+
+            <!-- Data Table -->
+            <template if:true={tableData}>
+                <lightning-datatable
+                    key-field="id"
+                    data={tableData}
+                    columns={tableColumns}>
+                </lightning-datatable>
+            </template>
+        </div>
+    </div>
+</template>

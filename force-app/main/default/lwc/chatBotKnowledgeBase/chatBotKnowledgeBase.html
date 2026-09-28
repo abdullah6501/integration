@@ -1,0 +1,219 @@
+<template>
+    <div class="knowledge-base">
+        <div class="knowledge-header">
+            <lightning-button-icon 
+                icon-name="utility:close" 
+                onclick={closeDialog}
+                variant="bare"
+                size="medium">
+            </lightning-button-icon>
+
+        </div>
+        <div class="knowledge-content">
+            <lightning-tabset active-tab-value={activeTab} onactive={handleTabChange}>
+                <!-- SHARE KNOWLEDGE TAB -->
+                <lightning-tab label="Share Knowledge" value="shareKnowledge">
+                    <div class="tab-body-container">
+                        <template if:true={isLoading}>
+                            <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                        </template>
+                        <div class="dialog-content scrollable-area">
+                            <div class="form-group">
+                                <lightning-combobox
+                                    name="knowledgeType"
+                                    label="Knowledge Type"
+                                    value={knowledgeType}
+                                    placeholder="Select knowledge type"
+                                    options={knowledgeTypeOptions}
+                                    onchange={handleKnowledgeTypeChange}
+                                    variant="label-stacked">
+                                </lightning-combobox>
+                            </div>
+
+                            <template if:true={showManualFields}>
+                                <div class="form-group">
+                                    <lightning-input
+                                        type="text"
+                                        label="Title"
+                                        value={knowledgeTitle}
+                                        onchange={handleKnowledgeTitleChange}
+                                        placeholder="Enter knowledge title"
+                                        variant="label-stacked">
+                                    </lightning-input>
+                                </div>
+                                <div class="form-group">
+                                    <lightning-textarea
+                                        label="Content"
+                                        value={knowledgeContent}
+                                        onchange={handleKnowledgeContentChange}
+                                        placeholder="Enter knowledge content"
+                                        variant="label-stacked"
+                                        rows="4">
+                                    </lightning-textarea>
+                                </div>
+                                <lightning-button label="Add Knowledge" onclick={addKnowledgeItem} class="s-m-top"></lightning-button>
+                            </template>
+
+                            <template if:true={showUrlField}>
+                                <div class="form-group">
+                                    <lightning-input
+                                        type="url"
+                                        label="URL"
+                                        value={knowledgeUrl}
+                                        onchange={handleKnowledgeUrlChange}
+                                        placeholder="Enter knowledge URL"
+                                        variant="label-stacked">
+                                    </lightning-input>
+                                </div>
+                                <lightning-button label="Add URL" onclick={addUrl} class="s-m-top"></lightning-button>
+                            </template>
+
+                            <template if:true={showDocumentField}>
+                                <div class="form-group">
+                                    <lightning-file-upload
+                                        label="Upload Document"
+                                        name="fileUploader"
+                                        accept={acceptedFormats}
+                                        onuploadfinished={handleDocumentUpload}
+                                        multiple>
+                                    </lightning-file-upload>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="dialog-content-display">          
+                            <template if:true={manualDocuments.length}>
+                                <p class="s-m-top"><strong>Knowledge Items:</strong></p>
+                                <ul>
+                                    <template for:each={manualDocuments} for:item="item" for:index="index">
+                                        <li key={item.title} class="item-row">
+                                            <div class="item-content">
+                                                <strong>{item.title}</strong>: <span>{item.content}</span>
+                                                <lightning-button-icon icon-name="utility:close" variant="bare"
+                                                    alternative-text="Remove" onclick={removeKnowledgeItem}
+                                                    data-index={index} size="x-small">
+                                                </lightning-button-icon>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+
+                            <template if:true={urls.length}>
+                                <p class="s-m-top"><strong>URLs:</strong></p>
+                                <ul>
+                                    <template for:each={urls} for:item="url" for:index="index">
+                                        <li key={url}>
+                                            <div class="item-content">
+                                                <div class="content-text">{url}</div>
+                                                <lightning-button-icon icon-name="utility:close" variant="bare"
+                                                    alternative-text="Remove" onclick={removeUrl}
+                                                    data-index={index} size="x-small">
+                                                </lightning-button-icon>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+
+                            <template if:true={fileDocuments.length}>
+                                <p class="s-m-top"><strong>Documents:</strong></p>
+                                <ul>
+                                    <template for:each={fileDocuments} for:item="doc" for:index="index">
+                                        <li key={doc.documentId}>
+                                            <div class="item-content">
+                                                <div class="content-text">{doc.title}</div>
+                                                <lightning-button-icon icon-name="utility:close" variant="bare"
+                                                    alternative-text="Remove" onclick={removeDocument}
+                                                    data-index={index} size="x-small">
+                                                </lightning-button-icon>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                        </div> 
+                        <template if:true={hasDataToSubmit}>
+                            <div class="dialog-footer">
+                                <lightning-button variant="neutral" label="Cancel" onclick={cancelShare}></lightning-button>
+                                <lightning-button variant="brand" label="Submit" onclick={submitData}></lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-tab>
+
+                <!-- KNOWLEDGE BASE TAB -->
+                <lightning-tab label="Knowledge Base" value="browse">
+                    <lightning-card title="Knowledge Browser">
+                            <div class="slds-p-horizontal_medium">
+                                <lightning-input 
+                                    label="Enter Source" 
+                                    value={source} 
+                                    onchange={handleSourceChange} 
+                                    onkeydown={handleKeyDown}>
+                                </lightning-input>
+
+                                <template if:true={isLoading}>
+                                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                                </template>
+                                <template if:true={error}>
+                                    <div class="slds-text-color_error slds-m-top_small">{error}</div>
+                                </template>
+                                <template if:false={error}>
+                                    <template if:true={documentFound}>
+                                        <div class="slds-box slds-m-top_medium">
+                                            <div class="scrollable-content slds-scrollable_y">
+                                                <template if:true={isEditing}>
+                                                    <lightning-textarea 
+                                                        label="Edit Content" 
+                                                        value={content} 
+                                                        onchange={handleContentChange}>
+                                                    </lightning-textarea>
+                                                </template>
+                                                <template if:false={isEditing}>
+                                                    <div class="slds-text-body_regular">
+                                                        <lightning-formatted-text value={content}></lightning-formatted-text>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                            <div class="button-container">
+                                                <template if:true={isEditing}>
+                                                    <lightning-button 
+                                                        label="Save" 
+                                                        variant="brand" 
+                                                        onclick={handleSave} 
+                                                        class="slds-m-right_small">
+                                                    </lightning-button>
+                                                    <lightning-button 
+                                                        label="Cancel" 
+                                                        variant="neutral" 
+                                                        onclick={handleCancel}>
+                                                    </lightning-button>
+                                                </template>
+                                                <template if:false={isEditing}>
+                                                    <lightning-button 
+                                                        label="Edit" 
+                                                        onclick={handleEdit} 
+                                                        class="slds-m-right_small">
+                                                    </lightning-button>
+                                                    <lightning-button 
+                                                        label="Delete" 
+                                                        variant="destructive" 
+                                                        onclick={handleDelete}>
+                                                    </lightning-button>
+                                                </template>
+                                            
+                                            </div>
+
+                                        </div>
+
+                                    </template>
+                                </template>
+                            </div>
+                        </lightning-card>
+                </lightning-tab>
+
+            </lightning-tabset>
+        </div>
+    </div>
+</template>

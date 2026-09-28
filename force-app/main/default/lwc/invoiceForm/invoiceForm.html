@@ -1,946 +1,387 @@
-<!-- AR 17/05/2025 DIscount Logic , Tax amount , Place of supply from metadata,Terms from invoice picklist, default first currency picklist  -->
-<!-- KK 17/05/2025 Invoice Item product lookup , Stock Serial Number tag in line item-->
 <template>
+  <div class="slds-m-around_medium">
+    <!-- Inner box with border and padding -->
+    <div class="slds-box slds-theme_default"
+      style="border: 1px solid #dddbda; border-radius: 0.25rem; padding: 1rem; margin-top: 1rem; width: 100%;">
 
-    <!-- <div>
-      <lightning-file-preview file-content={base64PDF}></lightning-file-preview>
-    </div> -->
-    <!-- YourComponent.cmp or YourComponent.html -->
-  
- 
-    <lightning-card title="Invoice Creation Form">
-      
-        <lightning-button class="slds-var-p-around_x-small" style="text-align:center;float:right;margin-top: -70px;margin-right: 15px" label="X" onclick={closeAction}></lightning-button>
+      <div if:false={spinnerFlag} class="slds-is-relative">
+        <lightning-spinner alternative-text="Loading..." variant="brand">
+        </lightning-spinner>
+      </div>
 
-        <!-- <div class="slds-m-around_medium">
-            <lightning-input type="search" label="AccountName" value={searchText} onkeyup={updateSearchText}></lightning-input>
-            <lightning-button label="Search" onclick={fetchAccountListFromDB}></lightning-button>
-        </div>
-        <template if:true={showResult}>
-            <lightning-datatable key-field="Id" data={resultantAccList} columns ={cols}></lightning-datatable>
-        </template> -->
-
-        
-
-        <div if:true={spinnerFlag} style="margin-top:3rem;" class={mainFrameClass}>
-          <lightning-layout>
-            <lightning-layout-item padding="around-small" size="7"> 
-              <lightning-layout>
-                <lightning-layout-item padding="around-small" size="3"> 
-                  <c-reusable-lookup if:false={parentAccountSelectedRecord.id} label="Parent Account" selected-icon-name="standard:account" object-label="Account"
-                    object-api-name="Account" field-api-name="Name" other-field-api-name="BillingStreet"
-                    additional-field-api-name="Preferred_Currency_Code__c"
-                    onvalueselected={handleValueSelectedOnAccount} onvalueremoval={handleAccValRemoval}>
-                  </c-reusable-lookup>
-                  <c-reusable-lookup if:true={parentAccountSelectedRecord.id} label="Parent Account" selected-icon-name="standard:account" object-label="Account"
-                    object-api-name="Account" field-api-name="Name" other-field-api-name="BillingStreet"
-                    additional-field-api-name="Preferred_Currency_Code__c"
-                    selected-record-id={parentAccountSelectedRecord.id}
-                    disable-flag={formDisableFlag} 
-                    onvalueselected={handleValueSelectedOnAccount} onvalueremoval={handleAccValRemoval}>
-                  </c-reusable-lookup>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="3"> 
-                  <c-reusable-lookup if:false={parentContactSelectedRecord.id} label="Parent Contact" selected-icon-name="standard:contact" object-label="Contact"
-                    object-api-name="Contact" field-api-name="Name" parent-record-id={parentAccountSelectedRecord.id} 
-                    parent-field-api-name="AccountId" other-field-api-name="Email"
-                    additional-field-api-name="Gender__c"
-                    onvalueselected={handleValueSelectedOnContact} onvalueremoval={handleConValRemoval}>
-                  </c-reusable-lookup> 
-                  <c-reusable-lookup if:true={parentContactSelectedRecord.id} label="Parent Contact" selected-icon-name="standard:contact" object-label="Contact"
-                    object-api-name="Contact" field-api-name="Name" parent-record-id={parentAccountSelectedRecord.id} 
-                    parent-field-api-name="AccountId" other-field-api-name="Email"
-                    additional-field-api-name="Gender__c"
-                    disable-flag={formDisableFlag} 
-                    selected-record-id={parentContactSelectedRecord.id}
-                    onvalueselected={handleValueSelectedOnContact} onvalueremoval={handleConValRemoval}>
-                  </c-reusable-lookup>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="4">
-                  <lightning-input type="email" label="Primary Contact EmailAddress" value={primaryContactEmail} 
-                   onchange={updateContactEmailList} disabled={formDisableFlag} 
-                   multiple>
-                  <!-- placeholder="Email (Separate emails with a comma)" onchange={updateContactEmailList}>     -->
-                  </lightning-input>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="2">
-                  <!-- <div style="cursor:pointer;color:#3568a3;" onclick={ccBccSecOnClick}>Cc/Bcc</div> -->
-                  <div class="tooltip">
-                    <span style="cursor:pointer;color:#3568a3;" onclick={ccBccSecOnClick}>Cc({ccListLength})/Bcc({bccListLength})</span>
-                    <span if:true={showCcBccSec} class="tooltiptext">
-                      <!-- <div style="cursor:pointer;font-size:x-large;color:black;text-align:end;width:auto;" onclick={ccBccSecOnClose}>&times;</div> -->
-                      <lightning-input class="ccBccInputSecOriginal" type="email" label="Cc" value={ccEmailAddressesStr} 
-                      onchange={ccOnChange} disabled={formDisableFlag} multiple>
-                      <!-- placeholder="Email (Separate emails with a comma)" onchange={ccOnChange}>     -->
-                      </lightning-input>
-                      <lightning-input class="ccBccInputSecOriginal" style="margin-bottom:0.5rem;" type="email" label="Bcc" value={bccEmailAddressesStr} 
-                      onchange={bccOnChange}  disabled={formDisableFlag} multiple>
-                    </lightning-input>
-
-                      <lightning-input style="display:none;" class="ccBccInputSec" type="email" label="Cc" 
-                      value={tempCcEmailAddressesStr} multiple>
-                      </lightning-input>
-                      <lightning-input style="display:none;" class="ccBccInputSec" type="email" label="Bcc" 
-                      value={tempBccEmailAddressesStr} multiple>
-                      </lightning-input>
-
-                      <button  disabled={formDisableFlag} style="margin-top:1rem;margin-bottom:1rem;" class="slds-button" onclick={ccBccSecCancel}>Cancel</button>
-                      <button  disabled={formDisableFlag} style="margin-top:1rem;margin-bottom:1rem;" class="slds-button" onclick={ccBccSecDone}>Done</button>
-                    </span>
-                  </div>
-                </lightning-layout-item>
-                <!-- <div style="padding-left:2rem;padding-top:5rem;position:relative">
-                  <button class="slds-button" aria-describedby="help" aria-disabled="true">Help Text</button>
-                  <div class="slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-slide-from-right-to-left" role="tooltip" id="help" style="position:absolute;top:-4px;left:35px">
-                    <div class="slds-popover__body">Sit nulla est ex deserunt exercitation anim occaecat. Nostrud ullamco deserunt aute id consequat veniam incididunt duis in sint irure nisi.</div>
-                  </div>
-                </div> -->
-              </lightning-layout>
-              <lightning-layout multiple-rows>
-                <!-- Currency -->
-                <lightning-layout-item size="4" padding="horizontal-small">
-                    <lightning-combobox
-                        name="currency"
-                        label="Currency"
-                        value={selectedCurrency}
-                        options={currencyoptions}
-                        onchange={handleCurrencyChange}>
-                    </lightning-combobox>
-                </lightning-layout-item>
-            
-                <!-- Exchange Rate -->
-                <lightning-layout-item size="4" padding="horizontal-small">
-                    <lightning-input 
-                        type="text" 
-                        label="Exchange Rate" 
-                        value={exchangeRate}
-                        onchange={handleExchangeRateChange}>
-                    </lightning-input>
-                </lightning-layout-item>
-            </lightning-layout>
-
-            <!-- for zatca -->
-            <lightning-layout multiple-rows>
-              <lightning-layout-item padding="horizontal-small" size="3">
-                <lightning-combobox name="Invoice Name Type" label="Invoice Name Type" value={invoiceNameType}
-                options={invoiceNametypeList} onchange={handleInvNameTypeChange} disabled={formDisableFlag}>
-                </lightning-combobox>
-              </lightning-layout-item>
-              <lightning-layout-item padding="horizontal-small" size="3">
-                  <lightning-combobox name="Invoice Type" label="Invoice Type" value={invoiceType}
-                  options={invoicetypeList} onchange={handleInvTypeChange} disabled={formDisableFlag}>
-                  </lightning-combobox> 
-              </lightning-layout-item>
-              <lightning-layout-item padding="horizontal-small" size="3">
-                <lightning-combobox name="Invoice Indicator" label="Invoice Indicator" value={invoiceIndicator}
-                options={invoiceIndicatorOptions} onchange={handleIndicatorChange} disabled={formDisableFlag}>
-                </lightning-combobox> 
-              </lightning-layout-item>
-            <!-- <lightning-layout-item padding="horizontal-small" size="9">
-              <label class="slds-form-element__label">Invoice Indicator</label>
-              <div class="slds-form-element__control">
-                  <div class="slds-radio_button-group">
-                    <span class="slds-button slds-radio_button">
-                      <input type="radio" name="indicator" id="third-party" value="third-party" onchange={handleIndicatorChange} disabled={formDisableFlag}/>
-                      <label class="slds-radio_button__label" for="third-party">
-                      <span class="slds-radio_faux">Third Party</span>
-                      </label>
-                    </span>
-                    <span class="slds-button slds-radio_button">
-                      <input type="radio" name="indicator" id="nominal" value="nominal" onchange={handleIndicatorChange} disabled={formDisableFlag}/>
-                      <label class="slds-radio_button__label" for="nominal">
-                      <span class="slds-radio_faux">Nominal</span>
-                      </label>
-                    </span>
-                    <span class="slds-button slds-radio_button">
-                      <input type="radio" name="indicator" id="export" value="export" onchange={handleIndicatorChange}/>
-                      <label class="slds-radio_button__label" for="export">
-                      <span class="slds-radio_faux">Export</span>
-                      </label>
-                    </span>
-                    <span class="slds-button slds-radio_button">
-                      <input type="radio" name="indicator" id="summary" value="summary" onchange={handleIndicatorChange}/>
-                      <label class="slds-radio_button__label" for="summary">
-                      <span class="slds-radio_faux">Summary</span>
-                      </label>
-                    </span>
-                    <span class="slds-button slds-radio_button">
-                      <input type="radio" name="indicator" id="self-billed" value="self-billed" onchange={handleIndicatorChange}/>
-                      <label class="slds-radio_button__label" for="self-billed">
-                      <span class="slds-radio_faux">Self Billed</span>
-                      </label>
-                    </span>
-                  </div>
-                </div>
-              </lightning-layout-item> -->
-              <lightning-layout-item if:true={showDeliveryDate} padding="around-small" size="3">
-                <lightning-input type="date" label="Latest Delivery Date" value={latestDeliveryDate} 
-                disabled={formDisableFlag} onchange={latestDeliveryDateChange}></lightning-input>
-              </lightning-layout-item>
-          </lightning-layout>
-            
-              <lightning-layout>
-                <lightning-layout-item padding="around-small" size="3">
-                  <lightning-textarea type="text" label="Billing Addresses" value={billingAddress} 
-                  onchange={updateBillingAddress} disabled={formDisableFlag}>
-                      <!-- placeholder="Billing Addresses" onchange={updateContactEmailList}>     -->
-                  </lightning-textarea>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="3">
-                  <lightning-combobox name="Terms" label="Terms"
-                  options={termsOptions} onchange={handleTermsChange} value={chosenTerm} disabled={formDisableFlag}></lightning-combobox>
-                   <!-- placeholder="Terms" -->
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="3">
-                  <lightning-input type="date" label="Invoice Date" value={invoiceDate} 
-                  disabled={formDisableFlag} onchange={invoiceDateChange}></lightning-input>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="3">
-                  <lightning-input type="date" label="Due Date" value={dueDate} disabled></lightning-input>
-                </lightning-layout-item>
-              </lightning-layout>
-              <lightning-layout>
-                <lightning-layout-item padding="around-small" size="3">
-                  <!-- <template if:true={listOfCountries.data}>
-                    <lightning-combobox name="Place Of Supply" label="Place Of Supply" value={selectedCountry}
-                        options={listOfCountries.data.values} onchange={handleCountryChange}  disabled={formDisableFlag}>
-                    </lightning-combobox>
-                  </template> -->
-                  <!-- <template if:true={selectedCountry}>
-                  <lightning-input type="text" label="Place of Supply" value={selectedCountry} disabled></lightning-input></template> -->
-                  <!-- <template if:false={selectedCountry}> -->
-                  <lightning-combobox
-                      name="Place of Supply"
-                      label="Place of Supply"
-                      value={selectedCountry}
-                      options={supplyOption}
-                      onchange={handleCountryChange} >
-                  </lightning-combobox>
-                <!-- </template> -->
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="3">
-                  <!--<template if:true={autComboBoxList}>-->
-                    <lightning-combobox name="Authroized Sign" label="Authroized Sign" value={authroizedSignature}
-                    options={autComboBoxList} onchange={handleAuthChange} disabled={formDisableFlag}>
-                    </lightning-combobox>
-                  <!--</template>-->
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" size="3">
-                  <lightning-input type="text" label="Invoice Number" value={invNumber} disabled></lightning-input>
-                </lightning-layout-item>
-              </lightning-layout>
-              
-               
-             
-             
+      <div style="display: flex; align-items: flex-start; gap: 2rem">
+        <div style="flex: 1">
+          <lightning-layout horizontal-align="start" class="slds-gutters slds-m-bottom_medium">
+            <!-- Parent Account -->
+            <lightning-layout-item size="3" class="slds-p-horizontal_x-small">
+              <c-reusable-lookup if:false={parentAccountSelectedRecord.id} label="Parent Account"
+                selected-icon-name="standard:account" object-label="Account" object-api-name="Account"
+                field-api-name="Name" other-field-api-name="BillingStreet" additional-field-api-name={accOtherFieldApi}
+                onvalueselected={handleValueSelectedOnAccount} onvalueremoval={handleAccValRemoval}>
+              </c-reusable-lookup>
+              <c-reusable-lookup if:true={parentAccountSelectedRecord.id} label="Parent Account"
+                selected-icon-name="standard:account" object-label="Account" object-api-name="Account"
+                field-api-name="Name" other-field-api-name="BillingStreet" additional-field-api-name={accOtherFieldApi}
+                selected-record-id={parentAccountSelectedRecord.id} disable-flag={formDisableFlag}
+                onvalueselected={handleValueSelectedOnAccount} onvalueremoval={handleAccValRemoval}>
+              </c-reusable-lookup>
             </lightning-layout-item>
-            <lightning-layout-item if:true={ready} style="text-align:end;" padding="around-small" size="5">  <!--if:true={showSubTotalSection} if:false={hideBalanceDueSecOnTop}-->
-              <div>
-                BALANCE DUE
-              </div>
-              <div style="font-size:-webkit-xxx-large;font-weight:bold;">
-                {currencyCode} {balanceDue}
-              </div>
+
+            <!-- Parent Contact -->
+            <lightning-layout-item size="3" class="slds-p-horizontal_x-small">
+              <c-reusable-lookup if:false={parentContactSelectedRecord.id} label="Parent Contact"
+                selected-icon-name="standard:contact" object-label="Contact" object-api-name="Contact"
+                field-api-name="Name" parent-record-id={parentAccountSelectedRecord.id}
+                parent-field-api-name="AccountId" other-field-api-name="Email"
+                additional-field-api-name={conAdditionalField} onvalueselected={handleValueSelectedOnContact}
+                onvalueremoval={handleConValRemoval}>
+              </c-reusable-lookup>
+              <c-reusable-lookup if:true={parentContactSelectedRecord.id} label="Parent Contact"
+                selected-icon-name="standard:contact" object-label="Contact" object-api-name="Contact"
+                field-api-name="Name" parent-record-id={parentAccountSelectedRecord.id}
+                parent-field-api-name="AccountId" other-field-api-name="Email"
+                additional-field-api-name={conAdditionalField} disable-flag={formDisableFlag}
+                selected-record-id={parentContactSelectedRecord.id} onvalueselected={handleValueSelectedOnContact}
+                onvalueremoval={handleConValRemoval}>
+              </c-reusable-lookup>
             </lightning-layout-item>
-          </lightning-layout>
 
-            <!-- <template if:true={listOfCountries.data}>
-                <lightning-datatable data={data} columns={columns} key-field="id" onreorder={handleRowReorder}>
-                </lightning-datatable>
-            </template> -->
+            <!-- Primary Contact Email -->
+            <lightning-layout-item size="3" class="slds-p-horizontal_x-small">
+              <lightning-input label="Primary Contact Email" type="email" value={primaryContactEmail}
+                onchange={updateContactEmailList} disabled={formDisableFlag}>
+              </lightning-input>
+            </lightning-layout-item>
 
-          <!-- <div style="height:2rem;margin-top:30px;">
-                <div style="float:left">
-                </div>
-                <div style="float:right;width:25%;">
-                  <span style="float:left;margin-top:1.5%;">Amounts are</span>&nbsp;&nbsp;
-                  <span style="float:right;margin-right:28%;">
-                    <lightning-combobox  disabled={formDisableFlag} name="Amounts are" variant = "label-hidden"
-                      options={parentTaxOptions} onchange={handleParentTaxChange} value={chosenParentTaxOption}>
-                    </lightning-combobox>
-                    placeholder="Amounts are" 
-                  </span>
-                </div>
-            </div> -->
-            <div class="slds-grid slds-gutters" style="margin-top: 30px; align-items: end;">
-    
-              <!-- Discount Mode -->
-              <div class="slds-col slds-size_1-of-6">
-                  <lightning-combobox
-                      name="Discount Mode"
-                      label="Discount Mode"
-                      value={selectedDiscountMode}
-                      options={discountoptions}
-                      onchange={handleDiscountMode}>
-                  </lightning-combobox>
-              </div>
-          
-              <!-- Discount Type -->
-              <div class="slds-col slds-size_1-of-6">
-                  <lightning-combobox
-                      name="Discount Type"
-                      label="Discount Type"
-                      value={selectedDiscountType}
-                      options={discountTypeoptions}
-                      onchange={handleDiscountType}>
-                  </lightning-combobox>
-              </div>
-              <div class="slds-col slds-size_1-of-6">
-                  <div class="slds-form-element">
-                      <label class="slds-form-element__label" for="amountsAre">Amounts are</label>
-                      <div class="slds-form-element__control">
-                          <lightning-combobox
-                              name="Amounts are"
-                              variant="label-hidden"
-                              disabled={formDisableFlag}
-                              options={parentTaxOptions}
-                              onchange={handleParentTaxChange}
-                              value={chosenParentTaxOption}>
-                          </lightning-combobox>
+
+            <lightning-layout-item size="2" class="slds-p-horizontal_x-small">
+              <div class="popup-trigger">
+                <span class="cc-bcc-link" onclick={toggleCcBccPopup}>
+                  Cc({ccListLength})/Bcc({bccListLength})
+                </span>
+
+                <!-- Popup Overlay (Dark Background) -->
+                <template if:true={showCcBccPopup}>
+                  <div class="popup-overlay" onclick={ccBccSecCancel}></div>
+                </template>
+
+                <!-- Centered Popup Content -->
+                <template if:true={showCcBccPopup}>
+                  <div class="popup-center">
+                    <div class="popup-content slds-p-around_medium">
+                      <lightning-input label="Cc" type="email" value={ccEmailAddressesStr} onchange={ccOnChange}
+                        disabled={formDisableFlag}>
+                      </lightning-input>
+                      <lightning-input label="Bcc" type="email" value={bccEmailAddressesStr} onchange={bccOnChange}
+                        disabled={formDisableFlag}>
+                      </lightning-input>
+                      <div class="slds-m-top_medium slds-text-align_right">
+                        <lightning-button disabled={formDisableFlag} label="Cancel" variant="neutral"
+                          onclick={ccBccSecCancel} class="slds-m-right_x-small">
+                        </lightning-button>
+                        <lightning-button disabled={formDisableFlag} label="Done" variant="brand"
+                          onclick={ccBccSecDone}>
+                        </lightning-button>
                       </div>
-                  </div>
-              </div>
-              <div class="slds-col slds-size_1-of-6">
-                <lightning-combobox name="Payment Type" label="Payment Type" value={paymentType}
-                options={paymentList} onchange={handlePaymentListChange} disabled={formDisableFlag}>
-                </lightning-combobox>
-              </div>
-          
-            </div>
-
-            <template if:true={pdtListRenderingFlag}>
-                <div class="slds-grid slds-grid_vertical"  style="margin-top:30px;">
-                  <div>  <!--class="slds-scrollable slds-grow"-->
-                    <div>  <!--class="slds-scrollable_none"-->
-                      <table aria-multiselectable="true" class="slds-table slds-no-row-hover 
-                        slds-table_bordered slds-table_resizable-cols tableStyle" role="grid"> <!--slds-table_fixed-layout-->
-                        <thead>
-                          <tr class="slds-line-height_reset">
-                            <th class="tableStyle" style="width:2.5rem;"></th>
-                            <th class="tableStyle" style="width:2.5rem;">#</th>
-                            <th class="tableStyle">SERVICE DATE</th>
-                            <th class="tableStyle">PRODUCT</th>
-                            <!-- <th class="tableStyle">YOUR PRODUCT/SERVICE</th> -->
-                            <!-- <th class="tableStyle">HSN/SAC</th> -->
-                            <!-- <th class="tableStyle">DESCRIPTION</th> -->
-                            <th class="tableStyle">QTY</th>
-                            <th class="tableStyle">RATE</th>
-                            <th class="tableStyle">AMOUNT ({currencyCode})</th>
-                            <th if:true={showDiscountReason} class="tableStyle">DISCOUNT REASON</th>
-                            <th if:true={showDiscountPercentage} class="tableStyle">Discount %</th>
-                            <th if:true={showDiscountAmount} class="tableStyle">Discount Amt</th>
-                            <th class="tableStyle">TAX Category</th>
-                            <th class="tableStyle">TAX Exemption</th>
-                            <!-- <th if:true={showTaxExemption} style="width: 20px !important" class="tableStyle">TAX Exemption</th> -->
-                            <!-- <th if:true={showTaxExemptionOutsideScope} style="width: 20px !important" class="tableStyle">TAX Exemption</th> -->
-                            <th if:false={hideSubTaxesSection} class="tableStyle">TAX</th>
-                            <th if:false={hideSubTaxesSection} class="tableStyle">TAX Amount</th>
-                            <th class="tableStyle" style="width:4rem;">ACTION</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <template for:each={invoiceItemList} for:item="invItem" for:index="index">
-                            {invItem.Id}
-                            <tr key={invItem.Id} draggable="true" 
-                                ondragstart={start} ondragover={over} ondrop={newDrop} title={index}> 
-                              <td class="tableStyle" role="gridcell">
-                                <div style="padding-top:20px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id1="IconChangeColor" height="11" width="11"><rect width="256" height="256" fill="none"></rect><circle cx="60" cy="92" r="16"></circle><circle cx="128" cy="92" r="16"></circle><circle cx="196" cy="92" r="16"></circle><circle cx="60" cy="164" r="16"></circle><circle cx="128" cy="164" r="16"></circle><circle cx="196" cy="164" r="16"></circle></svg>
-                                </div>
-                              </td>
-                              <td class="tableStyle" role="gridcell">
-                                <div style="padding-top:20px;">
-                                {invItem.key}
-                                <!-- {index} &&& {invItem.key} -->
-                                 </div>
-                              </td>
-                              <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <!-- <input type="text" id={invItem.Id} value={invItem.serviceDate} class="slds-input"/>  -->
-                                    <lightning-input type="date" variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.serviceDate} 
-                                    onchange={onExistingServiceDateChange} disabled={formDisableFlag}>
-                                    </lightning-input>
-                                </div>
-                              </td>
-                              <td class="tableStyle" role="gridcell">
-                                <div class="product-service-cell" style="width:15rem;">
-                                    <!-- <input type="text" value={invItem.pdtId} class="slds-input"/> -->
-                                    <!-- <lightning-input variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.pdtId}></lightning-input> -->
-                                    <!-- <lightning-combobox name="Product/Service Name" variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.pdtId}
-                                      options={pdtComboBoxList} onchange={onExistingPdtOptionChange} disabled={formDisableFlag} class="product-combobox">  -->
-                                      
-                                    <!-- </lightning-combobox> -->
-                                    <c-reusable-lookup selected-icon-name="standard:account" object-label="Product"
-                                      object-api-name="Product__c" field-api-name="Name" other-field-api-name="ProductCode__c"
-                                      additional-field-api-name="Actual_Cost__c"
-                                      selected-record-id={invItem.pdtId}
-                                      disable-flag={formDisableFlag}
-                                      row-id={index}
-                                      label={empty}
-                                      help-text={empty}
-                                      newrecord = {newrecord}
-                                      onvalueselected={handleProductSelected}>
-                                    </c-reusable-lookup>
-                                </div>
-                                <!-- </div> -->
-                                <template if:true={showpdtcolmnfn}>
-                                     <!-- Show search icon ONLY when product is selected -->
-                                    <template if:true={invItem.isSerialProduct}>
-                                        <div class="search-below">
-                                            <lightning-button-icon
-                                                icon-name="utility:search"
-                                                variant="bare"
-                                                alternative-text="Search Serial Number"
-                                                data-index={index}
-                                                onclick={togglePopup}>
-                                            </lightning-button-icon>
-                                        </div>
-                                    </template>
-                                    <!-- Centered popup with blur background -->
-                                    <template if:true={showPopup}>
-                                        <div class="overlay">
-                                            <div class="popup-modal">
-                                                <div class="popup-header">
-                                                    <strong>Select Product Serial Numbers</strong>
-                                                </div>
-
-                                                <!-- Input + Dropdown Container -->
-                                                <div class="input-wrapper">
-                                                    <lightning-input
-                                                        label="Serial Number"
-                                                        value={searchKey}
-                                                        onchange={handleSerialInput}
-                                                        placeholder="Enter serial number"
-                                                        type="search">
-                                                    </lightning-input>
-
-                                                    <!-- Dropdown scrollable list -->
-                                                    <div class="dropdown-container">
-                                                        <template if:true={searchResults.length}>
-                                                            <ul class="search-results">
-                                                                <template for:each={searchResults} for:item="stock">
-                                                                    <li key={stock.Id} class="result-item">
-                                                                        <lightning-input type="checkbox" label={stock.Serial_Number__c} data-id={stock.Id} onchange={handleSelect}></lightning-input>
-                                                                    </li>
-                                                                </template>
-                                                            </ul>
-                                                        </template>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Action Buttons -->
-                                                <div class="popup-buttons">
-                                                    <lightning-button variant="neutral" label="Cancel" onclick={closePopup}></lightning-button>
-                                                    <lightning-button variant="brand" label="Save" onclick={saveSerialNumber}></lightning-button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template if:true={invItem.selectedSerialNumbers}>
-                                        <div class="selected-serials">
-                                            <div class="badge-container">
-                                                <template for:each={invItem.selectedSerialNumbers} for:item="item">
-                                                    <span key={item.value} class="custom-badge">
-                                                        {item.label}
-                                                        <lightning-icon 
-                                                            icon-name="utility:close"
-                                                            size="xx-small"
-                                                            variant="error"
-                                                            alternative-text="Remove"
-                                                            class="remove-icon"
-                                                            data-index={index}
-                                                            data-value={item.value}
-                                                            onclick={deselectSerialNumber}>
-                                                        </lightning-icon>
-                                                    </span>
-                                                </template>
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                </template>
-
-                              </td>
-                              <!-- <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap">
-                                    <input type="text" value={invItem.pdtId} class="slds-input"/>
-                                    <lightning-input if:false={invItem.isKnownPdt} variant="label-hidden" disabled={formDisableFlag}
-                                    data-index={index} data-id={invItem.Id} value={invItem.pdtDraftName} onchange={onExistingPdtNameChange}></lightning-input>
-                                      <lightning-input if:true={invItem.isKnownPdt} disabled variant="label-hidden" 
-                                      data-index={index} data-id={invItem.Id} value={invItem.pdtDraftName}></lightning-input>
-                                </div>
-                              </td> -->
-                              <!-- <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;"> -->
-                                    <!-- <input type="text" value={invItem.hsn} class="slds-input"/> -->
-                                    <!-- <lightning-input variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.hsn} disabled={formDisableFlag}
-                                    onchange={onExistingHsnChange}></lightning-input>
-                                </div>
-                              </td> -->
-
-                              <!-- <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;"> -->
-                                    <!-- <input type="text" value={invItem.description} class="slds-input"/> -->
-                                    <!-- <lightning-input variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.description} disabled={formDisableFlag}
-                                    onchange={onExistingDescChange}></lightning-input> -->
-                                    <!-- <lightning-textarea variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.description} 
-                                      disabled={formDisableFlag} onchange={onExistingDescChange} class="invoiceItemtextarea">
-                                    </lightning-textarea>
-                                </div>
-                              </td> -->
-                              <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <!-- <input type="text" value={invItem.qty} class="slds-input"/> -->
-                                    <lightning-input type="number" step="any" variant="label-hidden" onchange={onExistingPdtQtyChange} data-index={index} data-id={invItem.Id} disabled={formDisableFlag}
-                                    value={invItem.qty}></lightning-input>
-                                </div>
-                              </td>
-                              <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <!-- <input type="text" value={invItem.rate} class="slds-input"/> -->
-                                    <lightning-input type="number" step="any" variant="label-hidden" onchange={onExistingPdtRateChange} data-index={index} data-id={invItem.Id} disabled={formDisableFlag}
-                                    value={invItem.rate}></lightning-input>
-                                </div>
-                              </td>
-                              <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <!-- <input type="text" value={invItem.amt} class="slds-input"/> -->
-                                    <lightning-input disabled variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.amt}></lightning-input>
-                                </div>
-                              </td>
-                              <td if:true={showDiscountReason} class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <lightning-combobox name="Discount Reason" variant="label-hidden" data-index={index} data-id={invItem.Id} 
-                                    value={invItem.discountReason} options={discountReasonOptions} onchange={handleDiscountReasonChange}
-                                    disabled={formDisableFlag}>
-                                    </lightning-combobox>
-                                </div>
-                              </td>
-                              <td if:true={showDiscountPercentage} class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <lightning-input 
-                                        type="number" 
-                                        variant="label-hidden" 
-                                        data-index={index} 
-                                        value={invItem.discountPercentage}
-                                        onchange={handleDiscountPercentageChange}
-                                        disabled={formDisableFlag}>
-                                    </lightning-input>
-                                </div>
-                            </td>
-                            <td if:true={showDiscountAmount} class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <lightning-input 
-                                        type="number" 
-                                        step="0.01" 
-                                        variant="label-hidden" 
-                                        data-index={index} 
-                                        value={invItem.discountAmount}
-                                        onchange={handleDiscountAmountChange}
-                                        disabled={formDisableFlag}>
-                                    </lightning-input>
-                                </div>
-                              </td>
-                              <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <!-- <input type="text" value={invItem.taxCategory} class="slds-input"/> -->
-                                    <lightning-combobox name="Tax Category" variant="label-hidden" data-index={index} data-id={invItem.Id} 
-                                    value={invItem.taxCategory} options={taxCategoryOptions} onchange={handleTaxCategoryChange}
-                                    disabled={formDisableFlag}>
-                                    </lightning-combobox>
-                                </div>
-                              </td>
-                              <td class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <lightning-combobox name="Tax Exemption" variant="label-hidden" data-index={index} data-id={invItem.Id} 
-                                    value={invItem.taxExemption} options={taxExemptionOptions} onchange={handleTaxExemptionChange}
-                                    disabled={formDisableFlag}>
-                                    </lightning-combobox>
-                                </div>
-                              </td>
-                              <!-- <td if:true={showTaxExemptionOutsideScope} class="tableStyle" role="gridcell" style="width: 20px !important">
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <lightning-input variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.taxExemption} disabled={formDisableFlag}
-                                    onchange={handleTaxExemptionChange}></lightning-input>
-                                </div>
-                              </td> -->
-                              <td if:false={hideSubTaxesSection} class="tableStyle" role="gridcell">
-                                <div class="slds-cell-wrap" style="width:10.5rem;padding-top:20px;">
-                                    <!-- <input type="text" value={invItem.tax} class="slds-input"/> -->
-                                    <!-- <lightning-input variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.tax}></lightning-input> -->
-                                    <lightning-combobox data-index={index} data-id={invItem.Id} data-label={invItem.taxLabel} variant = "label-hidden" 
-                                    options={fetchTaxOptions} value={invItem.tax} disabled={formDisableFlag}
-                                    onchange={updateExistingChildTaxInfoMap}>
-                                    </lightning-combobox>
-                                </div>
-                              </td>
-                              <td if:false={hideSubTaxesSection} class="tableStyle" role="gridcell">
-
-                                <div class="slds-cell-wrap" style="padding-top:20px;">
-                                    <lightning-input disabled variant="label-hidden" data-index={index} data-id={invItem.Id} value={invItem.taxAmount}></lightning-input>
-                                </div>
-                              </td>
-                              <td class="tableStyle">
-                                <div style="padding-top:20px;">
-                                <lightning-button-icon disabled={formDisableFlag} icon-name="utility:delete"
-																		  data-id={invItem.Id}   
-                                      data-key={invItem.key}
-                                      data-index={index}        
-                                      data-label={invItem.taxLabel}       
-																		  alternative-text="Delete"     
-																		  class="slds-m-left_xx-small"
-																		  onclick={removeRowNew} 
-																		  title="Delete"></lightning-button-icon>
-                                    </div>
-                              </td>
-                            </tr>
-                          </template>
-
-                          <!--<tr>
-                            <td class="tableStyle" role="gridcell">
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap">
-                                  <input type="date" value={serviceDate} class="slds-input" disabled={formDisableFlag} onchange={handleServiceDateChange}/>
-                              </div>
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap" style="width:15rem;">
-                                  <lightning-combobox disabled={formDisableFlag} name="Product/Service Name" 
-                                    variant="label-hidden" value={pdtId}
-                                    options={pdtComboBoxList} onchange={handlePdtChange}>
-                                  </lightning-combobox>
-
-                              </div>
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap">
-                                  <input disabled={disableFlagForPdtNameSec} type="text" value={pdtDraftName} class="slds-input" 
-                                    onkeyup={handlePdtDraftChange}/>
-                              </div>
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap">
-                                  <input type="text" value={hsn} class="slds-input" disabled={formDisableFlag} onkeyup={handleHsnChange}/>
-                              </div>
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap">
-                                   <lightning-textarea value={description}  disabled={formDisableFlag} 
-                                   onkeyup={handleDescChange} variant="label-hidden" class="invoiceItemtextarea">
-                                  </lightning-textarea>
-                              </div>
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap">
-                                  <input type="number" value={qty} class="slds-input" disabled={formDisableFlag} onkeyup={handleQtyChange}/>
-                              </div>
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap">
-                                  <input type="number" value={rate} class="slds-input" disabled={formDisableFlag} onkeyup={handleRateChange}/>
-                              </div>
-                            </td>
-                            <td class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap">
-                                  <input type="number" value={amt} class="slds-input" onkeyup={handleAmtChange} step=".01" disabled/>
-                              </div>
-                            </td>
-                            <td if:false={hideSubTaxesSection} class="tableStyle" role="gridcell">
-                              <div class="slds-cell-wrap" style="width:10.5rem;">
-                                  <lightning-combobox variant = "label-hidden" disabled={formDisableFlag}
-                                    options={fetchTaxOptions} onchange={handleTaxChange} value={tax}>
-                                  </lightning-combobox>
-                              </div>
-                            </td>
-                            <td class="tableStyle">
-                              <lightning-button-icon disabled={formDisableFlag} icon-name="utility:delete"  
-                                    alternative-text="Delete"     
-                                    class="slds-m-left_xx-small"
-                                    onclick={deleteCurrentRow} 
-                                    title="Delete"></lightning-button-icon>
-                            </td>
-                          </tr>-->
-                        </tbody>
-                      </table>
-                      <div  style="margin-top:2rem;" class="slds-float_left slds-p-bottom_small">
-                        <!-- <lightning-button disabled={disableAddRowButton} label="Add lines" title="Add lines" onclick={addRow}></lightning-button>
-                        <lightning-button label="Clear all lines" title="Clear all lines" onclick={clearAllRows}></lightning-button> -->
-                        <button class="slds-button" disabled={formDisableFlag} onclick={addNewRow}>Add lines</button> <!-- disabled={disableAddRowButton} -->
-                        <button class="slds-button" disabled={disableCalculateSubTotalButton} onclick={clearAllRows}>Clear all lines</button>
-                        <!-- <button class="slds-button" disabled={disableCalculateSubTotalButton} onclick={calculateSubTotal}>Add subtotal</button> -->
-                      </div>
-                      <!-- Replace the existing lumpsum discount section -->
-                      <div class="slds-grid slds-gutters" style="margin-top:2rem; justify-content: flex-end;">
-                        <!-- Lumpsum Discount Reason -->
-                        <div if:true={showLumpsumDiscountReason} class="slds-col slds-size_1-of-6">
-                          <lightning-combobox
-                              name="Lumpsum Discount Reason"
-                              label="Discount Reason"
-                              value={lumpsumDiscountReason}
-                              options={discountReasonOptions}
-                              onchange={handleLumpsumDiscountReasonChange}
-                              disabled={formDisableFlag}>
-                          </lightning-combobox>
-                        </div>
-                        <!-- Lumpsum Discount Percentage Input -->
-                        <div if:true={showLumpsumPercentage} class="slds-col slds-size_1-of-5">
-                            <lightning-input
-                                type="number"
-                                label="Lumpsum Discount %"
-                                value={lumpsumDiscountPercentage}
-                                onchange={handleLumpsumDiscountPercentageChange}
-                                disabled={formDisableFlag}>
-                            </lightning-input>
-                        </div>
-                        
-                        <!-- Lumpsum Discount Amount Input -->
-                        <div if:true={showLumpsumAmount} class="slds-col slds-size_1-of-5">
-                            <lightning-input
-                                type="number"
-                                label="Lumpsum Discount Amount"
-                                value={lumpsumDiscountAmount}
-                                step="0.01"
-                                onchange={handleLumpsumDiscountAmountChange}
-                                disabled={formDisableFlag}>
-                            </lightning-input>
-                        </div>
-
-                        
-                      </div>
-                      <!-- <div if:true={showSubTotalSection} class="slds-float_right slds-p-bottom_small subTotalDiv">
-                        <span style="float:left" class="subTotalSpan">Subtotal</span>
-                        <span style="float:right" class="subTotalSpan">{calculatedSubTotal}</span>
-                      </div> -->
                     </div>
                   </div>
-                </div>
-              </template>
-
-              <!-- <div class="row">
-                <div class="column">
-                  <h2>Message on invoice</h2>
-                  <p>
-                    <textarea label="Message on invoice" name="Message on invoice" rows="7" cols="50">
-                      {msgOnInv}
-                    </textarea>
-                  </p>
-                </div>
-                <div class="column" style="text-align:end;font-size:1.1rem;font-weight:bold;">
-                  <template for:each={finalSubTaxesInfoJson} for:item="subTax" for:index="subTaxIndex">
-                    <span key={subTax.Id}>{subTax.Label}</span>
-                    <span style="padding-left:12rem;" key={subTax.Id}>{subTax.Value}</span>
-                    <br key={subTax.Id}/>
-                  </template>
-                </div>
-              </div> -->
-
-              <div style="margin-top:2rem;" class="row">
-                <div class="column">
-                   <!-- <h2>Message on invoice</h2>
-                  <p>
-                   <textarea onkeyup={msgOnInvOnChange} label="Message on invoice" name="Message on invoice" 
-                      disabled={formDisableFlag} rows="7" cols="50">
-                      {msgOnInv}
-                    </textarea> 
-                  </p>-->
-                  <lightning-textarea class="custom-textarea" onkeyup={msgOnInvOnChange} label="Message on invoice" 
-                    name="Message on invoice" value={msgOnInv} disabled={formDisableFlag}>
-                  </lightning-textarea>
-                </div>
-                
-                <div if:true={showSubTotalSecConditionally} class="column"> <!-- if:true={showSubTotalSection}  -->
-                  <table aria-multiselectable="true" class="slds-table slds-no-row-hover 
-                  slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols columnRightStyling" 
-                  role="grid"> 
-                    <!-- <thead>
-                      <tr class="slds-line-height_reset">
-                        <th></th>
-                        <th></th>
-                      </tr>
-                    </thead> -->
-                    <tbody>
-                      <tr>
-                        <td class="tdClass" role="gridcell">
-                            Amount ({currencyCode})
-                        </td>
-                        <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                            {totalRate}
-                        </td>
-                    </tr>
-                      <tr>
-                        <td class="tdClass" role="gridcell">
-                            Discount ({currencyCode})
-                        </td>
-                        <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                            {totalDiscount}
-                        </td>
-                    </tr>
-                      <tr>
-                        <td class="tdClass" role="gridcell">
-                          Subtotal ({currencyCode})
-                        </td>
-                        <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                          {calculatedSubTotal}
-                        </td>
-                      </tr>
-                      <template if:false={hideSubTaxesSection}>
-                        <tr>
-                          <td class="tdClass" role="gridcell">
-                            Tax Amount
-                          </td>
-                          <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                            {calculatedTaxAmount}
-                          </td>
-                        </tr>
-                      </template>
-                      <!-- <template if:false={hideSubTaxesSection} for:each={finalSubTaxesInfoJson} for:item="subTax" for:index="index">
-                        <tr key={subTax.Id}>
-                          <td class="tdClass" role="gridcell">
-                            {subTax.Label}
-                          </td>
-                          <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                            {subTax.Value}
-                          </td>
-                        </tr>
-                      </template> -->
-                      <tr> <!-- if:true={showGrandTotalSection}-->
-                        <td class="tdClass" role="gridcell">
-                          Total ({currencyCode}) 
-                        </td>
-                        <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                          {grandTotal}
-                        </td>
-                      </tr>
-                      <tr><!-- if:true={showGrandTotalSection}-->
-                        <td class="tdClass" role="gridcell">
-                          Balance due ({currencyCode}) 
-                        </td>
-                        <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                          {balanceDue}
-                        </td>
-                      </tr>
-                      <tr if:true={currencyInWords}>
-                        <td class="tdClass" role="gridcell">
-                          In Words:
-                        </td>
-                        <td style="text-align:end;border-top:none;border-bottom:none;padding-right:0px;" role="gridcell">
-                          {currencyCode} {currencyCodeName} {currencyInWords}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                </template>
               </div>
+            </lightning-layout-item>
+          </lightning-layout>
 
-              <div style="margin-top:2rem;" class="row">
-                <div class="column">
-                  <!-- <h2>Message on statement</h2>
-                  <p>
-                   <textarea onkeyup={msgOnStmtOnChange} label="Message on statement" name="Message on statement" 
-                      disabled={formDisableFlag} rows="7" cols="50">
-                      {msgOnStmt}
-                    </textarea>
-                  </p> -->
-                  <lightning-textarea onkeyup={msgOnStmtOnChange} class="custom-textarea" label="Message on statement" 
-                    name="Message on statement" value={msgOnStmt} disabled={formDisableFlag}>
-                  </lightning-textarea>
-                </div>
-              </div>
+          <lightning-layout horizontal-align="start" class="slds-gutters slds-m-bottom_medium">
+            <!-- Billing Address -->
+            <lightning-layout-item size="3" class="slds-p-horizontal_x-small">
+              <lightning-textarea label="Billing Addresses" value={billingAddress} onchange={updateBillingAddress}
+                disabled={formDisableFlag}>
+              </lightning-textarea>
+            </lightning-layout-item>
+            <!-- Currency -->
+            <lightning-layout-item style="width:15%" class="slds-p-horizontal_x-small">
+              <lightning-combobox label="Currency" name="currency" options={currencyoptions} value={selectedCurrency}
+                onchange={handleCurrencyChange} disabled={formDisableFlag}>
+              </lightning-combobox>
+            </lightning-layout-item>
+            <!-- Terms -->
+            <lightning-layout-item style="width:10%;" class="slds-p-horizontal_x-small">
+              <lightning-combobox label="Terms" name="terms" options={termsOptions} value={chosenTerm}
+                onchange={handleTermsChange} disabled={formDisableFlag}>
+              </lightning-combobox>
+            </lightning-layout-item>
 
-              <div if:true={termsAndCond} style="margin-top:2rem;align-items:end;" class="row">
-                <div class="column">
-                  <lightning-textarea class="custom-textarea" onkeyup={termsAndCondOnChange} label="Terms and Conditions" 
-                    name="Terms and Conditions" value={termsAndCond} disabled={formDisableFlag}>
-                  </lightning-textarea>
-                </div>
-                
-                
-                <!--<div class="column">
-                  <table aria-multiselectable="true" class="slds-table slds-no-row-hover 
-                  slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols columnRightStyling" 
-                  role="grid"> 
-                    <tbody>
-                      <tr>
-                        <td class="tdClass" role="gridcell">
-                          For {companyName}
-                        </td>
-                      </tr>
-                      <tr style="height:3rem;">
-                        <td class="tdClass" role="gridcell">
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td class="tdClass" role="gridcell">
-                          Authorized Signatory
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>-->
-              </div>
-              <lightning-layout multiple-rows>
-                <lightning-layout-item size="1">
-                  <lightning-input type="text" label="Email View Count" value={emailViewData} disabled>
-                </lightning-input>               
-               </lightning-layout-item>
-               
-              </lightning-layout>
 
-              
-              
-              {currencyInWords}
+            <!-- Invoice Date -->
+            <lightning-layout-item size="1.5" class="slds-p-horizontal_x-small">
+              <lightning-input label="Invoice Date" type="date" value={invoiceDate} onchange={invoiceDateChange}
+                disabled={formDisableFlag}>
+              </lightning-input>
+            </lightning-layout-item>
 
-              <div style="height:2rem;margin:1rem;">
-                <button style="text-align:center;float:left;" disabled={formDisableFlag} onclick={saveAction} class="slds-button">Save</button> <!--disabled={disableSaveButton}-->
-                <button style="text-align:center;float:left;" disabled={formDisableFlag} onclick={saveAndSendAction} class="slds-button">Save & Send</button> 
-                
-                <lightning-input style="position: absolute;left: 305px;bottom: 28px;font-weight: bold;" type="checkbox" label="Create Automated Journal Entries" onchange={handleCheckboxChange}></lightning-input>
-                <lightning-button style="position: absolute;right: 190px;bottom: 24px;" variant="brand" label="Validate" onclick={validateAndSave} disabled={isValidateDisabled}></lightning-button>
-                <lightning-button style="position: absolute;right: 290px;bottom: 24px;" variant="brand" label="Clearance" onclick={clearance} disabled={isClearanceDisabled}></lightning-button>
-                
-                <!-- <button class="slds-checkbox" style="text-align:center;float:left;" disabled={formDisableFlag} onclick={saveAndSendAction}>Create Automatic Journal Entries</button> -->
-              <!--  <button if:true={recordId} style="text-align:center;float:right;margin-right: 15px" onclick={viewCountAction} class="slds-button">EmailViewCount</button>-->
-                <!-- <button style="text-align:center;" onclick={openInvRec} class="slds-button">OpenRecord</button>  -->
-                <!--<button if:true={recordId} style="text-align:center;float:right;" disabled={formDisableFlag} onclick={openVisualForcePage} class="slds-button">EmailViewCount</button> -->
-                <button if:true={recordId} style="text-align:center;float:right;" disabled={formDisableFlag} onclick={openVisualForcePage} class="slds-button">Preview Invoice Pdf</button> <!--disabled={disableSaveButton}-->
-                
-              </div>
+            <!-- Due Date (disabled) -->
+            <lightning-layout-item size="1.5" class="slds-p-horizontal_x-small">
+              <lightning-input label="Due Date" type="date" disabled value={dueDate}>
+              </lightning-input>
+            </lightning-layout-item>
+          </lightning-layout>
+
+          <lightning-layout horizontal-align="start" class="slds-gutters slds-m-bottom_medium">
+
+
+
+
+            <!-- Place of Supply -->
+            <lightning-layout-item style="width:13%" class="slds-p-horizontal_x-small">
+              <lightning-combobox label="Place of Supply" name="Place of Supply" options={supplyOption}
+                value={selectedCountry} onchange={handleCountryChange} disabled={formDisableFlag}>
+              </lightning-combobox>
+            </lightning-layout-item>
+
+            <!-- Authorized Sign -->
+            <lightning-layout-item style="width:12%" class="slds-p-horizontal_x-small">
+              <lightning-combobox label="Authorized Sign" name="Authroized Sign" options={autComboBoxList}
+                value={authroizedSignature} onchange={handleAuthChange} disabled={formDisableFlag}>
+              </lightning-combobox>
+            </lightning-layout-item>
+
+            <!-- Invoice Number -->
+            <lightning-layout-item size="1.5" class="slds-p-horizontal_x-small">
+              <lightning-input label="Invoice Number" disabled value={invNumber}>
+              </lightning-input>
+            </lightning-layout-item>
+          </lightning-layout>
         </div>
 
-
-
-        <div class="slds-m-around_large">
-             <div if:false={spinnerFlag} class="slds-is-relative">
-                <lightning-spinner
-                    alternative-text="Loading..." variant="brand">
-                </lightning-spinner>
+        <!-- Right side: Balance Due -->
+        <div style="text-align: right; margin-top: 2rem">
+          <div class="slds-box slds-theme_default" style="background-color: #f3f3f3;
+                    display: inline-grid;  
+                    grid-template-columns: auto auto; 
+                    align-items: center;   
+                    gap: 0 1rem;          
+                    padding: 1.5rem 2rem;
+                    border: 1px solid #dddbda;
+                    border-radius: 0.25rem;">
+            <div class="slds-text-heading_small" style="grid-column: span 2;">BALANCE DUE</div>
+            <div style="font-size: 2.5rem; 
+                       font-weight: bold;
+                       color: #080707;
+                       text-align: right;">
+              {currencyCode}
             </div>
-        </div> 
-
-    <!-- <lightning-icon if:true={vfPageURLToPreview} style="background:dimgrey;margin-top:-59%;position:absolute;margin-left:74%;" icon-name="utility:close"
-                alternative-text="close" onclick={hideModalBox}
-                variant="inverse"
-                size="small"></lightning-icon>
-  
-    <iframe if:true={vfPageURLToPreview} 
-    style="height:50rem;width:50rem;position:absolute;margin-top:-57%;margin-left:25%"
-    src={vfPageURLToPreview}></iframe> -->
-
-    <div style={popupDivStyle}>
-      <div style="height:5%;width:100%;text-align:end;">
-        <lightning-icon if:true={vfPageURLToPreview} style="background:dimgrey;" icon-name="utility:close"
-                alternative-text="close" onclick={hideModalBox}
-                variant="inverse"
-                size="small"></lightning-icon>
+            <div style="font-size: 2.5rem;
+                       font-weight: bold;
+                       color: #080707;
+                       font-family: monospace; 
+                       min-width: 150px;       
+                       text-align: right;">
+              {total}
+            </div>
+          </div>
+        </div>
       </div>
-  
-      <iframe style="height:100%;width:100%" if:true={vfPageURLToPreview} 
-      src={vfPageURLToPreview}></iframe>
+      <!-- Dotted Line Separator -->
+      <div class="slds-m-vertical_medium">
+        <div style="border-bottom: 2px dashed #dddbda; width: 100%;"></div>
+      </div>
+
+      <!-- discount -->
+      <div style="display: flex; justify-content: flex-end; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+        <!-- Amounts are (right-most) -->
+        <div style="order: 1;">
+          <div class="slds-form-element">
+            <label class="slds-form-element__label" for="amountsAre">Amounts are</label>
+            <div class="slds-form-element__control">
+              <lightning-combobox name="Amounts are" variant="label-hidden" options={parentTaxOptions}
+                onchange={handleParentTaxChange} value={chosenParentTaxOption} disabled={formDisableFlag}>
+              </lightning-combobox>
+            </div>
+          </div>
+        </div>
+
+        <!-- Discount fields (middle) -->
+        <template if:true={isDiscountEnabled}>
+          <div style="order: 3; display: flex; gap: 1rem;">
+            <div>
+              <lightning-combobox name="Discount Mode" label="Discount Mode" value={selectedDiscountMode}
+                options={discountoptions} onchange={handleDiscountMode} disabled={formDisableFlag}>
+              </lightning-combobox>
+            </div>
+            <div>
+              <lightning-combobox name="Discount Type" label="Discount Type" value={selectedDiscountType}
+                options={discountTypeoptions} onchange={handleDiscountType} disabled={formDisableFlag}>
+              </lightning-combobox>
+            </div>
+          </div>
+        </template>
+
+        <!-- Toggle (left-most) -->
+        <div style="order: 2;">
+          <div class="slds-form-element">
+            <label class="slds-form-element__label">Discount</label>
+            <div class="slds-form-element__control">
+              <lightning-input type="toggle" checked={isDiscountEnabled} onchange={handleDiscountToggle}
+                variant="label-hidden" class="discount-toggle" disabled={formDisableFlag}>
+              </lightning-input>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Added by Mohamed abdul kadher for dynamic table starts -->
+      <div>
+        <template if:true={isDataLoaded}>
+          <c-table-creator table-field-metadata={tableFieldMetadata} ontabledataupdate={handleTableDataUpdate}
+            formcontroller={formDisableFlag}>
+          </c-table-creator>
+        </template>
+
+        <template if:false={isDataLoaded}>
+          <div class="loading-container">
+            <lightning-spinner alternative-text="Loading table data..." size="medium"></lightning-spinner>
+            <p>Loading table configuration...</p>
+          </div>
+        </template>
+      </div>
+      <!-- Added by Mohamed abdul kadher for dynamic table Ends -->
+      <div class="slds-grid slds-gutters" style="margin-top:2rem; justify-content: flex-end;">
+        <!-- Lumpsum Discount Percentage Input -->
+        <div if:true={showLumpsumPercentage} class="slds-col slds-size_1-of-6">
+          <lightning-input type="number" label="Lumpsum Discount %" value={lumpsumDiscountPercentage}
+            onchange={handleLumpsumDiscountPercentageChange} disabled={formDisableFlag}>
+          </lightning-input>
+        </div>
+
+        <!-- Lumpsum Discount Amount Input -->
+        <div if:true={showLumpsumAmount} class="slds-col slds-size_1-of-6">
+          <lightning-input type="number" label="Lumpsum Discount Amount" value={lumpsumDiscountAmount} step="0.01"
+            onchange={handleLumpsumDiscountAmountChange} disabled={formDisableFlag}>
+          </lightning-input>
+        </div>
+      </div>
+      <div if:true={itemList} class="slds-grid slds-grid_align-end slds-p-around_medium">
+        <div class="slds-col slds-size_2-of-12">
+          <div class="slds-grid slds-grid_vertical">
+            <div class="slds-col">
+              <div class="slds-grid">
+                <div class="slds-col ">
+                  <p class="slds-text-heading_small" style="padding: 4% 0%;">Subtotal({currencyCode}):</p>
+                </div>
+                <div class="slds-col  slds-text-align_right">
+                  <p class="slds-text-heading_small" style="padding: 8% 0%;">{subtotal}</p>
+                </div>
+              </div>
+            </div>
+            <!-- Discoun summary -->
+            <div class="slds-col">
+              <div class="slds-grid">
+                <div class="slds-col ">
+                  <p class="slds-text-heading_small" style="padding: 4% 0%;">Discount({currencyCode}):</p>
+                </div>
+                <div class="slds-col  slds-text-align_right">
+                  <p class="slds-text-heading_small" style="padding: 16% 0%;">{totalDiscount}</p>
+                </div>
+              </div>
+            </div>
+            <!-- Dynamic Tax Details -->
+            <template for:each={uniqueTaxDetails} for:item="tax">
+              <div class="slds-col" key={tax.taxName}>
+                <div class="slds-grid">
+                  <div class="slds-col ">
+                    <p class="slds-text-heading_small" style="padding: 4% 0%;">{tax.taxName}({currencyCode}):</p>
+                  </div>
+                  <div class="slds-col  slds-text-align_right">
+                    <p class="slds-text-heading_small" style="padding: 9% 0%;">{tax.taxAmount}</p>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <div class="slds-col">
+              <div class="slds-grid" style="border-top: 1px solid #dddbda; margin-top: 0.5rem; padding-top: 0.5rem;">
+                <div class="slds-col ">
+                  <p class="slds-text-heading_small"><strong>Total({currencyCode}):</strong></p>
+                </div>
+                <div class="slds-col slds-text-align_right">
+                  <p class="slds-text-heading_small"><strong>{total}</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; margin: 1rem;">
+        <div class="slds-box"
+          style="background-color: #eff6fc; padding: 1rem; margin-top: 1rem; border: 1px solid #d8dde6; border-radius: 0.25rem; width: 100%; ">
+          <div class="slds-grid slds-wrap slds-gutters">
+            <!-- Message on Invoice -->
+            <div class="slds-col slds-size_1-of-3">
+              <lightning-textarea class="custom-textarea" onkeyup={msgOnInvOnChange} label="Message on invoice"
+                name="Message on invoice" value={msgOnInv} disabled={formDisableFlag}>
+              </lightning-textarea>
+            </div>
+
+            <!-- Message on Statement -->
+            <div class="slds-col slds-size_1-of-3">
+              <lightning-textarea class="custom-textarea" onkeyup={msgOnStmtOnChange} label="Message on statement"
+                name="Message on statement" value={msgOnStmt} disabled={formDisableFlag}>
+              </lightning-textarea>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="slds-col slds-size_1-of-3" if:true={termsAndCond}>
+              <lightning-textarea class="custom-textarea" onkeyup={termsAndCondOnChange} label="Terms and Conditions"
+                name="Terms and Conditions" value={termsAndCond} disabled={formDisableFlag}>
+              </lightning-textarea>
+            </div>
+          </div>
+
+          <!-- Bottom row with buttons and checkbox -->
+          <div class="slds-grid slds-align_absolute-center slds-m-top_medium">
+            <div class="slds-col slds-size_4-of-12">
+              <lightning-input type="checkbox" label="Create Automated Journal Entries" onchange={handleCheckboxChange}
+                disabled={formDisableFlag} class="slds-m-right_medium">
+              </lightning-input>
+            </div>
+
+            <div class="slds-col slds-size_4-of-12 slds-text-align_left">
+              <lightning-button label="Save" variant="brand" onclick={saveAction} disabled={saveDisableFlag}
+                class="slds-m-right_x-small">
+              </lightning-button>
+
+              <lightning-button label="Save & Send" variant="brand" onclick={saveAndSendAction}
+                disabled={saveDisableFlag}>
+              </lightning-button>
+            </div>
+
+            <div class="slds-col slds-size_4-of-12 slds-text-align_right" if:true={recordId}>
+              <lightning-button label="Preview Invoice PDF" variant="neutral" onclick={openVisualForcePage}
+                disabled={formDisableFlag}>
+              </lightning-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <div class="slds-m-around_large">
+    <div if:false={spinnerFlag} class="slds-is-relative">
+      <lightning-spinner alternative-text="Loading..." variant="brand">
+      </lightning-spinner>
+    </div>
+  </div>
+
+  <div style={popupDivStyle}>
+    <div style="height:5%;width:100%;text-align:end;">
+      <lightning-icon if:true={vfPageURLToPreview} style="background:dimgrey;" icon-name="utility:close"
+        alternative-text="close" onclick={hideModalBox} variant="inverse" size="small"></lightning-icon>
     </div>
 
-    </lightning-card>
-
+    <iframe style="height:100%;width:100%" if:true={vfPageURLToPreview} src={vfPageURLToPreview}></iframe>
+  </div>
+  <!-- </lightning-card> -->
 </template>

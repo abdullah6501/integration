@@ -1,0 +1,442 @@
+<!-- /* AAB 11/07/2025 UI changes */ -->
+<!-- AR 11/07/2025 Table Config ,visiblity,width -->
+<!-- AB 25JUL25 WIDTH CONTROL -->
+<!-- AAB 22AUG25 Rounding Off Input field and minor UI Changes -->
+<!-- RT 20AUG25 - Total and Tax amount changed to lightning input -->
+<!-- Abdullah V S | 22-Aug-25 | Dynamically sets visibility, read-only, and required flags for fields -->
+<template>
+	<lightning-card>
+		<!-- Header Section -->
+		<div class="slds-grid slds-wrap slds-p-around_medium">
+			<!-- First Row: Bill No, Vendor, Contract, RFQ -->
+			<div class="slds-col slds-size_1-of-1">
+				<div class="slds-grid slds-gutters_small">
+					<div class="slds-col slds-size_1-of-6">
+						<div class="slds-form-element">
+							<lightning-input label="Bill No" placeholder="Bill no" value={billRecord.Name}
+								onchange={handleInputChange} data-id="Name" disabled={isFormDisabled}></lightning-input>
+						</div>
+					</div>
+					<div if:true={vendorRecords.visible} class="slds-col slds-size_1-of-6">
+						<div class="slds-form-element">
+							<c-reusable-lookup label={vendorRecords.label} 
+								selected-icon-name="standard:account"
+								object-label={accountlabel} object-api-name={accountobjectApiName} field-api-name="Name"
+								other-field-api-name={accountotherFieldApiName}
+								additional-field-api-name={accountadditionalFieldApiName}
+								selected-record-id={vendorSelectedRecord.id}
+								onvalueselected={handleValueSelectedOnVendor}
+								required={vendorRecords.required} 
+                          		class={vendorRecords.requiredClass}
+								disable-flag={isFormDisabled}>
+							</c-reusable-lookup>
+						</div>
+					</div>
+					<!-- Abdullah V S | 14-Aug-25 | Contract is removed from this component -->
+					<!-- <div if:true={isContractVisible.visible} class="slds-col slds-size_1-of-6">
+						<div class="slds-form-element">
+							<c-reusable-lookup label={isContractVisible.label} selected-icon-name="standard:contract"
+								object-label={contractlabel} object-api-name={contractobjectApiName}
+								field-api-name="Name" other-field-api-name={contractotherFieldApiName}
+								additional-field-api-name={contractadditionalFieldApiName}
+								selected-record-id={contractSelectedRecord.id}
+								onvalueselected={handleValueSelectedOnContract}
+								disable-flag={isFormDisabled}></c-reusable-lookup>
+						</div>
+					</div> -->
+					<div if:true={isRFQ.visible} class="slds-col slds-size_1-of-6">
+						<div class="slds-form-element">
+							<c-reusable-lookup label={isRFQ.label} selected-icon-name="standard:quotes"
+								object-label={rfqlabel} object-api-name={rfqobjectApiName} field-api-name="Name"
+								other-field-api-name={rfqotherFieldApiName}
+								additional-field-api-name={rfqadditionalFieldApiName}
+								selected-record-id={rfqSelectedRecord.id} onvalueselected={handleValueSelectedOnRFQ}
+								required={isRFQ.required} 
+                          		class={isRFQ.requiredClass}
+								disable-flag={isFormDisabled}></c-reusable-lookup>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Second Row: Bill Date, Due Date, Status, Create Voucher Entries, Total Amount -->
+			<div class="slds-col slds-size_1-of-1 slds-m-top_xx-small">
+				<div class="slds-grid slds-gutters_small">
+					<div class="slds-col slds-size_1-of-6">
+						<div class="slds-form-element">
+							<lightning-input type="date" label="Bill Date" placeholder="DD/MM/YYYY"
+								value={billRecord.billDate} onchange={handleInputChange} data-id="billDate"
+								disabled={isFormDisabled}></lightning-input>
+						</div>
+					</div>
+					<div class="slds-col slds-size_1-of-6">
+						<div class="slds-form-element">
+							<lightning-input type="date" label="Due Date" placeholder="DD/MM/YYYY"
+								value={billRecord.dueDate} onchange={handleInputChange} data-id="dueDate"
+								disabled={isFormDisabled}></lightning-input>
+						</div>
+					</div>
+					<div class="slds-col slds-size_1-of-6">
+						<div class="slds-form-element">
+							<lightning-combobox label="Status" placeholder="Select the type" value={billRecord.status}
+								options={statusOptions} onchange={handleInputChange} data-id="status"
+								disabled={isFormDisabled}></lightning-combobox>
+						</div>
+					</div>
+					<div class="slds-col slds-size_1-of-6">
+						<div if:true={isCreateVoucherEntries.visible}
+							class="slds-form-element slds-p-top_small createVoucherEntries">
+							<lightning-input type="checkbox" label={isCreateVoucherEntries.label}
+								checked={billRecord.createJournalEntry} onchange={handleCheckboxChange}
+								data-id="createJournalEntry" disabled={isFormDisabled}
+								required={isCreateVoucherEntries.required} class={isCreateVoucherEntries.requiredClass}></lightning-input>
+						</div>
+					</div>
+					<!-- Total Amount Section - Now aligned with the form row -->
+					<div class="slds-col slds-size_1-of-6">
+						<div class="grand-total-section-inline">
+							<!-- AP-04AUG25 Right Side Total Section -->
+						<div class="total-amount-section">
+						  <div class="slds-text-heading_small" style="grid-column: span 2;">Total Amount</div>
+					      <!-- AP-05AUG25 {currencyCode} Replace currencyDisplay -->
+						  <div class="currency">{currencyDisplay}</div>
+						  <div class="total-amount">{grandTotal}</div>
+						  <template if:true={amountInWords}>
+							<div style="grid-column: span 2; font-weight: bold;">{amountInWords}</div>
+						  </template>
+						</div>
+						</div>
+					  </div>
+				</div>
+			</div>
+		</div>
+		<!-- Product Details Section with compact controls -->
+		<div class="slds-m-around_medium">
+			<div class="slds-grid slds-gutters_small slds-p-bottom_small">
+				<!-- Left side: Product Details -->
+				<div class="slds-col slds-size_1-of-2">
+					<div class="slds-text-heading_small" style="font-size:20px; font-weight: bold;margin-top: 20px;position: relative;margin-bottom: -4px;">Product Details</div>
+				</div>
+				<!-- Right side: Compact Amounts Are and Reverse Charges -->
+				<div class="slds-col slds-size_1-of-2">
+					<div class="slds-grid slds-gutters_x-small slds-grid_align-end">
+						<!-- Amounts Are Section - Compact -->
+						<div class="slds-col slds-shrink">
+							<div class="compact-control-group">
+								<label class="compact-label">Amounts Are</label>
+								<lightning-combobox name="Amounts are" variant="label-hidden" options={parentTaxOptions}
+									onchange={handleParentTaxChange} value={chosenParentTaxOption}
+									class="compact-combobox" disabled={isFormDisabled}></lightning-combobox>
+							</div>
+						</div>
+						<!-- Reverse Charges Section - Compact -->
+						<div class="slds-col slds-shrink slds-m-left_small">
+							<div class="compact-control-group">
+								<div class="reverse-charge-container">
+									<label class="compact-label">Reverse Charges</label>
+									<lightning-input type="toggle" variant="label-hidden" class="compact-toggle"
+										onchange={handleReverseChargeChange} checked={isReverseChargeActive}
+										disabled={isFormDisabled}></lightning-input>
+								</div>
+							</div>
+						</div>
+						<!--AP-29AUG25 TDS Toggle Button Section -->
+						<div class="slds-col slds-shrink slds-m-left_small">
+							<div class="compact-control-group">
+								<div class="reverse-charge-container">
+									<label class="compact-label">TDS</label>
+									<lightning-input type="toggle" variant="label-hidden" class="compact-toggle"
+										onchange={handleTDS} checked={isTDS}
+										name="tdsToggle"
+										disabled={isFormDisabled}></lightning-input>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Product Detail Table -->
+		<div class="slds-p-top_medium">
+			<table class="slds-table slds-table_bordered custom-header-row">
+				<!--slds-size_12-of-12-->
+				<thead>
+					<tr>
+						<th class="slds-cell_action-mode header-cell" width="50px"></th>
+						<th class="slds-cell_action-mode header-cell" width="50px"></th>
+						<template if:true={isProduct.visible}>
+							<th style={isProductStyle}>
+								<div class="slds-truncate slds-text-align_center">{isProduct.label}</div>
+							</th>
+						</template>
+						<template if:true={isDescription.visible}>
+							<th style={isDescriptionStyle}>
+								<div class="slds-truncate slds-text-align_center">{isDescription.label}</div>
+							</th>
+						</template>
+						<template if:true={isUnitPrice.visible}>
+							<th style={isUnitPriceStyle}>
+								<div class="slds-truncate slds-text-align_center">{isUnitPrice.label}</div>
+							</th>
+						</template>
+						<template if:true={isQuantity.visible}>
+							<th style={isQuantityStyle}>
+								<div class="slds-truncate slds-text-align_center">{isQuantity.label}</div>
+							</th>
+						</template>
+						<template if:true={isSubTotal.visible}>
+							<th style={isSubTotalStyle}>
+								<div class="slds-truncate slds-text-align_center">{isSubTotal.label}</div>
+							</th>
+						</template>
+						<template if:true={isTax.visible}>
+							<th style={isTaxStyle}>
+								<div class="slds-truncate slds-text-align_center">{isTax.label}</div>
+							</th>
+						</template>
+						<template if:true={isTaxAmount.visible}>
+							<th style={isTaxAmountStyle}>
+								<div class="slds-truncate slds-text-align_center">{isTaxAmount.label}</div>
+							</th>
+						</template>
+						<th style="width: 3.25rem"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<template for:each={numberedBillItems} for:item="item" for:index="index">
+						<tr key={item.keyField} class="slds-hint-parent" draggable="true" ondragstart={handleDragStart}
+							ondragover={handleDragOver} ondrop={handleDrop} data-index={index}>
+							<td class="tableStyle slds-cell_action-mode" role="gridcell">
+								<div class="slds-p-top_x-small">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" height="11"
+										width="11">
+										<rect width="256" height="256" fill="none"></rect>
+										<circle cx="60" cy="92" r="16"></circle>
+										<circle cx="128" cy="92" r="16"></circle>
+										<circle cx="196" cy="92" r="16"></circle>
+										<circle cx="60" cy="164" r="16"></circle>
+										<circle cx="128" cy="164" r="16"></circle>
+										<circle cx="196" cy="164" r="16"></circle>
+									</svg>
+								</div>
+							</td>
+							<td class="slds-cell_action-mode">
+								<div class="slds-truncate">{item.lineNumber}</div>
+							</td>
+							<td if:true={isProduct.visible} style={isProductStyle}>
+								<div>
+									<!-- AP-30JUL25 - Show manual input when productId is not selected and user entered item name manually -->
+									<div if:true={item.isBillItemName}>
+										<lightning-input type="Search" 
+											value={item.billItemName} 
+											data-index={index} disabled ={isProduct.readOnly} 
+											required={isProduct.required} class={isProduct.requiredClass}
+											>
+										</lightning-input>
+									</div>
+									<!-- AP-30JUL25 - Show product lookup input when a product is selected -->
+									<div if:false={item.isBillItemName}>
+									<c-reusable-lookup if:true={item.productId} label=""
+										selected-icon-name="standard:product" object-label={productlabel}
+										object-api-name={productobjectApiName}
+										additional-field-api-name={productadditionalFieldApiName} field-api-name="Name"
+										other-field-api-name={productotherFieldApiName} row-id={index}
+										data-index={index} selected-record-id={item.productId}
+										onvalueselected={handleProductSelected} 
+										onchange={handleProductSelected}
+										disable-flag={isFormDisabled}
+										required={isProduct.required} class={isProduct.requiredClass}>
+									</c-reusable-lookup>
+									<c-reusable-lookup if:false={item.productId} label=""
+										selected-icon-name="standard:product" object-label={productlabel}
+										object-api-name={productobjectApiName}
+										additional-field-api-name={productadditionalFieldApiName} field-api-name="Name"
+										other-field-api-name={productotherFieldApiName} row-id={index}
+										data-index={index} selected-record-id={item.productId}
+										onvalueselected={handleProductSelected} 
+										onchange={handleProductSelected}
+										disable-flag={isFormDisabled}
+										required={isProduct.required} class={isProduct.requiredClass}>
+									</c-reusable-lookup>
+									</div>
+								</div>
+							</td>
+							<td if:true={isDescription.visible} style={isDescriptionStyle}>
+								<div>
+									<!--style={isDescriptionVisible.sldsSize}-->
+									<lightning-textarea value={item.description} data-index={index}
+										data-id="description" onchange={handleItemChange}
+										disabled={isFormDisabled} 
+										required={isDescription.required} class={isDescription.requiredClass}></lightning-textarea>
+								</div>
+							</td>
+							<td if:true={isUnitPrice.visible} style={isUnitPriceStyle}>
+								<div>
+									<lightning-input type="number" step="0.01" value={item.unitPrice} data-index={index}
+										data-id="unitPrice" onchange={handleItemChange} disabled={isFormDisabled} 
+										required={isUnitPrice.required} class={isUnitPrice.requiredClass}>
+									</lightning-input>
+								</div>
+							</td>
+							<td if:true={isQuantity.visible} style={isQuantityStyle}>
+								<div>
+									<!-- AAB 29AUG25 freeze quantity when form is in freeze mode-->
+									<lightning-input type="number" value={item.quantity} data-index={index}
+										data-id="quantity" onchange={handleItemChange} disabled ={quantityDisabled}
+										required={isQuantity.required} class={isQuantity.requiredClass}>
+									</lightning-input>
+								</div>
+							</td>
+							<td if:true={isSubTotal.visible} style={isSubTotalStyle}>
+								<div class="slds-text-align_center">
+									<lightning-input value={item.total} disabled></lightning-input>
+								</div>
+							</td>
+							<td if:true={isTax.visible} style={isTaxStyle}>
+								<div>
+									<lightning-combobox name="taxRate" value={item.taxRate} data-index={index}
+										data-id="taxRate" options={taxOptions} onchange={handleItemChange}
+										disabled={isFormDisabled}></lightning-combobox>
+								</div>
+							</td>
+							<td if:true={isTaxAmount.visible} style={isTaxAmountStyle}>
+								<div class="slds-text-align_center">
+									<lightning-input value={item.taxAmount} disabled></lightning-input>
+								</div>
+							</td>
+							<!-- AR 29AUG25 Control the delete icon when form is disabled -->
+							<!-- AAB 29AUG25 Delete icon position fix-->
+							<td if:false={isFormDisabled}>
+								<div class="delete-icon-container">
+									<lightning-button-icon 
+										icon-name="utility:delete" 
+										variant="bare"
+										class="slds-m-left_xx-small"
+										alternative-text="Remove Item" 
+										title="Remove Item" 
+										data-index={index}
+										onclick={removeItem}>
+									</lightning-button-icon>
+								</div>
+							</td>
+						</tr>
+					</template>
+				</tbody>
+			</table>
+		</div>
+		<!-- Buttons and Summary -->
+		<div class="slds-grid slds-grid_align-end slds-p-top_medium slds-p-horizontal_medium">
+			<div class="slds-col slds-no-flex">
+				<lightning-button label="Add Lines" variant="brand" onclick={addItem}
+					disabled={isFormDisabled}></lightning-button>
+				<lightning-button label="Clear All Lines" variant="neutral" class="slds-m-left_x-small"
+					onclick={clearAllItems} disabled={isFormDisabled}></lightning-button>
+			</div>
+		</div>
+		<!-- Rounding Off Input aligned to the right with Summary Section -->
+		<div class="slds-grid slds-grid_align-end slds-p-top_medium slds-p-horizontal_medium">
+			<!-- Rounding Off Section -->
+			<div class="slds-col slds-size_3-of-12 slds-text-align_right">
+				<div class="slds-grid slds-m-vertical_xx-small">
+					<!-- AAB 29AUG25 rounding off position fix,freeze once form disabled -->
+					<div class="slds-col slds-size_1-of-2 slds-text-align_left rounding-Off-Label">
+						<label class="slds-text-body_regular" for="roundingOffInput">Rounding Off</label>
+					</div>
+					<div class="slds-col slds-size_1-of-2 slds-text-align_right">
+						<lightning-input 
+							type="number" 
+							step="0.01" 
+							value={billRecord.roundingOff} 
+							data-id="roundingOff"
+							onchange={handleRoundingOffChange}
+							class="slds-input_small"
+							disabled={isFormDisabled}>
+						</lightning-input>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="slds-grid slds-grid_align-end slds-p-horizontal_medium">
+			<!-- Summary Section -->
+			<div class="slds-col slds-size_3-of-12 slds-text-align_right">
+				<!-- Sub Total -->
+				<div class="slds-grid slds-m-vertical_xx-small">
+					<div class="slds-col slds-size_1-of-2 slds-text-align_left">
+						<span class="slds-text-body_regular">Sub Total ({currencyDisplay})</span>
+					</div>
+					<div class="slds-col slds-size_1-of-2 slds-text-align_right">
+						<lightning-formatted-number value={subtotal}
+							minimum-fraction-digits="2"></lightning-formatted-number>
+					</div>
+				</div>
+				<!-- Tax Details -->
+				<template if:true={showTaxDetailsSection}>
+					<template for:each={taxDetails} for:item="tax">
+						<div class="slds-grid slds-m-vertical_xx-small" key={tax.taxName}>
+							<div class="slds-col slds-size_1-of-2 slds-text-align_left">
+								<span class="slds-text-body_small">{tax.taxName}</span>
+							</div>
+							<div class="slds-col slds-size_1-of-2 slds-text-align_right">
+								<lightning-formatted-number value={tax.taxAmount}
+									minimum-fraction-digits="2"></lightning-formatted-number>
+							</div>
+						</div>
+					</template>
+				</template>
+				<!-- Sum of Tax -->
+				<div if:true={showTaxDetailsSection} class="slds-grid slds-m-vertical_xx-small">
+					<div class="slds-col slds-size_1-of-2 slds-text-align_left">
+						<span class="slds-text-body_regular">Sum of Tax</span>
+					</div>
+					<div class="slds-col slds-size_1-of-2 slds-text-align_right">
+						<lightning-formatted-number value={taxTotal}
+							minimum-fraction-digits="2"></lightning-formatted-number>
+					</div>
+				</div>
+
+				<!--AP-29AUG25 TDS Charge Display Section (visible only if TDS is enabled) -->
+				<div class="slds-grid slds-m-vertical_xx-small slds-border-top" if:true={isTDS}>
+					<div class="slds-col slds-size_1-of-2 slds-text-align_left">
+						<span class="slds-text-body_regular">TDS Charge</span>
+					</div>
+					<div class="slds-col slds-size_1-of-2 slds-text-align_right">
+						<lightning-formatted-number value={billRecord.tds}
+							minimum-fraction-digits="2"></lightning-formatted-number>
+					</div>
+				</div>
+				
+				<!-- Total -->
+				<div class="slds-grid slds-m-vertical_xx-small slds-border-top">
+					<div class="slds-col slds-size_1-of-2 slds-text-align_left">
+						<span class="slds-text-heading_small">Total ({currencyDisplay})</span>
+					</div>
+					<div class="slds-col slds-size_1-of-2 slds-text-align_right">
+						<lightning-formatted-number value={grandTotal}
+							minimum-fraction-digits="2"></lightning-formatted-number>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Message Input at the very bottom -->
+		<div class="slds-grid slds-grid_align-center slds-p-top_large">
+			<div class="slds-col slds-size_1-of-1 custom-message-box-wrapper">
+				<lightning-textarea label="Message / Statement" placeholder="Enter your message and statement here!"
+					value={billRecord.message} onchange={handleInputChange} data-id="message" disabled={isFormDisabled}
+					class="custom-message-box"></lightning-textarea>
+			</div>
+		</div>
+		<!-- Save/Cancel Buttons -->
+		<div class="slds-grid slds-grid_align-center slds-p-top_large">
+			<lightning-button variant="neutral" label="Cancel" onclick={handleCancel}
+				class="slds-m-right_x-small"></lightning-button>
+			<lightning-button variant="brand" label="Save" onclick={handleSave} class="slds-m-right_x-small"
+				disabled={isButtonDisabled}></lightning-button>
+			<lightning-button variant="brand" label="Save & Submit" onclick={handleSaveSubmit}
+				disabled={isButtonDisabled}></lightning-button>
+		</div>
+	</lightning-card>
+	<template if:true={showSpinner}>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+		<lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+	</template>
+</template>

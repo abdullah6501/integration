@@ -1,0 +1,66 @@
+/* Custom modal styling that mimics SLDS modal but avoids Flow triggers */
+.custom-modal-wrapper {
+    background: white;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
+    border: 1px solid #d8dde6;
+    max-width: 100rem;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.custom-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+}
+
+.custom-modal-header {
+    background: #fafaf9;
+    border-bottom: 1px solid #d8dde6;
+    padding: 1rem 1.5rem;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.custom-modal-header h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #080707;
+}
+
+.custom-modal-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.custom-modal-footer {
+    background: #fafaf9;
+    border-top: 1px solid #d8dde6;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0 0 0.25rem 0.25rem;
+}
+
+/* Section headers */
+.payments-section-header {
+    background-color: #e5e5e5;
+}
+
+.additional-info-header {
+    background-color: #e5e5e5;
+}
+
+/* Hide any Flow-generated close buttons globally */
+.runtime_sales_forceBaseScreenAction .slds-button_icon,
+.flowruntime-screen .slds-button_icon,
+.oneFlowRuntimeBaseScreenAction .slds-button_icon,
+* .slds-modal__close,
+* .slds-button_icon[data-key="utility:close"] {
+    display: none !important;
+    visibility: hidden !important;
+}

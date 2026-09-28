@@ -562,6 +562,14 @@ if (productSerialMapList != null && !productSerialMapList.isEmpty()) {
         List<ZATCA_Api_Request__c> dataList = [SELECT Id, Invoice_ID__c, JSON__c FROM ZATCA_Api_Request__c 
                                             WHERE Invoice_ID__c = :invoiceId LIMIT 1];
 
+        List<Company_Settings__mdt> companySettingList = new List<Company_Settings__mdt>();
+        if (Schema.sObjectType.Company_Settings__mdt.isAccessible()) {
+            companySettingList = [SELECT GSTIN__c FROM Company_Settings__mdt LIMIT 1];
+        }
+        Company_Settings__mdt company = companySettingList.isEmpty() ? null : companySettingList[0];
+
+        Invoice__c inv = [SELECT Invoice_Date__c, CreatedDate FROM Invoice__c WHERE Id = :invoiceId WITH SECURITY_ENFORCED LIMIT 1];
+
         if (dataList.isEmpty()) {
             throw new AuraHandledException('No record found for the given invoice ID: ' + invoiceId);
         }
@@ -592,20 +600,45 @@ if (productSerialMapList != null && !productSerialMapList.isEmpty()) {
             // req.setHeader('Accept-Version', 'V2');
             req.setHeader('Clearance-Status', '1');
             req.setHeader('Authorization', encodedAuth);
+            req.setHeader('SellerVatNumber', company.GSTIN__c);
+            req.setHeader('IssueDate', String.valueOf(inv.Invoice_Date__c));
+            req.setHeader('IssueTime', String.valueOf(inv.CreatedDate.format('HH:mm:ss')));
+            req.setHeader('InvoiceId', invoiceId);
             req.setBody(apiRequestJson);
 
             Http http = new Http();
             HttpResponse res = http.send(req);
 
+            // if (res.getStatusCode() == 200) {
+            //     String responseStr = res.getBody();
+            //     Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(responseStr);
+            //     if (responseMap.containsKey('QrCode-Base64Encoded')) {
+            //         String qrCode = (String) responseMap.get('QrCode-Base64Encoded');
+            //         String qr = generateQRCodeFromBase64(qrCode, invoiceId);
+            //         return qr;
+            //     }
+            // }
             if (res.getStatusCode() == 200) {
-                String responseStr = res.getBody();
-                Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(responseStr);
-                if (responseMap.containsKey('QrCode-Base64Encoded')) {
-                    String qrCode = (String) responseMap.get('QrCode-Base64Encoded');
-                    String qr = generateQRCodeFromBase64(qrCode, invoiceId);
-                    return qr;
-                }
-            } else {
+                Blob pdfBlob = res.getBodyAsBlob(); 
+            
+                ContentVersion cv = new ContentVersion();
+                cv.Title = 'ZATCA_Clearance_' + invoiceId;
+                cv.PathOnClient = 'ZATCA_Clearance_' + invoiceId + '.pdf';
+                cv.VersionData = pdfBlob;
+                insert cv;
+            
+                ContentVersion insertedVersion = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id LIMIT 1];
+            
+                ContentDocumentLink cdl = new ContentDocumentLink();
+                cdl.ContentDocumentId = insertedVersion.ContentDocumentId;
+                cdl.LinkedEntityId = invoiceId; 
+                cdl.ShareType = 'V'; 
+                cdl.Visibility = 'AllUsers';
+                insert cdl;
+            
+                return 'PDF saved and linked to invoice.';
+            }             
+            else {
                 System.debug('Clearance failed:-----> ' + res.getBody());
                 throw new AuraHandledException('Clearance failed: ' + res.getBody());
             }
@@ -842,54 +875,6 @@ if (productSerialMapList != null && !productSerialMapList.isEmpty()) {
         return autList;
     }
 
-    // @AuraEnabled(cacheable=true)
-    // public static List<Map<String, String>> getInvoiceType() {
-    //     List<Map<String, String>> invoiceTypeList = new List<Map<String, String>>();
-        
-    //     Schema.DescribeFieldResult fieldResult = Invoice__c.Invoice_Type__c.getDescribe();
-    //     List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
-
-    //     for (Schema.PicklistEntry entry : picklistValues) {
-    //         Map<String, String> invoiceTypeMap = new Map<String, String>();
-    //         invoiceTypeMap.put('label', entry.getLabel());
-    //         invoiceTypeMap.put('value', entry.getValue());
-    //         invoiceTypeList.add(invoiceTypeMap);
-    //     }
-    //     return invoiceTypeList;
-    // }
-
-    // @AuraEnabled(cacheable=true)
-    // public static List<Map<String, String>> getInvoiceNameType() {
-    //     List<Map<String, String>> invoiceNameTypeList = new List<Map<String, String>>();
-        
-    //     Schema.DescribeFieldResult fieldResult = Invoice__c.Invoice_Name_Type__c.getDescribe();
-    //     List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
-
-    //     for (Schema.PicklistEntry entry : picklistValues) {
-    //         Map<String, String> invoiceNameTypeMap = new Map<String, String>();
-    //         invoiceNameTypeMap.put('label', entry.getLabel());
-    //         invoiceNameTypeMap.put('value', entry.getValue());
-    //         invoiceNameTypeList.add(invoiceNameTypeMap);
-    //     }
-    //     return invoiceNameTypeList;
-    // }
-
-    // @AuraEnabled(cacheable=true)
-    // public static List<Map<String, String>> getPaymentType() {
-    //     List<Map<String, String>> paymentTypeList = new List<Map<String, String>>();
-        
-    //     Schema.DescribeFieldResult fieldResult = Invoice__c.Payment_Type__c.getDescribe();
-    //     List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
-
-    //     for (Schema.PicklistEntry entry : picklistValues) {
-    //         Map<String, String> paynentTypeMap = new Map<String, String>();
-    //         paynentTypeMap.put('label', entry.getLabel());
-    //         paynentTypeMap.put('value', entry.getValue());
-    //         paymentTypeList.add(paynentTypeMap);
-    //     }
-    //     return paymentTypeList;
-    // }
-
     @AuraEnabled(cacheable=true)
     public static Map<String, List<String>> getPicklistValues() {
         Map<String, List<String>> picklistMap = new Map<String, List<String>>();
@@ -937,31 +922,6 @@ if (productSerialMapList != null && !productSerialMapList.isEmpty()) {
             taxId.add(entry.getLabel());
         }
 
-        // Map<String, List<String>> taxDependencyMap = new Map<String, List<String>>();
-        // // Schema.DescribeFieldResult taxField = Invoice__c.Tax_ID__c.getDescribe();
-        // Schema.DescribeFieldResult exemptionField = Invoice__c.Tax_Exemption_Reason__c.getDescribe();
-        
-        // // Get the controlling field
-        // Schema.sObjectField controllingField = exemptionField.getController();
-        // if (controllingField != null) {
-        //     // Get dependency info
-        //     // List<Schema.PicklistEntry> controllingValues = field5.getPicklistValues();
-        //     List<Schema.PicklistEntry> dependentValues = exemptionField.getPicklistValues();
-            
-        //     // For each controlling value, find its valid dependent values
-        //     for (Schema.PicklistEntry controlling : taxIdValues) {
-        //         List<String> validDependentValues = new List<String>();
-        //         for (Schema.PicklistEntry dependent : dependentValues) {
-        //             if (dependent.isActive()) {
-        //                 validDependentValues.add(dependent.getLabel());
-        //             }
-        //         }
-        //         if (!validDependentValues.isEmpty()) {
-        //             taxDependencyMap.put(controlling.getValue(), validDependentValues);
-        //         }
-        //     }
-        // }
-
         List<String> taxExemptionReason = new List<String>();
         for (Schema.PicklistEntry entry : taxExemptionReasonValues) {
             taxExemptionReason.add(entry.getLabel());
@@ -983,40 +943,6 @@ if (productSerialMapList != null && !productSerialMapList.isEmpty()) {
 
         return picklistMap;
     }
-
-    // @AuraEnabled(cacheable=true)
-    // public static Map<String, List<String>> getDependentPicklistValues() {
-    //     Map<String, List<String>> dependentMap = new Map<String, List<String>>();
-
-    //     Schema.DescribeFieldResult controllingField = Invoice__c.Tax_ID__c.getDescribe();
-    //     Schema.DescribeFieldResult dependentField = Invoice__c.Tax_Exemption_Reason__c.getDescribe();
-
-    //     List<Schema.PicklistEntry> controlValues = controllingField.getPicklistValues();
-    //     List<Schema.PicklistEntry> dependentValues = dependentField.getPicklistValues();
-
-    //     // Store controlling values in a list and their index
-    //     List<String> controlValueLabels = new List<String>();
-    //     Map<String, Integer> controlValueIndexMap = new Map<String, Integer>();
-    //     for (Integer i = 0; i < controlValues.size(); i++) {
-    //         String val = controlValues[i].getLabel();
-    //         controlValueLabels.add(val);
-    //         controlValueIndexMap.put(val, i);
-    //         dependentMap.put(val, new List<String>());
-    //     }
-
-    //     // Loop through dependent picklist entries and match using validFor
-    //     for (Schema.PicklistEntry depVal : dependentValues) {
-    //         Blob validFor = depVal.getValidFor();
-    //         for (String ctrlVal : controlValueLabels) {
-    //             Integer index = controlValueIndexMap.get(ctrlVal);
-    //             if (validFor != null && validFor.size() > 0 && Schema.sObjectType.Invoice__c.getDescribe().getField('Tax_Exemption__c').getDescribe().isValidFor(validFor, index)) {
-    //                 dependentMap.get(ctrlVal).add(depVal.getLabel());
-    //             }
-    //         }
-    //     }
-
-    //     return dependentMap;
-    // }
 
     @AuraEnabled(Cacheable=true)
     //RP - 02May2023 - removed param "accName" - Commanded since we will be having only one row in this table here after

@@ -4,19 +4,21 @@ trigger ExpenseApiTrigger on RFAB__Expense__c (after insert, after update, after
         return;
     }
     List<SObject> filteredRecords = new List<SObject>();
- 
-    for (RFAB__Expense__c expense : Trigger.new) {
-        if (expense.External_Id__c != null && expense.External_Id__c.startsWith('external')) {
-            continue;
+
+    if (Trigger.isInsert) {
+        for (RFAB__Expense__c expense : Trigger.new) {
+            if (expense.External_Id__c != null && expense.External_Id__c.startsWith('external')) {
+                continue; 
+            }
+            filteredRecords.add(expense);
         }
-        filteredRecords.add(expense);
+    } else if (Trigger.isUpdate) {
+        filteredRecords.addAll(Trigger.new);
     }
 
-    if (!filteredRecords.isEmpty() && (Trigger.isInsert || Trigger.isUpdate)) {
+    if (!filteredRecords.isEmpty()) {
         FusionApiHandler.handleTrigger(filteredRecords, Trigger.isInsert, Trigger.isUpdate, false);
-        // FusionApiHandler.handleTrigger(filteredRecords, Trigger.isInsert, Trigger.isUpdate, false);
-    }
-    
+    } 
 }
 
 

@@ -1,0 +1,242 @@
+<template>
+    <template if:true={isVisible}>
+        <lightning-card>
+            <div class="chat-container-and-knowledge">
+                <div class={chatContainerClass} >
+                    <template if:true={isExpanded}>
+                        <div class="chat-sidebar">
+                            
+                            <div class="chat-history-list">
+                            <div class="sidebar-header" onclick={createConversation}>
+                                <lightning-button-icon 
+                                    icon-name="utility:add" 
+                                    variant="bare"
+                                    size="small"
+                                    title="New Chat">
+                                </lightning-button-icon>
+                                <span>Create chat</span>
+                            </div>
+                                <template for:each={Conversations} for:item="chat" for:index="index">
+                                    <div key={chat.conversation_id} 
+                                        class={chat.class} 
+                                        onclick={selectChat}
+                                        data-chat-id={chat.conversation_id}
+                                        data-key={chat.conversation_id}>
+                                        <div class="chat-preview">
+                                            <template if:true={chat.isEditing}>
+                                                <lightning-input
+                                                    type="text"
+                                                    name="topic"
+                                                    value={chat.topic}
+                                                    onkeydown={saveconversationEdit}
+                                                    onblur={cancelconversationEdit}
+                                                    onkeypress={handleconversationkeypress}
+                                                    data-chat-id={chat.conversation_id}
+                                                    data-index={index}
+                                                    variant="label-hidden"
+                                                    class="inline-edit-input">
+                                                </lightning-input>
+                                            </template>
+                                            <template if:false={chat.isEditing}>
+                                                <div class="chat-title">
+                                                    <lightning-icon
+                                                        icon-name="utility:chat"
+                                                        size="x-small"
+                                                        class="chat-icon">
+                                                    </lightning-icon>
+                                                    <span class="chat-topic-text">{chat.topic}</span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <template if:false={chat.isEditing}>
+                                            <div class="chat-actions">
+                                                <lightning-button-icon 
+                                                    icon-name="utility:edit" 
+                                                    onclick={editchat}
+                                                    data-chat-id={chat.conversation_id}
+                                                    data-index={index}
+                                                    variant="bare"
+                                                    size="medium"
+                                                    class="edit-chat-btn">
+                                                </lightning-button-icon>
+                                                <lightning-button-icon 
+                                                    icon-name="utility:delete" 
+                                                    onclick={deleteChat}
+                                                    data-chat-id={chat.conversation_id}
+                                                    data-index={index}
+                                                    variant="bare"
+                                                    size="medium"
+                                                    class="delete-chat-btn">
+                                                </lightning-button-icon>
+                                            </div>
+                                        </template>
+                                    </div> 
+                                </template>
+                            </div>
+
+                            <!-- <div class="sidebar-footer">
+                                <lightning-button variant="neutral" label="Clear conversations" class="sidebar-footer-button" onclick={clearConversations}></lightning-button>
+                                <lightning-button variant="neutral" label="Enquiries / Case" class="sidebar-footer-button" onclick={openEnquiries}></lightning-button>
+                            </div>-->
+                            <div class="sidebar-footer">
+                                <div class="footer-action" onclick={clearConversations}>
+                                    <lightning-icon icon-name="utility:delete" size="x-small" class="footer-icon"></lightning-icon>
+                                    <span>Clear conversations</span>
+                                </div>
+                                <div class="footer-action" onclick={openEnquiries}>
+                                    <lightning-icon icon-name="utility:jump_to_top" size="x-small" class="footer-icon"></lightning-icon>
+                                    <span>Enquiries / Case</span>
+                                </div>
+                            </div>                    
+                        </div>
+                    </template>
+                    <div class={mainChatClass}>
+                        <div class="chat-header">
+                            <template if:false={isExpanded}>
+                                <lightning-button-icon 
+                                    icon-name={expandIcon}
+                                    onclick={expandChat} 
+                                    variant="container"
+                                    size="small"
+                                    title={expandCollapseTitle}>
+                                </lightning-button-icon>
+                            </template>
+                            <div class="header-content">
+                                <div class="header-text">
+                                    <template if:true={currentChat}>
+                                        <span class="chat-title-header">{currentChat.title}</span>
+                                    </template>
+                                    <template if:false={currentChat}>
+                                        <span class="chat-title-header">Chat started by {currentUser}</span>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="header-actions">
+                                <!-- Toggle for LTR/RTL -->
+                                <lightning-input
+                                    type="toggle"
+                                    label="ultra Mode"
+                                    name="rtlToggle"
+                                    show-indicator-label={hideIndicator}
+                                    checked={isRtl}
+                                    onchange={handleRtlToggle}
+                                    class="ltr-toggle">
+                                </lightning-input>
+                                <template if:true={isExpanded}>
+                                    <lightning-button-icon 
+                                        icon-name="utility:knowledge_base" 
+                                        onclick={openKnowledgeDialog}
+                                        variant="container"
+                                        size="small"
+                                        title="Knowledge Base">
+                                    </lightning-button-icon>
+                                </template>
+                                <!-- <lightning-button-icon    ######used for global action
+                                    icon-name="utility:close" 
+                                    onclick={closeChat} 
+                                    variant="container"
+                                    size="small"
+                                    title="Close">
+                                </lightning-button-icon> -->
+                            </div>
+                        </div>
+
+                        <div class="chat-messages">
+                            <template for:each={Current_messages} for:item="msg">
+                                <div key={msg.message_id} class={msg.class} style="position: relative;">
+                                    <div class="message-row">
+                                        <div class="message message-content">
+                                            <div class="message-text" style="white-space: pre-line;">{msg.message_text}</div>
+                                            <!-- <template if:true={msg.attachments}>
+                                                <div class="message-attachments">
+                                                    <template for:each={msg.attachments} for:item="file">
+                                                        <div key={file.documentId} class="file-badge">
+                                                            <lightning-icon icon-name="utility:file" size="x-small"></lightning-icon>
+                                                            <span>{file.name}</span>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </template> -->
+                                        </div>
+                                        <div class="mark"></div>
+                                    </div>
+                                    <div class="timestamp">{msg.timestamp}</div> 
+                                </div>
+
+                            </template>
+
+                            <!-- <template if:true={showTemplate}>
+                                <div class="template-form">
+                                    <c-post-form onsubmit={handleFormSubmit}></c-post-form>
+                                </div>
+                            </template> -->
+
+                            <template if:true={chatloading}>
+                                <div class="loading-indicator">
+                                    <div class="typing-indicator">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <!-- <template if:false={currentChat}>
+                                <div class="empty-state">
+                                    <div class="empty-state-content">
+                                        <lightning-icon icon-name="utility:chat" size="large"></lightning-icon>
+                                        <h3>Welcome to Chat Assistant</h3>
+                                        <p>Select a chat from history or start a new conversation</p>
+                                    </div>
+                                </div>
+                            </template> -->
+                        </div>
+
+                        <div class="chat-input-container">
+                            <div class="chat-input-box">
+                                <lightning-input
+                                    type="text"
+                                    placeholder="Write your message"
+                                    variant="label-hidden"
+                                    value={newMessage}
+                                    onchange={handleMessageChange}
+                                    onkeypress={handleKeyPress}
+                                    class="chat-text-input">
+                                </lightning-input>
+                                <div class="chat-input-icons">
+                                    <div class="file-upload-container" >
+                                        <lightning-button-icon icon-name="utility:upload" alternative-text="Upload File" title="Upload File" class="file-upload-button" disabled={isnotsendable}></lightning-button-icon>
+                                        <lightning-file-upload name="fileUploader" accept=".pdf,.html" label="" title="upload Document" onuploadfinished={handleDocUpload} onclick={checkFileLimit} data-id="hiddenUploader" class="chat-file-content" disabled={isnotsendable}></lightning-file-upload>
+                                    </div>
+                                    <lightning-button-icon
+                                        icon-name="utility:unmuted"
+                                        variant="bare"
+                                        onclick={handleVoiceInput}
+                                        title="Voice Input"
+                                        disabled={isnotsendable}>
+                                    </lightning-button-icon>
+                        
+                                    <lightning-button-icon
+                                        icon-name="utility:send"
+                                        variant="bare"
+                                        onclick={sendMessage}
+                                        class="send-button"
+                                        title="Send Message"
+                                        disabled={isnotsendable}>
+                                    </lightning-button-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="knowledge_section1">
+                    <template if:true={showKnowledgeDialog}>
+                        <div class= "knowledge_section">
+                        <c-chat-bot-knowledge-base onclosedialog={closeKnowledgeDialog}></c-chat-bot-knowledge-base>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </lightning-card>
+    </template>
+</template>
